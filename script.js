@@ -23,16 +23,27 @@ var touches = [];
 var activeKeys = [];
 
 var cameraPos = { x: 0, y: 0 };
+var loadingLevel = false;
 
 
 async function loadLevel(index) {
+    if (loadingLevel) {
+        return;
+    }
+
+    loadingLevel = true;
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     let path = "/levels/" + index + ".json";
 
     await fetch(currentPath + path)
         .then(response => response.json())
+        .catch(error => {
+            loadingLevel = false;
+        })
         .then(json => {
             setLevel(new Level(json.index, json.startPos, json.startColor, new Key(ctx, json.keyPos), new Finish(ctx, json.finish.pos, json.finish.size), json.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color)), json.obstacles.map(obstacle => new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color))));
+        }).catch(error => { 
+            loadingLevel = false;
         });
 }
 
@@ -44,6 +55,7 @@ function setLevel(newLevel) {
     };
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
+    loadingLevel = false;
 }
 
 
@@ -103,6 +115,9 @@ function draw() {
             case 'ArrowRight':
                 colorWheel.nextColor();
                 activeKeys = activeKeys.filter(key => key !== 'e' && key !== 'ArrowRight');
+                break;
+            case 'r':
+                loadLevel(level.index);
                 break;
             case ' ':
                 player.jump();

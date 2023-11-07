@@ -21,4 +21,5 @@ The player can be controlled by touching the on screen buttons. The player can m
 | `D` | Move right |
 | `Q` or `Arrow Left` | Switch color left |
 | `E` or `Arrow Right` | Switch color right |
+| `R` | Restart level |
 | `Space` | Jump |
