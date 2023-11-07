@@ -66,4 +66,18 @@ export class ColorWheel {
     }
 
 
+    nextColor() {
+        this.player.color = this.player.colors[(this.player.colors.indexOf(this.player.color) + 1) % this.player.colors.length];
+
+        this.setColor(this.player.color);
+    }
+
+
+    previousColor() {
+        this.player.color = this.player.colors[(this.player.colors.indexOf(this.player.color) - 1 + this.player.colors.length) % this.player.colors.length];
+
+        this.setColor(this.player.color);
+    }
+
+
 }

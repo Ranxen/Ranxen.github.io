@@ -94,6 +94,14 @@ function draw() {
             case 'd':
                 player.moveRight();
                 break;
+            case 'q':
+                colorWheel.previousColor();
+                activeKeys = activeKeys.filter(key => key !== 'q');
+                break;
+            case 'e':
+                colorWheel.nextColor();
+                activeKeys = activeKeys.filter(key => key !== 'e');
+                break;
             case ' ':
                 player.jump();
                 break;
