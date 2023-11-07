@@ -19,6 +19,6 @@ The player can be controlled by touching the on screen buttons. The player can m
 | --- | --- |
 | `A` | Move left |
 | `D` | Move right |
-| `Q` | Switch color left |
-| `E` | Switch color right |
+| `Q` or `Arrow Left` | Switch color left |
+| `E` or `Arrow Right` | Switch color right |
 | `Space` | Jump |

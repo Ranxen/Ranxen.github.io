@@ -95,12 +95,14 @@ function draw() {
                 player.moveRight();
                 break;
             case 'q':
+            case 'ArrowLeft':
                 colorWheel.previousColor();
-                activeKeys = activeKeys.filter(key => key !== 'q');
+                activeKeys = activeKeys.filter(key => key !== 'q' && key !== 'ArrowLeft');
                 break;
             case 'e':
+            case 'ArrowRight':
                 colorWheel.nextColor();
-                activeKeys = activeKeys.filter(key => key !== 'e');
+                activeKeys = activeKeys.filter(key => key !== 'e' && key !== 'ArrowRight');
                 break;
             case ' ':
                 player.jump();
