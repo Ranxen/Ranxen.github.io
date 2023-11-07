@@ -1,0 +1,100 @@
+{
+    "index" : 0,
+    "startPos" : {
+        "x" : 50,
+        "y" : 200
+    },
+    "startColor" : "red",
+    "keyPos" : {
+        "x" : 50,
+        "y" : -100
+    },
+    "finish" : {
+        "pos" : {
+            "x" : 1200,
+            "y" : 200
+        },
+        "size" : {
+            "width" : 50,
+            "height" : 100
+        }
+    },
+    "colorOrbs" : [
+        {
+            "pos" : {
+                "x" : 400,
+                "y" : 250
+            },
+            "size" : 25,
+            "color" : "purple"
+        }
+    ],
+    "obstacles" : [
+        {
+            "pos": {
+                "x": 0,
+                "y": 300
+            },
+            "size": {
+                "width": 1300,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 100
+            },
+            "size": {
+                "width": 300,
+                "height": 25
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 800,
+                "y": -200
+            },
+            "size": {
+                "width": 25,
+                "height": 500
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": -200
+            },
+            "size": {
+                "width": 25,
+                "height": 525
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": -25,
+                "y": -200
+            },
+            "size": {
+                "width": 25,
+                "height": 525
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": -200
+            },
+            "size": {
+                "width": 1300,
+                "height": 25
+            },
+            "color": "green"
+        }
+    ]
+}

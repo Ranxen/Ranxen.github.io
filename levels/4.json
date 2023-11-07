@@ -1,0 +1,184 @@
+{
+    "index" : 4,
+    "startPos" : {
+        "x" : 800,
+        "y" : 50
+    },
+    "startColor" : "red",
+    "keyPos": {
+        "x": 800,
+        "y": 8000
+    },
+    "finish" : {
+        "pos" : {
+            "x" : 800,
+            "y" : 12000
+        },
+        "size" : {
+            "width" : 50,
+            "height" : 100
+        }
+    },
+    "colorOrbs" : [
+        {
+            "pos" : {
+                "x" : 825,
+                "y" : 900
+            },
+            "size" : 25,
+            "color" : "orange"
+        },
+        {
+            "pos": {
+                "x": 725,
+                "y": 1900
+            },
+            "size": 25,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 625,
+                "y": 2900
+            },
+            "size": 25,
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 525,
+                "y": 3900
+            },
+            "size": 25,
+            "color": "lightblue"
+        },
+        {
+            "pos": {
+                "x": 625,
+                "y": 4900
+            },
+            "size": 25,
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 1000,
+                "y": 9900
+            },
+            "size": 25,
+            "color": "purple"
+        }
+    ],
+    "obstacles" : [
+        {
+            "pos": {
+                "x": 0,
+                "y": 0
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "grey"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 12100
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "grey"
+        },
+        {
+            "pos": {
+                "x": -25,
+                "y": 0
+            },
+            "size": {
+                "width": 25,
+                "height": 12125
+            },
+            "color": "grey"
+        },
+        {
+            "pos": {
+                "x": 1600,
+                "y": 0
+            },
+            "size": {
+                "width": 25,
+                "height": 12125
+            },
+            "color": "grey"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 1000
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 2000
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 3000
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 4000
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "lightblue"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 5000
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 10000
+            },
+            "size": {
+                "width": 1600,
+                "height": 25
+            },
+            "color": "purple"
+        }
+    ]
+}
