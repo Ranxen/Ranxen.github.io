@@ -17,7 +17,9 @@ export class Button {
     draw() {
         this.ctx.translate(this.pos.x, this.pos.y);
         drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
-        drawLib.text(this.ctx, this.size.width / 2, this.size.height / 2, this.text, 'black', 'center', 'middle');
+        if (this.text.length > 0) {
+            drawLib.text(this.ctx, this.size.width / 2, this.size.height / 2, this.text, 'black');
+        }
 
         this.ctx.resetTransform();
     }

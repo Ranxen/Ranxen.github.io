@@ -31,7 +31,12 @@ export class ColorWheel {
 
 
     drawSelector() {
-        drawLib.circle(this.ctx, Math.cos(this.selectorPos * Math.PI / 180) * this.size, Math.sin(this.selectorPos * Math.PI / 180) * this.size, 10, this.isDragging ? 'white' : 'black');
+        let selectorSize = 90 / this.player.colors.length;
+
+        drawLib.arc(this.ctx, 0, 0, this.size, (this.selectorPos + selectorSize) * Math.PI / 180, (this.selectorPos - selectorSize) * Math.PI / 180, 'rgba(0, 0, 0, 0.5)');
+        drawLib.arc(this.ctx, 0, 0, this.size, (this.selectorPos - selectorSize) * Math.PI / 180, (this.selectorPos + selectorSize) * Math.PI / 180, 'transparent', 'black', 8);
+        drawLib.circle(this.ctx, Math.cos(this.selectorPos * Math.PI / 180) * (this.size - 25), Math.sin(this.selectorPos * Math.PI / 180) * (this.size - 25), 8, this.isDragging ? 'white' : 'black');
+        
     }
 
 

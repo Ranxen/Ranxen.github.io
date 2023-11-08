@@ -19,11 +19,18 @@ var player = null;
 var buttons = [];
 var colorWheel;
 
+var mouseDown = false;
+var mouseX = 0;
+var mouseY = 0;
+
 var touches = [];
 var activeKeys = [];
 
 var cameraPos = { x: 0, y: 0 };
 var loadingLevel = false;
+var isMobile = true;
+
+var buttonColor = '#414e5c';
 
 
 async function loadLevel(index) {
@@ -60,27 +67,40 @@ function setLevel(newLevel) {
 
 
 function setup() {
+    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        addTouchEventListener();
+    } else {
+        addKeyEventListener();
+    }
+
     loadLevel(0).then(() => {
-        let leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, "rgba(255, 255, 255, 0.2)", "<", () => {
-            player.moveLeft();
-        });
+        if (isMobile) {
+            let leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
+                player.moveLeft();
+            });
 
-        let rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, "rgba(255, 255, 255, 0.2)", ">", () => {
-            player.moveRight();
-        });
+            let rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
+                player.moveRight();
+            });
 
-        let jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", "jump", () => {
-            player.jump();
-        });
+            buttons.push(leftButton);
+            buttons.push(rightButton);
+        }
 
-        let retryButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, "rgba(255, 255, 255, 0.2)", "retry", () => {
+        let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
             loadLevel(level.index);
         });
 
-        buttons.push(leftButton);
-        buttons.push(rightButton);
+        let jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
+            if (isMobile) {
+                player.jump();
+            }
+        });
+
+        buttons.push(restartButton);
         buttons.push(jumpButton);
-        buttons.push(retryButton);
 
         draw();
     });
@@ -127,18 +147,13 @@ function draw() {
 
     colorWheel.isDragging = false;
 
-    for (let touch of touches) {
-        let touchUsed = false;
-        for (let button of buttons) {
-            if (button.isClicked(touch.clientX, touch.clientY)) {
-                touchUsed = true;
-                break;
-            }
+    if (isMobile) {
+        for (let touch of touches) {
+            processTouchOrClick(touch.clientX, touch.clientY);
         }
-
-        if (!touchUsed) {
-            colorWheel.isMoved(touch.clientX, touch.clientY);
-        }
+    }
+    else if (mouseDown) {
+        processTouchOrClick(mouseX, mouseY);
     }
 
     player.clearCollisions();
@@ -177,6 +192,21 @@ function draw() {
 }
 
 
+function processTouchOrClick(x, y) {
+    let touchUsed = false;
+    for (let button of buttons) {
+        if (button.isClicked(x, y)) {
+            touchUsed = true;
+            break;
+        }
+    }
+
+    if (!touchUsed) {
+        colorWheel.isMoved(x, y);
+    }
+}
+
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -184,50 +214,67 @@ function resizeCanvas() {
 
 resizeCanvas();
 
+
+function addTouchEventListener() {
+    window.addEventListener('touchstart', (touchEvent) => {
+        touchEvent.preventDefault();
+
+        for (let touch of touchEvent.changedTouches) {
+            touches.push(touch);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (touchEvent) => {
+        touchEvent.preventDefault();
+
+        for (let touch of touchEvent.changedTouches) {
+            touches.push(touch);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchend', (touchEvent) => {
+        touchEvent.preventDefault();
+
+        for (let touch of touchEvent.changedTouches) {
+            touches = touches.filter(t => t.identifier !== touch.identifier);
+        }
+    }, { passive: false });
+}
+
+
+function addKeyEventListener() {
+    window.addEventListener('keydown', (keyEvent) => {
+        activeKeys.push(keyEvent.key);
+    });
+
+    window.addEventListener('keyup', (keyEvent) => {
+        keyEvent.preventDefault();
+
+        activeKeys = activeKeys.filter(key => key !== keyEvent.key);
+    });
+
+    window.addEventListener('mousedown', (mouseEvent) => {
+        mouseEvent.preventDefault();
+
+        mouseDown = true;
+    });
+
+    window.addEventListener('mouseup', (mouseEvent) => {
+        mouseEvent.preventDefault();
+
+        mouseDown = false;
+    });
+
+    window.addEventListener('mousemove', (mouseEvent) => {
+        mouseEvent.preventDefault();
+
+        mouseX = mouseEvent.clientX;
+        mouseY = mouseEvent.clientY;
+    });
+}
+
 window.addEventListener('resize', resizeCanvas);
 
+window.addEventListener('orientationchange', resizeCanvas);
+
 window.onload = setup;
-
-window.addEventListener('touchstart', (touchEvent) => {
-    touchEvent.preventDefault();
-
-    for (let touch of touchEvent.changedTouches) {
-        touches.push(touch);
-    }
-}, { passive: false });
-
-window.addEventListener('touchmove', (touchEvent) => {
-    touchEvent.preventDefault();
-
-    for (let touch of touchEvent.changedTouches) {
-        touches.push(touch);
-    }
-}, { passive: false });
-
-window.addEventListener('touchend', (touchEvent) => {
-    touchEvent.preventDefault();
-
-    for (let touch of touchEvent.changedTouches) {
-        touches = touches.filter(t => t.identifier !== touch.identifier);
-    }
-}, { passive: false });
-
-window.addEventListener('keydown', (keyEvent) => {
-    activeKeys.push(keyEvent.key);
-});
-
-window.addEventListener('keyup', (keyEvent) => {
-    keyEvent.preventDefault();
-
-    activeKeys = activeKeys.filter(key => key !== keyEvent.key);
-});
-
-window.addEventListener('mousedown', (mouseEvent) => {
-    mouseEvent.preventDefault();
-
-    for (let button of buttons) {
-        button.isClicked(mouseEvent.clientX, mouseEvent.clientY);
-    }
-
-    colorWheel.isMoved(mouseEvent.clientX, mouseEvent.clientY);
-});

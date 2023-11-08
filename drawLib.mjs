@@ -30,13 +30,16 @@ export function circle(ctx, x, y, radius, fillStyle = "#fff", strokeStyle = "#00
 }
 
 
-export function arc(ctx, x, y, radius, startAngle, endAngle, color) {
+export function arc(ctx, x, y, radius, startAngle, endAngle, color, strokeStyle = "transparent", lineWidth = 0) {
     ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.arc(0, 0, radius, startAngle, endAngle);
-    ctx.closePath();
     ctx.fillStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = strokeStyle;
+    ctx.arc(x, y, radius, startAngle, endAngle, false);
+    ctx.lineTo(x, y);
+    ctx.closePath();
     ctx.fill();
+    ctx.stroke();
 }
 
 
@@ -52,7 +55,7 @@ export function path(ctx, p, M, fillStyle = "#fff", strokeStyle = "#000", lineWi
 }
 
 
-export function text(ctx, x, y, text, fillStyle = "#000", font = "20px sans-serif", textAlign = "left", textBaseline = "top") {
+export function text(ctx, x, y, text, fillStyle = "#000", textAlign = "center", textBaseline = "middle", font = "20px sans-serif") {
     ctx.fillStyle = fillStyle;
     ctx.font = font;
     ctx.textAlign = textAlign;

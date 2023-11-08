@@ -4,8 +4,8 @@ import { Button } from './Button.mjs';
 export class JumpButton extends Button {
 
 
-    constructor(ctx, pos, size, color, text, onClick) {
-        super(ctx, pos, size, color, text, onClick);
+    constructor(ctx, pos, size, color, onClick) {
+        super(ctx, pos, size, color, "", onClick);
     }
 
 
