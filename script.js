@@ -286,6 +286,17 @@ function addKeyEventListener() {
         mouseX = mouseEvent.clientX;
         mouseY = mouseEvent.clientY;
     });
+
+    window.addEventListener('wheel', (scrollEvent) => {
+        scrollEvent.preventDefault();
+
+        if (scrollEvent.deltaY < 0) {
+            colorWheel.previousColor();
+        }
+        else {
+            colorWheel.nextColor();
+        }
+    }, { passive: false });
 }
 
 window.addEventListener('resize', resizeCanvas);
