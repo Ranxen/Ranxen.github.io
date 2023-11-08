@@ -11,6 +11,7 @@ export class ColorWheel {
         this.player = player;
         this.selectorPos = -90;
         this.isDragging = false;
+        this.touchIdentifier = null;
     }
 
 
@@ -40,9 +41,12 @@ export class ColorWheel {
     }
 
 
-    isMoved(x, y) {
-        if (Math.sqrt((x - this.pos.x) ** 2 + (y - this.pos.y) ** 2) < this.size) {
+    isMoved(x, y, touchIdentifier) {
+        if ((this.isDragging && touchIdentifier == null) || (this.isDragging && touchIdentifier != null && this.touchIdentifier == touchIdentifier) || Math.sqrt((x - this.pos.x) ** 2 + (y - this.pos.y) ** 2) < this.size) {
             this.isDragging = true;
+            if (touchIdentifier != null) {
+                this.touchIdentifier = touchIdentifier;
+            }
             this.selectorPos = Math.atan2(y - this.pos.y, x - this.pos.x) * 180 / Math.PI;
 
             if (this.selectorPos > 90) {
@@ -52,14 +56,11 @@ export class ColorWheel {
             }
 
             this.player.color = this.player.colors[Math.floor((this.selectorPos + 180) / (180 / this.player.colors.length))];
-        } else {
-            this.isDragging = false;
         }
     }
 
 
     setColor(color) {
-
         let degrees = 180;
         for (let i = 0; i < this.player.colors.length; i++) {
             if (this.player.colors[i] === color) {

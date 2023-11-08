@@ -145,15 +145,27 @@ function draw() {
         }
     }
 
-    colorWheel.isDragging = false;
-
     if (isMobile) {
         for (let touch of touches) {
-            processTouchOrClick(touch.clientX, touch.clientY);
+            processTouchOrClick(touch.clientX, touch.clientY, touch.identifier);
+        }
+
+        if (touches.length > 0) {
+            let touch = touches.find(touch => touch.identifier === colorWheel.touchIdentifier);
+
+            if (touch === undefined) {
+                colorWheel.isDragging = false;
+                colorWheel.touchIdentifier = null;
+            }
         }
     }
-    else if (mouseDown) {
-        processTouchOrClick(mouseX, mouseY);
+    else {
+        if (mouseDown) {
+            processTouchOrClick(mouseX, mouseY);
+        }
+        else {
+            colorWheel.isDragging = false;
+        }
     }
 
     player.clearCollisions();
@@ -192,7 +204,7 @@ function draw() {
 }
 
 
-function processTouchOrClick(x, y) {
+function processTouchOrClick(x, y, touchIdentifier = null) {
     let touchUsed = false;
     for (let button of buttons) {
         if (button.isClicked(x, y)) {
@@ -202,7 +214,7 @@ function processTouchOrClick(x, y) {
     }
 
     if (!touchUsed) {
-        colorWheel.isMoved(x, y);
+        colorWheel.isMoved(x, y, touchIdentifier);
     }
 }
 
@@ -228,7 +240,10 @@ function addTouchEventListener() {
         touchEvent.preventDefault();
 
         for (let touch of touchEvent.changedTouches) {
-            touches.push(touch);
+            if (touches.some(t => t.identifier === touch.identifier)) {
+                touches = touches.filter(t => t.identifier !== touch.identifier);
+                touches.push(touch);
+            }
         }
     }, { passive: false });
 
