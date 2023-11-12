@@ -1,0 +1,298 @@
+{
+    "index": 8,
+    "startPos": {
+        "x": 175,
+        "y": 1025
+    },
+    "startColor": "red",
+    "keyPos": {
+        "x": 100,
+        "y": 100
+    },
+    "finish": {
+        "pos": {
+            "x": 675,
+            "y": 275
+        },
+        "size": {
+            "width": 50,
+            "height": 100
+        }
+    },
+    "colorOrbs": [
+        {
+            "pos": {
+                "x": 200,
+                "y": 650
+            },
+            "size": 25,
+            "color": "purple"
+        }
+    ],
+    "obstacles": [
+        {
+            "pos": {
+                "x": 0,
+                "y": 1075
+            },
+            "size": {
+                "width": 1475,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 25
+            },
+            "size": {
+                "width": 25,
+                "height": 1050
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 0
+            },
+            "size": {
+                "width": 1475,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 1450,
+                "y": 25
+            },
+            "size": {
+                "width": 25,
+                "height": 1050
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 25,
+                "y": 900
+            },
+            "size": {
+                "width": 75,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 150,
+                "y": 725
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 450,
+                "y": 725
+            },
+            "size": {
+                "width": 50,
+                "height": 25
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 675,
+                "y": 725
+            },
+            "size": {
+                "width": 50,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 900,
+                "y": 725
+            },
+            "size": {
+                "width": 50,
+                "height": 25
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 1125,
+                "y": 725
+            },
+            "size": {
+                "width": 50,
+                "height": 25
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 1275,
+                "y": 600
+            },
+            "size": {
+                "width": 50,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 1250,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 1350,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 1150,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 1050,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 950,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 850,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 750,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 650,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 800,
+                "y": 25
+            },
+            "size": {
+                "width": 650,
+                "height": 275
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 525,
+                "y": 200
+            },
+            "size": {
+                "width": 25,
+                "height": 200
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 325,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 200,
+                "y": 25
+            },
+            "size": {
+                "width": 175,
+                "height": 250
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 150,
+                "y": 375
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "green"
+        }
+    ]
+}
