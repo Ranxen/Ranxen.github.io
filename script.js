@@ -7,10 +7,13 @@ import { ColorWheel } from "./ColorWheel.mjs";
 import { Finish } from "./Finish.mjs";
 import { Key } from "./Key.mjs";
 import { Level } from "./Level.mjs";
+import { LevelSelection } from "./LevelSelection.mjs";
 import * as drawLib from "./drawLib.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+
+var levelSelection = null;
 
 
 var level = null;
@@ -67,7 +70,8 @@ function setLevel(newLevel) {
 
 
 function setup() {
-    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    drawHtml();
+    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
 
     if (isMobile) {
         addTouchEventListener();
@@ -89,6 +93,10 @@ function setup() {
             buttons.push(rightButton);
         }
 
+        let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
+            levelSelection.show();
+        });
+
         let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
             loadLevel(level.index);
         });
@@ -99,11 +107,20 @@ function setup() {
             }
         });
 
+        buttons.push(showLevelSelectionButton);
         buttons.push(restartButton);
         buttons.push(jumpButton);
 
         draw();
     });
+}
+
+
+function drawHtml() {
+    levelSelection = new LevelSelection(document, loadLevel);
+    let parentContainer = document.getElementById("siteContainer");
+
+    parentContainer.appendChild(levelSelection.createElement());
 }
 
 
@@ -231,8 +248,10 @@ function addTouchEventListener() {
     window.addEventListener('touchstart', (touchEvent) => {
         touchEvent.preventDefault();
 
-        for (let touch of touchEvent.changedTouches) {
-            touches.push(touch);
+        if (!levelSelection.visible) {
+            for (let touch of touchEvent.changedTouches) {
+                touches.push(touch);
+            }
         }
     }, { passive: false });
 
@@ -271,7 +290,9 @@ function addKeyEventListener() {
     window.addEventListener('mousedown', (mouseEvent) => {
         mouseEvent.preventDefault();
 
-        mouseDown = true;
+        if (!levelSelection.visible) {
+            mouseDown = true;
+        }
     });
 
     window.addEventListener('mouseup', (mouseEvent) => {
@@ -290,11 +311,13 @@ function addKeyEventListener() {
     window.addEventListener('wheel', (scrollEvent) => {
         scrollEvent.preventDefault();
 
-        if (scrollEvent.deltaY < 0) {
-            colorWheel.previousColor();
-        }
-        else {
-            colorWheel.nextColor();
+        if (!levelSelection.visible) {
+            if (scrollEvent.deltaY < 0) {
+                colorWheel.previousColor();
+            }
+            else {
+                colorWheel.nextColor();
+            }
         }
     }, { passive: false });
 }

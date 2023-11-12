@@ -19,8 +19,6 @@ export class Obstacle {
         drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
 
         this.ctx.restore();
-
-        // this.ctdx.resetTransform();
     }
 
 }
