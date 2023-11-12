@@ -62,8 +62,8 @@ export class ColorWheel {
 
     setColor(color) {
         let degrees = 180;
-        for (let i = 0; i < this.player.colors.length; i++) {
-            if (this.player.colors[i] === color) {
+        for (const element of this.player.colors) {
+            if (element === color) {
                 this.selectorPos = degrees + 90 / this.player.colors.length;
                 break;
             }

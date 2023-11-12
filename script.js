@@ -8,6 +8,7 @@ import { Finish } from "./Finish.mjs";
 import { Key } from "./Key.mjs";
 import { Level } from "./Level.mjs";
 import { LevelSelection } from "./LevelSelection.mjs";
+import { Timer } from "./Timer.mjs";
 import * as drawLib from "./drawLib.mjs";
 
 var canvas = document.getElementById("canvas");
@@ -24,6 +25,7 @@ var colorWheel = null;
 var leftButton = null;
 var rightButton = null;
 var jumpButton = null;
+var timer = null;
 
 var mouseDown = false;
 var mouseX = 0;
@@ -64,11 +66,13 @@ async function loadLevel(index) {
 function setLevel(newLevel) {
     level = newLevel;
     level.finish.onFinish = () => {
+        timer.saveTime(level.index);
         loadLevel(level.index + 1);
     };
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
     loadingLevel = false;
+    timer.start();
 }
 
 
@@ -82,38 +86,40 @@ function setup() {
         addKeyEventListener();
     }
 
-    loadLevel(0).then(() => {
+    if (isMobile) {
+        leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
+            player.moveLeft();
+        });
+
+        rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
+            player.moveRight();
+        });
+
+        buttons.push(leftButton);
+        buttons.push(rightButton);
+    }
+
+    let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
+        levelSelection.show();
+    });
+
+    let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
+        loadLevel(level.index);
+    });
+
+    jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
         if (isMobile) {
-            leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
-                player.moveLeft();
-            });
-
-            rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
-                player.moveRight();
-            });
-
-            buttons.push(leftButton);
-            buttons.push(rightButton);
+            player.jump();
         }
+    });
 
-        let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
-            levelSelection.show();
-        });
+    buttons.push(showLevelSelectionButton);
+    buttons.push(restartButton);
+    buttons.push(jumpButton);
 
-        let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
-            loadLevel(level.index);
-        });
+    timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor);
 
-        jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
-            if (isMobile) {
-                player.jump();
-            }
-        });
-
-        buttons.push(showLevelSelectionButton);
-        buttons.push(restartButton);
-        buttons.push(jumpButton);
-
+    loadLevel(0).then(() => {
         draw();
     });
 }
@@ -178,6 +184,10 @@ function draw() {
                 colorWheel.touchIdentifier = null;
             }
         }
+        else {
+            colorWheel.isDragging = false;
+            colorWheel.touchIdentifier = null;
+        }
     }
     else {
         if (mouseDown) {
@@ -219,7 +229,7 @@ function draw() {
         button.draw();
     }
 
-    // window.requestAnimationFrame(draw);
+    timer.draw();
     setTimeout(draw, 1000 / 60);
 }
 
