@@ -20,7 +20,10 @@ var level = null;
 var player = null;
 
 var buttons = [];
-var colorWheel;
+var colorWheel = null;
+var leftButton = null;
+var rightButton = null;
+var jumpButton = null;
 
 var mouseDown = false;
 var mouseX = 0;
@@ -81,11 +84,11 @@ function setup() {
 
     loadLevel(0).then(() => {
         if (isMobile) {
-            let leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
+            leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
                 player.moveLeft();
             });
 
-            let rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
+            rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
                 player.moveRight();
             });
 
@@ -101,7 +104,7 @@ function setup() {
             loadLevel(level.index);
         });
 
-        let jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
+        jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
             if (isMobile) {
                 player.jump();
             }
@@ -118,7 +121,7 @@ function setup() {
 
 function drawHtml() {
     levelSelection = new LevelSelection(document, loadLevel);
-    let parentContainer = document.getElementById("siteContainer");
+    let parentContainer = document.getElementById("overlay");
 
     parentContainer.appendChild(levelSelection.createElement());
 }
@@ -239,6 +242,20 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    if (leftButton !== null) {
+        leftButton.pos.y = window.innerHeight - 100;
+        rightButton.pos.y = window.innerHeight - 100;
+    }
+
+    if (jumpButton !== null) {
+        jumpButton.pos.y = window.innerHeight;
+    }
+
+    if (colorWheel !== null) {
+        colorWheel.pos.x = window.innerWidth - 150;
+        colorWheel.pos.y = window.innerHeight;
+    }
 }
 
 resizeCanvas();

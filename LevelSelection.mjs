@@ -21,16 +21,23 @@ export class LevelSelection {
     createElement() {
         this.container = this.document.createElement("div");
         this.container.classList.add("level-selection", "glassy");
-        this.container.style.opacity = 0;
+        this.hide();
+
+        let header = this.document.createElement("div");
+        header.classList.add("header");
+        this.container.appendChild(header);
 
         let title = this.document.createElement("h1");
         title.innerText = "Levels";
-        this.container.appendChild(title);
+        header.appendChild(title);
 
         let closeButton = this.document.createElement("button");
         closeButton.classList.add("close-button");
         closeButton.innerText = "X";
         closeButton.addEventListener("click", () => {
+            this.hide();
+        });
+        closeButton.addEventListener("touchend", () => {
             this.hide();
         });
         this.container.appendChild(closeButton);
@@ -48,11 +55,17 @@ export class LevelSelection {
         this.previousSiteButton.addEventListener("click", () => {
             this.previousSite();
         });
+        this.previousSiteButton.addEventListener("touchend", () => {
+            this.previousSite();
+        });
         buttonContainer.appendChild(this.previousSiteButton);
 
         this.nextSiteButton = this.document.createElement("button");
         this.nextSiteButton.innerText = ">";
         this.nextSiteButton.addEventListener("click", () => {
+            this.nextSite();
+        });
+        this.nextSiteButton.addEventListener("touchend", () => {
             this.nextSite();
         });
         buttonContainer.appendChild(this.nextSiteButton);
@@ -79,6 +92,10 @@ export class LevelSelection {
                 level.classList.add("level", "glassy");
                 level.innerText = this.levels[targetIndex + i * this.maxLevelsPerRow + j];
                 level.addEventListener("click", () => {
+                    this.hide();
+                    this.loadLevel(this.levels[targetIndex + i * this.maxLevelsPerRow + j]);
+                });
+                level.addEventListener("touchend", () => {
                     this.hide();
                     this.loadLevel(this.levels[targetIndex + i * this.maxLevelsPerRow + j]);
                 });
@@ -114,12 +131,14 @@ export class LevelSelection {
 
     hide() {
         this.container.style.opacity = 0;
+        this.container.style.visibility = "hidden";
         this.visible = false;
     }
 
 
     show() {
         this.container.style.opacity = 1;
+        this.container.style.visibility = "visible";
         this.visible = true;
     }
 

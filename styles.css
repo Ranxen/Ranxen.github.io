@@ -1,11 +1,12 @@
 body {
+    background-color: #123;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
 
 
-#siteContainer {
+#overlay {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -21,33 +22,34 @@ body {
 }
 
 
+h1 {
+    margin: 0;
+    padding: 0;
+}
+
+
+.header {
+    padding: 8px;
+    margin-top: 8px;
+}
+
+
 .level-selection {
-    font: 16px 'Roboto', sans-serif;
+    font: 2vmin 'Roboto', sans-serif;
     text-align: center;
     color: aliceblue;
-    width: 50vw;
-    height: 50vh;
-    transition: opacity 0.1s ease-in-out;
-}
-
-
-.level-selection.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-
-.level-selection.visible {
-    opacity: 1;
-    pointer-events: all;
+    width: 30vmax;
+    height: 30vmax;
+    max-height: 60vh;
+    max-width: 60vw;
+    transition: all 0.1s ease-in-out;
 }
 
 
 .close-button {
     position: absolute;
-    top: 0;
-    right: 0;
-    margin: 16px;
+    top: 16px;
+    right: 16px;
     cursor: pointer;
 }
 
@@ -57,7 +59,7 @@ body {
     flex-direction: column;
     justify-content: space-around;
     margin: 16px;
-    height: 60%;
+    height: 50%;
 }
 
 
@@ -71,16 +73,23 @@ body {
 
 
 .level {
-    padding: 8px;
+    padding: 6%;
     border-radius: 8px;
     background-color: #1e1e1e;
     border: rgba(255, 255, 255, 0.4) 1px solid;
     cursor: pointer;
+    transition: scale 0.1s ease-in-out;
+}
+
+
+.level:hover {
+    scale: 1.1;
 }
 
 
 .button-container {
-    margin-top: 16px;
+    position: absolute;
+    bottom: 16px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -94,6 +103,7 @@ body {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.2);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 
@@ -101,11 +111,14 @@ button {
     background-color: #1e1e1e;
     border: rgba(255, 255, 255, 0.4) 1px solid;
     cursor: pointer;
-    font-size: 16px;
     color: aliceblue;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    padding: 8px 16px;
+    font-size: calc(min(1.5vh, 12px));
+    height: calc(max(4vh, 48px));
+    width: calc(max(6vh, 72px));
+    min-height: 48px;
+    min-width: 72px;
     border-radius: 8px;
     transition: background-color 0.2s;
 }
@@ -119,4 +132,48 @@ button:hover:enabled {
 button:disabled {
     opacity: 0.5;
     cursor: default;
+}
+
+
+@media screen and (max-width: 1000px) and (orientation: landscape) {
+    .level-selection {
+        font-size: 4vmin;
+        width: 80vmax;
+        height: 80vmax;
+        max-height: 70vh;
+        max-width: 400px;
+        top: 10vh;
+    }
+
+
+    .level-container {
+        height: 50%;
+    }
+
+
+    .level {
+        padding: 4%;
+    }
+}
+
+
+@media screen and (max-width: 1000px) and (orientation: portrait) {
+    .level-selection {
+        font-size: 4vmin;
+        width: 70vw;
+        height: 50vh;
+        max-height: 600px;
+        max-width: 70vw;
+        top: 10vh;
+    }
+
+
+    .level-container {
+        height: 60%;
+    }
+
+
+    .level {
+        padding: 4%;
+    }
 }
