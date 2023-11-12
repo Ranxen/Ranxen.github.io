@@ -1,0 +1,298 @@
+{
+    "index" : 6,
+    "startPos" : {
+        "x" : 175,
+        "y" : 925
+    },
+    "startColor" : "red",
+    "keyPos" : {
+        "x" : 340,
+        "y" : 195
+    },
+    "finish" : {
+        "pos" : {
+            "x" : 325,
+            "y" : 875
+        },
+        "size" : {
+            "width" : 50,
+            "height" : 100
+        }
+    },
+    "colorOrbs" : [
+        {
+            "pos" : {
+                "x" : 175,
+                "y" : 600
+            },
+            "size" : 25,
+            "color" : "orange"
+        }
+    ],
+    "obstacles" : [
+        {
+            "pos": {
+                "x": 0,
+                "y": 975
+            },
+            "size": {
+                "width": 1500,
+                "height": 25
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 50,
+                "y": 800
+            },
+            "size": {
+                "width": 75,
+                "height": 25
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 150,
+                "y": 675
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 450,
+                "y": 675
+            },
+            "size": {
+                "width": 50,
+                "height": 300
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 675,
+                "y": 675
+            },
+            "size": {
+                "width": 50,
+                "height": 300
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 900,
+                "y": 675
+            },
+            "size": {
+                "width": 50,
+                "height": 300
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1125,
+                "y": 675
+            },
+            "size": {
+                "width": 50,
+                "height": 300
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": 550
+            },
+            "size": {
+                "width": 50,
+                "height": 425
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 1250,
+                "y": 350
+            },
+            "size": {
+                "width": 150,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1250,
+                "y": 150
+            },
+            "size": {
+                "width": 150,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1400,
+                "y": 150
+            },
+            "size": {
+                "width": 50,
+                "height": 225
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 1100,
+                "y": 150
+            },
+            "size": {
+                "width": 150,
+                "height": 225
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 800,
+                "y": 150
+            },
+            "size": {
+                "width": 150,
+                "height": 150
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 400,
+                "y": 150
+            },
+            "size": {
+                "width": 100,
+                "height": 150
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 50,
+                "y": 100
+            },
+            "size": {
+                "width": 250,
+                "height": 200
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 50,
+                "y": 50
+            },
+            "size": {
+                "width": 1150,
+                "height": 50
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 50,
+                "y": 0
+            },
+            "size": {
+                "width": 1400,
+                "height": 50
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 0
+            },
+            "size": {
+                "width": 50,
+                "height": 975
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 1450,
+                "y": 0
+            },
+            "size": {
+                "width": 50,
+                "height": 975
+            },
+            "color": "blue"
+        },
+        {
+            "pos": {
+                "x": 950,
+                "y": 150
+            },
+            "size": {
+                "width": 150,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 650,
+                "y": 150
+            },
+            "size": {
+                "width": 150,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 500,
+                "y": 150
+            },
+            "size": {
+                "width": 150,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 300,
+                "y": 150
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 300,
+                "y": 275
+            },
+            "size": {
+                "width": 100,
+                "height": 25
+            },
+            "color": "orange"
+        }
+    ]
+}

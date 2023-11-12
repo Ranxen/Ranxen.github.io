@@ -1,6 +1,6 @@
 export class LevelSelection {
 
-    levels = [0, 1, 2, 3, 4, 5];
+    levels = [0, 1, 2, 3, 4, 5, 6];
     maxLevelsPerRow = 3;
     maxRows = 2;
     currentSite = 0;
