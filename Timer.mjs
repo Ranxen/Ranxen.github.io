@@ -1,4 +1,5 @@
 import * as drawLib from './drawLib.mjs';
+import { formatTime } from './formatTime.mjs';
 
 
 export class Timer {
@@ -22,7 +23,7 @@ export class Timer {
         this.ctx.translate(this.pos.x, this.pos.y);
         drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
         if (this.running) {
-            drawLib.text(this.ctx, this.size.width / 2, this.size.height / 2, this.formatTime(Date.now() - this.time), 'black');
+            drawLib.text(this.ctx, this.size.width / 2, this.size.height / 2, formatTime(Date.now() - this.time), 'black');
         } else {
             drawLib.text(this.ctx, this.size.width / 2, this.size.height / 2, '00:00:00', 'black');
         }
@@ -35,7 +36,7 @@ export class Timer {
             for (const time of this.times) {
                 this.ctx.translate(0, this.size.height / 2 + 10);
                 drawLib.rect(this.ctx, 0, 0, this.size.width * 0.8, this.size.height / 2, this.color);
-                drawLib.text(this.ctx, (this.size.width * 0.8) / 2, this.size.height / 4, `${time.level}. ${this.formatTime(time.time)}`, 'black', 'center', 'middle', '15px sans-serif');
+                drawLib.text(this.ctx, (this.size.width * 0.8) / 2, this.size.height / 4, `${time.level}. ${formatTime(time.time)}`, 'black', 'center', 'middle', '15px sans-serif');
             }   
         }
 
@@ -66,15 +67,6 @@ export class Timer {
     }
 
 
-    formatTime(time) {
-        let minutes = Math.floor(time / 60000);
-        let seconds = Math.floor((time - minutes * 60000) / 1000);
-        let milliseconds = Math.floor((time - minutes * 60000 - seconds * 1000) / 10);
-
-        return `${minutes}:${seconds}:${milliseconds}`;
-    }
-
-
     calcTotalTime() {
         let total = 0;
 
@@ -86,7 +78,7 @@ export class Timer {
             total += Date.now() - this.time;
         }
 
-        return this.formatTime(total);
+        return formatTime(total);
     }
 
 

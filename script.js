@@ -8,6 +8,7 @@ import { Finish } from "./Finish.mjs";
 import { Key } from "./Key.mjs";
 import { Level } from "./Level.mjs";
 import { LevelSelection } from "./LevelSelection.mjs";
+import { LevelDoneDialog } from "./LevelDoneDialog.mjs";
 import { ControlsDialog } from "./ControlsDialog.mjs";
 import { Timer } from "./Timer.mjs";
 import * as drawLib from "./drawLib.mjs";
@@ -17,6 +18,7 @@ var ctx = canvas.getContext("2d");
 
 var controlsDialog = null
 var levelSelection = null;
+var levelDoneDialog = null;
 
 
 var level = null;
@@ -43,6 +45,20 @@ var isMobile = true;
 var buttonColor = '#414e5c';
 
 
+async function loadAvailableLevels() {
+    await fetch("/levels/availableLevels.json")
+        .then(response => response.json())
+        .catch(error => {
+            
+        })
+        .then(json => {
+            levelSelection.setAvailableLevels(json.availableLevels);
+        }).catch(error => {
+            
+        });
+}
+
+
 async function loadLevel(index) {
     if (loadingLevel) {
         return;
@@ -67,9 +83,12 @@ async function loadLevel(index) {
 
 function setLevel(newLevel) {
     level = newLevel;
+    levelSelection.setCurrentLevel(level.index);
+    levelDoneDialog.nextLevelButton.disabled = !levelSelection.hasNextLevel();
     level.finish.onFinish = () => {
         timer.saveTime(level.index);
-        loadLevel(level.index + 1);
+        levelDoneDialog.drawLevelTimes(timer.times);
+        levelDoneDialog.show();
     };
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
@@ -83,53 +102,55 @@ function setup() {
 
     drawHtml();
 
-    if (isMobile) {
-        addTouchEventListener();
-    } else {
-        addKeyEventListener();
-    }
-
-    if (isMobile) {
-        leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
-            player.moveLeft();
-        });
-
-        rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
-            player.moveRight();
-        });
-
-        buttons.push(leftButton);
-        buttons.push(rightButton);
-    } else {
-        let showControlsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "?", () => {
-            controlsDialog.show();
-        });
-
-        buttons.push(showControlsButton);
-    }
-
-    let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
-        levelSelection.show();
-    });
-
-    let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
-        loadLevel(level.index);
-    });
-
-    jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
+    loadAvailableLevels().then(() => {
         if (isMobile) {
-            player.jump();
+            addTouchEventListener();
+        } else {
+            addKeyEventListener();
         }
-    });
 
-    buttons.push(showLevelSelectionButton);
-    buttons.push(restartButton);
-    buttons.push(jumpButton);
+        if (isMobile) {
+            leftButton = new Button(ctx, { x: 50, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, "<", () => {
+                player.moveLeft();
+            });
 
-    timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor, isMobile);
+            rightButton = new Button(ctx, { x: 175, y: window.innerHeight - 100 }, { width: 100, height: 50 }, buttonColor, ">", () => {
+                player.moveRight();
+            });
 
-    loadLevel(0).then(() => {
-        draw();
+            buttons.push(leftButton);
+            buttons.push(rightButton);
+        } else {
+            let showControlsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "?", () => {
+                controlsDialog.show();
+            });
+
+            buttons.push(showControlsButton);
+        }
+
+        let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
+            levelSelection.show();
+        });
+
+        let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
+            loadLevel(level.index);
+        });
+
+        jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
+            if (isMobile) {
+                player.jump();
+            }
+        });
+
+        buttons.push(showLevelSelectionButton);
+        buttons.push(restartButton);
+        buttons.push(jumpButton);
+
+        timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor, isMobile);
+
+        loadLevel(0).then(() => {
+            draw();
+        });
     });
 }
 
@@ -140,6 +161,9 @@ function drawHtml() {
     levelSelection = new LevelSelection(document, loadLevel);
     parentContainer.appendChild(levelSelection.createElement());
 
+    levelDoneDialog = new LevelDoneDialog(document, () => levelSelection.nextLevel(), () => loadLevel(level.index));
+    parentContainer.appendChild(levelDoneDialog.createElement());
+
     if (!isMobile) {
         controlsDialog = new ControlsDialog(document);
         parentContainer.appendChild(controlsDialog.createElement());
@@ -148,7 +172,7 @@ function drawHtml() {
 
 
 function dialogShown() {
-    return levelSelection.visible || (controlsDialog !== null && controlsDialog.visible);
+    return levelSelection.visible || levelDoneDialog.visible || (controlsDialog !== null && controlsDialog.visible);
 }
 
 
@@ -162,6 +186,11 @@ function draw() {
     ctx.translate(-cameraPos.x, -cameraPos.y);
 
     player.velocity.x = 0;
+
+    if (dialogShown()) {
+        activeKeys = [];
+        touches = [];
+    }
 
     for (let key of activeKeys) {
         switch (key) {
@@ -323,7 +352,9 @@ function addTouchEventListener() {
 
 function addKeyEventListener() {
     window.addEventListener('keydown', (keyEvent) => {
-        activeKeys.push(keyEvent.key);
+        if (!dialogShown()) {
+            activeKeys.push(keyEvent.key);
+        }
     });
 
     window.addEventListener('keyup', (keyEvent) => {

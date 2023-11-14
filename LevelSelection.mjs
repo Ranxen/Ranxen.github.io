@@ -1,6 +1,7 @@
 export class LevelSelection {
 
-    levels = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    availableLevels = [];
+    currentLevel = null;
     maxLevelsPerRow = 3;
     maxRows = 2;
     currentSite = 0;
@@ -40,7 +41,7 @@ export class LevelSelection {
         closeButton.addEventListener("touchend", () => {
             this.hide();
         });
-        this.container.appendChild(closeButton);
+        header.appendChild(closeButton);
 
         this.levelContainer = this.document.createElement("div");
         this.levelContainer.classList.add("level-container");
@@ -84,20 +85,20 @@ export class LevelSelection {
             row.classList.add("level-row");
             for (let j = 0; j < this.maxLevelsPerRow; j++) {
                 let targetIndex = this.currentSite * this.maxLevelsPerRow * this.maxRows;
-                if (targetIndex + i * this.maxLevelsPerRow + j >= this.levels.length) {
+                if (targetIndex + i * this.maxLevelsPerRow + j >= this.availableLevels.length) {
                     break;
                 }
 
                 let level = this.document.createElement("div");
                 level.classList.add("level", "glassy");
-                level.innerText = this.levels[targetIndex + i * this.maxLevelsPerRow + j];
+                level.innerText = this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j];
                 level.addEventListener("click", () => {
                     this.hide();
-                    this.loadLevel(this.levels[targetIndex + i * this.maxLevelsPerRow + j]);
+                    this.loadLevel(this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j]);
                 });
                 level.addEventListener("touchend", () => {
                     this.hide();
-                    this.loadLevel(this.levels[targetIndex + i * this.maxLevelsPerRow + j]);
+                    this.loadLevel(this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j]);
                 });
                 row.appendChild(level);
             }
@@ -105,7 +106,7 @@ export class LevelSelection {
         }
 
         this.previousSiteButton.disabled = this.currentSite === 0;
-        this.nextSiteButton.disabled = (this.currentSite + 1) * this.maxLevelsPerRow * this.maxRows >= this.levels.length;
+        this.nextSiteButton.disabled = (this.currentSite + 1) * this.maxLevelsPerRow * this.maxRows >= this.availableLevels.length;
     }
 
 
@@ -120,7 +121,7 @@ export class LevelSelection {
 
 
     nextSite() {
-        if ((this.currentSite + 1) * this.maxLevelsPerRow * this.maxRows >= this.levels.length) {
+        if ((this.currentSite + 1) * this.maxLevelsPerRow * this.maxRows >= this.availableLevels.length) {
             return;
         }
 
@@ -143,5 +144,36 @@ export class LevelSelection {
     }
 
 
+    setAvailableLevels(availableLevels) {
+        this.availableLevels = availableLevels;
+        this.drawLevelSite();
+    }
+
+
+    nextLevel() {
+        let index = this.availableLevels.indexOf(this.currentLevel);
+        if (index === -1) {
+            return;
+        }
+
+        if (index + 1 < this.availableLevels.length) {
+            this.loadLevel(this.availableLevels[index + 1]);
+        }
+    }
+
+
+    hasNextLevel() {
+        let index = this.availableLevels.indexOf(this.currentLevel);
+        if (index === -1) {
+            return false;
+        }
+
+        return index + 1 < this.availableLevels.length;
+    }
+
+
+    setCurrentLevel(level) {
+        this.currentLevel = level;
+    }
 
 }

@@ -55,9 +55,8 @@ export class ControlsDialog {
         closeButton.addEventListener("touchend", () => {
             this.hide();
         });
-        this.container.appendChild(closeButton);
+        header.appendChild(closeButton);
 
-        // show controls in table
         let table = this.document.createElement("table");
         table.classList.add("controls-table");
 
@@ -94,7 +93,5 @@ export class ControlsDialog {
         this.container.style.visibility = "visible";
         this.visible = true;
     }
-
-
 
 }
