@@ -385,14 +385,16 @@ function addKeyEventListener() {
     });
 
     window.addEventListener('wheel', (scrollEvent) => {
-        scrollEvent.preventDefault();
+        if (scrollEvent.target.id === 'overlay') {
+            scrollEvent.preventDefault();
 
-        if (!dialogShown()) {
-            if (scrollEvent.deltaY < 0) {
-                colorWheel.previousColor();
-            }
-            else {
-                colorWheel.nextColor();
+            if (!dialogShown()) {
+                if (scrollEvent.deltaY < 0) {
+                    colorWheel.previousColor();
+                }
+                else {
+                    colorWheel.nextColor();
+                }
             }
         }
     }, { passive: false });

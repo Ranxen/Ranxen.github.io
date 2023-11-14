@@ -80,6 +80,10 @@ export class LevelDoneDialog {
     drawLevelTimes(times) {
         this.timesContainer.innerHTML = "";
 
+        let totalTime = this.document.createElement("div");
+        totalTime.innerText = "Total Time: " + formatTime(times.reduce((acc, cur) => acc + cur.time, 0));
+        this.timesContainer.appendChild(totalTime);
+
         let table = this.document.createElement("table");
         table.classList.add("level-times-table");
 
