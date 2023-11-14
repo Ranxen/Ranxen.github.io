@@ -8,12 +8,14 @@ import { Finish } from "./Finish.mjs";
 import { Key } from "./Key.mjs";
 import { Level } from "./Level.mjs";
 import { LevelSelection } from "./LevelSelection.mjs";
+import { ControlsDialog } from "./ControlsDialog.mjs";
 import { Timer } from "./Timer.mjs";
 import * as drawLib from "./drawLib.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
+var controlsDialog = null
 var levelSelection = null;
 
 
@@ -77,8 +79,9 @@ function setLevel(newLevel) {
 
 
 function setup() {
-    drawHtml();
     isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+
+    drawHtml();
 
     if (isMobile) {
         addTouchEventListener();
@@ -97,6 +100,12 @@ function setup() {
 
         buttons.push(leftButton);
         buttons.push(rightButton);
+    } else {
+        let showControlsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "?", () => {
+            controlsDialog.show();
+        });
+
+        buttons.push(showControlsButton);
     }
 
     let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
@@ -117,7 +126,7 @@ function setup() {
     buttons.push(restartButton);
     buttons.push(jumpButton);
 
-    timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor);
+    timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor, isMobile);
 
     loadLevel(0).then(() => {
         draw();
@@ -126,10 +135,20 @@ function setup() {
 
 
 function drawHtml() {
-    levelSelection = new LevelSelection(document, loadLevel);
     let parentContainer = document.getElementById("overlay");
 
+    levelSelection = new LevelSelection(document, loadLevel);
     parentContainer.appendChild(levelSelection.createElement());
+
+    if (!isMobile) {
+        controlsDialog = new ControlsDialog(document);
+        parentContainer.appendChild(controlsDialog.createElement());
+    }
+}
+
+
+function dialogShown() {
+    return levelSelection.visible || (controlsDialog !== null && controlsDialog.visible);
 }
 
 
@@ -259,6 +278,7 @@ function resizeCanvas() {
     }
 
     if (jumpButton !== null) {
+        jumpButton.pos.x = window.innerWidth - 150;
         jumpButton.pos.y = window.innerHeight;
     }
 
@@ -268,14 +288,12 @@ function resizeCanvas() {
     }
 }
 
-resizeCanvas();
-
 
 function addTouchEventListener() {
     window.addEventListener('touchstart', (touchEvent) => {
         touchEvent.preventDefault();
 
-        if (!levelSelection.visible) {
+        if (!dialogShown()) {
             for (let touch of touchEvent.changedTouches) {
                 touches.push(touch);
             }
@@ -317,7 +335,7 @@ function addKeyEventListener() {
     window.addEventListener('mousedown', (mouseEvent) => {
         mouseEvent.preventDefault();
 
-        if (!levelSelection.visible) {
+        if (!dialogShown()) {
             mouseDown = true;
         }
     });
@@ -338,7 +356,7 @@ function addKeyEventListener() {
     window.addEventListener('wheel', (scrollEvent) => {
         scrollEvent.preventDefault();
 
-        if (!levelSelection.visible) {
+        if (!dialogShown()) {
             if (scrollEvent.deltaY < 0) {
                 colorWheel.previousColor();
             }
@@ -348,6 +366,8 @@ function addKeyEventListener() {
         }
     }, { passive: false });
 }
+
+resizeCanvas();
 
 window.addEventListener('resize', resizeCanvas);
 

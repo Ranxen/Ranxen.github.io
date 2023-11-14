@@ -8,11 +8,12 @@ export class Timer {
     running = false;
 
 
-    constructor(ctx, pos, size, color) {
+    constructor(ctx, pos, size, color, isMobile) {
         this.ctx = ctx;
         this.pos = pos;
         this.size = size;
         this.color = color;
+        this.isMobile = isMobile;
         this.time = Date.now();
     }
 
@@ -30,7 +31,7 @@ export class Timer {
         drawLib.rect(this.ctx, 0, 0, this.size.width * 0.8, this.size.height / 2, this.color);
         drawLib.text(this.ctx, (this.size.width * 0.8) / 2, this.size.height / 4, this.calcTotalTime(), 'black', 'center', 'middle', '15px sans-serif');
 
-        if (this.times.length > 0) {
+        if (this.times.length > 0 && !this.isMobile) {
             for (const time of this.times) {
                 this.ctx.translate(0, this.size.height / 2 + 10);
                 drawLib.rect(this.ctx, 0, 0, this.size.width * 0.8, this.size.height / 2, this.color);

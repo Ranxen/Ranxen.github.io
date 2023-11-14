@@ -20,7 +20,7 @@ export class LevelSelection {
 
     createElement() {
         this.container = this.document.createElement("div");
-        this.container.classList.add("level-selection", "glassy");
+        this.container.classList.add("dialog", "level-selection", "glassy");
         this.hide();
 
         let header = this.document.createElement("div");

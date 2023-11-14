@@ -1,4 +1,5 @@
 body {
+    font: 2vmin 'Roboto', sans-serif;
     background-color: #123;
     margin: 0;
     padding: 0;
@@ -17,7 +18,7 @@ body {
 }
 
 
-#canvas, .level-selection {
+#canvas, .dialog {
     position: absolute;
 }
 
@@ -34,8 +35,22 @@ h1 {
 }
 
 
-.level-selection {
-    font: 2vmin 'Roboto', sans-serif;
+.controls-table {
+    margin: auto;
+    height: 80%;
+    padding: 16px;
+}
+
+
+.controls-table td {
+    padding: 8px;
+    background-color: #123;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+}
+
+
+.level-selection, .controls-dialog {
     text-align: center;
     color: aliceblue;
     width: 30vmax;
@@ -136,7 +151,7 @@ button:disabled {
 
 
 @media screen and (max-width: 1000px) and (orientation: landscape) {
-    .level-selection {
+    .level-selection, .controls-dialog {
         font-size: 4vmin;
         width: 80vmax;
         height: 80vmax;
@@ -158,7 +173,7 @@ button:disabled {
 
 
 @media screen and (max-width: 1000px) and (orientation: portrait) {
-    .level-selection {
+    .level-selection, .controls-dialog {
         font-size: 4vmin;
         width: 70vw;
         height: 50vh;
