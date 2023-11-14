@@ -194,26 +194,26 @@ function draw() {
 
     for (let key of activeKeys) {
         switch (key) {
-            case 'a':
+            case 'KeyA':
                 player.moveLeft();
                 break;
-            case 'd':
+            case 'KeyD':
                 player.moveRight();
                 break;
-            case 'q':
+            case 'KeyQ':
             case 'ArrowLeft':
                 colorWheel.previousColor();
-                activeKeys = activeKeys.filter(key => key !== 'q' && key !== 'ArrowLeft');
+                activeKeys = activeKeys.filter(key => key !== 'KeyQ' && key !== 'ArrowLeft');
                 break;
-            case 'e':
+            case 'KeyE':
             case 'ArrowRight':
                 colorWheel.nextColor();
-                activeKeys = activeKeys.filter(key => key !== 'e' && key !== 'ArrowRight');
+                activeKeys = activeKeys.filter(key => key !== 'KeyE' && key !== 'ArrowRight');
                 break;
-            case 'r':
+            case 'KeyR':
                 loadLevel(level.index);
                 break;
-            case ' ':
+            case 'Space':
                 player.jump();
                 break;
         }
@@ -320,31 +320,37 @@ function resizeCanvas() {
 
 function addTouchEventListener() {
     window.addEventListener('touchstart', (touchEvent) => {
-        touchEvent.preventDefault();
+        if (touchEvent.target.id === 'overlay') {
+            touchEvent.preventDefault();
 
-        if (!dialogShown()) {
-            for (let touch of touchEvent.changedTouches) {
-                touches.push(touch);
+            if (!dialogShown()) {
+                for (let touch of touchEvent.changedTouches) {
+                    touches.push(touch);
+                }
             }
         }
     }, { passive: false });
 
     window.addEventListener('touchmove', (touchEvent) => {
-        touchEvent.preventDefault();
+        if (touchEvent.target.id === 'overlay') {
+            touchEvent.preventDefault();
 
-        for (let touch of touchEvent.changedTouches) {
-            if (touches.some(t => t.identifier === touch.identifier)) {
-                touches = touches.filter(t => t.identifier !== touch.identifier);
-                touches.push(touch);
+            for (let touch of touchEvent.changedTouches) {
+                if (touches.some(t => t.identifier === touch.identifier)) {
+                    touches = touches.filter(t => t.identifier !== touch.identifier);
+                    touches.push(touch);
+                }
             }
         }
     }, { passive: false });
 
     window.addEventListener('touchend', (touchEvent) => {
-        touchEvent.preventDefault();
+        if (touchEvent.target.id === 'overlay') {
+            touchEvent.preventDefault();
 
-        for (let touch of touchEvent.changedTouches) {
-            touches = touches.filter(t => t.identifier !== touch.identifier);
+            for (let touch of touchEvent.changedTouches) {
+                touches = touches.filter(t => t.identifier !== touch.identifier);
+            }
         }
     }, { passive: false });
 }
@@ -353,14 +359,14 @@ function addTouchEventListener() {
 function addKeyEventListener() {
     window.addEventListener('keydown', (keyEvent) => {
         if (!dialogShown()) {
-            activeKeys.push(keyEvent.key);
+            activeKeys.push(keyEvent.code);
         }
     });
 
     window.addEventListener('keyup', (keyEvent) => {
         keyEvent.preventDefault();
 
-        activeKeys = activeKeys.filter(key => key !== keyEvent.key);
+        activeKeys = activeKeys.filter(key => key !== keyEvent.code);
     });
 
     window.addEventListener('mousedown', (mouseEvent) => {

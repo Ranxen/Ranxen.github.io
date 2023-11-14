@@ -182,7 +182,7 @@ button {
     color: aliceblue;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    font-size: calc(min(1.5vh, 12px));
+    font-size: calc(min(3vh, 24px));
     height: calc(max(4vh, 48px));
     width: calc(max(6vh, 72px));
     min-height: 48px;
@@ -204,7 +204,7 @@ button:disabled {
 
 
 @media screen and (max-width: 1000px) and (orientation: landscape) {
-    .level-selection, .controls-dialog {
+    .level-selection, .controls-dialog, .level-done-dialog {
         font-size: 4vmin;
         width: 80vmax;
         height: 80vmax;
@@ -226,7 +226,7 @@ button:disabled {
 
 
 @media screen and (max-width: 1000px) and (orientation: portrait) {
-    .level-selection, .controls-dialog {
+    .level-selection, .controls-dialog, .level-done-dialog {
         font-size: 4vmin;
         width: 70vw;
         height: 50vh;
