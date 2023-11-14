@@ -182,9 +182,9 @@ button {
     color: aliceblue;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    font-size: calc(min(3vh, 24px));
-    height: calc(max(4vh, 48px));
-    width: calc(max(6vh, 72px));
+    font-size: calc(min(2vh, 24px));
+    height: calc(max(5vh, 48px));
+    width: calc(max(8vh, 72px));
     min-height: 48px;
     min-width: 72px;
     border-radius: 8px;
