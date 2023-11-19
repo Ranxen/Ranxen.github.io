@@ -22,4 +22,5 @@ The player can be controlled by touching the on screen buttons. The player can m
 | `Q`, `Arrow Left`, `Scroll up` | Switch to previous color |
 | `E`, `Arrow Right`, `Scroll down` | Switch to next color |
 | `R` | Restart level |
+| `LShift` | Next Level (Menu only) |
 | `Space` | Jump |

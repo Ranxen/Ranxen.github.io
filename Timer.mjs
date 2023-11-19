@@ -7,7 +7,6 @@ export class Timer {
 
     times = [];
     running = false;
-    currentTime = Date.now();
 
 
     constructor(ctx, pos, size, color, isMobile) {
@@ -17,6 +16,7 @@ export class Timer {
         this.color = color;
         this.isMobile = isMobile;
         this.time = Date.now();
+        this.currentTime = this.time;
         this.ticks = 0;
         this.currentColor = color;
     }
@@ -56,6 +56,15 @@ export class Timer {
 
     stop() {
         this.running = false;
+    }
+
+
+    reset() {
+        this.stop();
+        this.ticks = 0;
+        this.time = Date.now();
+        this.currentTime = this.time;
+        this.currentColor = this.color;
     }
 
 

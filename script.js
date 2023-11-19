@@ -25,6 +25,7 @@ var level = null;
 var player = null;
 
 var buttons = [];
+var restartButton = null;
 var colorWheel = null;
 var leftButton = null;
 var rightButton = null;
@@ -40,6 +41,7 @@ var activeKeys = [];
 
 var cameraPos = { x: 0, y: 0 };
 var loadingLevel = false;
+var running = false;
 var isMobile = true;
 
 var buttonColor = '#414e5c';
@@ -65,6 +67,8 @@ async function loadLevel(index) {
     }
 
     loadingLevel = true;
+    running = false;
+    timer.reset();
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     let path = "/levels/" + index + ".json";
 
@@ -93,7 +97,6 @@ function setLevel(newLevel) {
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
     loadingLevel = false;
-    timer.start();
 }
 
 
@@ -132,7 +135,7 @@ function setup() {
             levelSelection.show();
         });
 
-        let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
+        restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
             loadLevel(level.index);
         });
 
@@ -176,11 +179,22 @@ function dialogShown() {
 }
 
 
+function hideDialogs() {
+    levelSelection.hide();
+    levelDoneDialog.hide();
+    controlsDialog?.hide();
+}
+
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawLib.rect(ctx, 0, 0, canvas.width, canvas.height, "#123")
 
     updateCameraPos();
+
+    if ((activeKeys.length > 0 || touches.length > 0) && !running) {
+        startGame();
+    }
 
     if (dialogShown()) {
         activeKeys = [];
@@ -192,7 +206,9 @@ function draw() {
     processKeys();
     processTouchesAndClick();
 
-    handleCollisions();
+    if (running) {
+        computePhysics();
+    }
 
     drawGameObjects();
 
@@ -200,6 +216,12 @@ function draw() {
 
     drawHUD();
     setTimeout(draw, 1000 / 60);
+}
+
+
+function startGame() {
+    running = true;
+    timer.start();
 }
 
 
@@ -286,7 +308,7 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
 }
 
 
-function handleCollisions() {
+function computePhysics() {
     player.clearCollisions();
 
     for (let colorOrb of level.colorOrbs) {
@@ -335,6 +357,10 @@ function drawHUD() {
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    if (restartButton !== null) {
+        restartButton.pos.x = window.innerWidth - 125;
+    }
 
     if (leftButton !== null) {
         leftButton.pos.y = window.innerHeight - 100;
@@ -402,6 +428,17 @@ function addKeyEventListener() {
         keyEvent.preventDefault();
 
         activeKeys = activeKeys.filter(key => key !== keyEvent.code);
+
+        if (dialogShown()) {
+            if (keyEvent.code === 'KeyR') {
+                hideDialogs();
+                loadLevel(level.index);
+            }
+            else if (keyEvent.code === 'ShiftLeft') {
+                hideDialogs();
+                levelSelection.nextLevel();
+            }
+        }
     });
 
     window.addEventListener('mousedown', (mouseEvent) => {

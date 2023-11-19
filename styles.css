@@ -98,12 +98,23 @@ h1 {
 }
 
 
-.level-selection, .controls-dialog, .level-done-dialog {
+.level-selection, .level-done-dialog {
     text-align: center;
     color: aliceblue;
     width: 30vmax;
     height: 30vmax;
     max-height: 60vh;
+    max-width: 60vw;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.controls-dialog {
+    text-align: center;
+    color: aliceblue;
+    width: 30vmax;
+    height: 40vmax;
+    max-height: 70vh;
     max-width: 60vw;
     transition: all 0.1s ease-in-out;
 }
@@ -214,6 +225,16 @@ button:disabled {
     }
 
 
+    .controls-dialog {
+        font-size: 4vmin;
+        width: 80vmax;
+        height: 80vmax;
+        max-height: 80vh;
+        max-width: 400px;
+        top: 10vh;
+    }
+
+
     .level-container {
         height: 50%;
     }
@@ -231,6 +252,16 @@ button:disabled {
         width: 70vw;
         height: 50vh;
         max-height: 600px;
+        max-width: 70vw;
+        top: 10vh;
+    }
+
+
+    .controls-dialog {
+        font-size: 4vmin;
+        width: 70vw;
+        height: 70vh;
+        max-height: 800px;
         max-width: 70vw;
         top: 10vh;
     }
