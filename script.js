@@ -172,7 +172,7 @@ function drawHtml() {
 
 
 function dialogShown() {
-    return levelSelection.visible || levelDoneDialog.visible || (controlsDialog !== null && controlsDialog.visible);
+    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible;
 }
 
 
@@ -180,10 +180,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawLib.rect(ctx, 0, 0, canvas.width, canvas.height, "#123")
 
-    cameraPos.x = player.pos.x - window.innerWidth / 2;
-    cameraPos.y = player.pos.y - window.innerHeight / 2;
-
-    ctx.translate(-cameraPos.x, -cameraPos.y);
+    updateCameraPos();
 
     player.velocity.x = 0;
 
@@ -192,6 +189,29 @@ function draw() {
         touches = [];
     }
 
+    processKeys();
+    processTouchesAndClick();
+
+    handleCollisions();
+
+    drawGameObjects();
+
+    ctx.resetTransform();
+
+    drawHUD();
+    setTimeout(draw, 1000 / 60);
+}
+
+
+function updateCameraPos() {
+    cameraPos.x = player.pos.x - window.innerWidth / 2;
+    cameraPos.y = player.pos.y - window.innerHeight / 2;
+
+    ctx.translate(-cameraPos.x, -cameraPos.y);
+}
+
+
+function processKeys() {
     for (let key of activeKeys) {
         switch (key) {
             case 'KeyA':
@@ -218,7 +238,10 @@ function draw() {
                 break;
         }
     }
+}
 
+
+function processTouchesAndClick() {
     if (isMobile) {
         for (let touch of touches) {
             processTouchOrClick(touch.clientX, touch.clientY, touch.identifier);
@@ -245,40 +268,6 @@ function draw() {
             colorWheel.isDragging = false;
         }
     }
-
-    player.clearCollisions();
-
-    for (let obstacle of level.obstacles) {
-        player.detectCollision(obstacle);
-        obstacle.draw();
-    }
-
-    for (let colorOrb of level.colorOrbs) {
-        colorOrb.detectCollision(player, colorWheel);
-        colorOrb.draw();
-    }
-
-    level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
-
-    level.finish.draw();
-
-    player.update();
-    player.draw();
-    level.key.draw(player);
-
-    level.key.detectCollision(player);
-    level.finish.detectCollision(player);
-
-    ctx.resetTransform();
-
-    colorWheel.draw();
-
-    for (let button of buttons) {
-        button.draw();
-    }
-
-    timer.draw();
-    setTimeout(draw, 1000 / 60);
 }
 
 
@@ -294,6 +283,50 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
     if (!touchUsed) {
         colorWheel.isMoved(x, y, touchIdentifier);
     }
+}
+
+
+function handleCollisions() {
+    player.clearCollisions();
+
+    for (let colorOrb of level.colorOrbs) {
+        colorOrb.detectCollision(player, colorWheel);
+    }
+
+    for (let obstacle of level.obstacles) {
+        player.detectCollision(obstacle);
+    }
+
+    level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
+    player.update();
+    level.key.detectCollision(player);
+    level.finish.detectCollision(player);
+}
+
+
+function drawGameObjects() {
+    for (let obstacle of level.obstacles) {
+        obstacle.draw();
+    }
+
+    for (let colorOrb of level.colorOrbs) {
+        colorOrb.draw();
+    }
+
+    level.finish.draw();
+    player.draw();
+    level.key.draw(player);
+}
+
+
+function drawHUD() {
+    colorWheel.draw();
+
+    for (let button of buttons) {
+        button.draw();
+    }
+
+    timer.draw();
 }
 
 
