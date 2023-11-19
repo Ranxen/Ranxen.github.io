@@ -24,6 +24,14 @@ export class ControlsDialog {
         {
             key: 'Q, Arrow Left, Scroll Up',
             description: 'Switch to previous color'
+        },
+        {
+            key: 'R',
+            description: 'Restart level'
+        },
+        {
+            key: 'LShift',
+            description: 'Next Level (Menu only)'
         }
     ]
 

@@ -25,6 +25,7 @@ var level = null;
 var player = null;
 
 var buttons = [];
+var restartButton = null;
 var colorWheel = null;
 var leftButton = null;
 var rightButton = null;
@@ -40,6 +41,7 @@ var activeKeys = [];
 
 var cameraPos = { x: 0, y: 0 };
 var loadingLevel = false;
+var running = false;
 var isMobile = true;
 
 var buttonColor = '#414e5c';
@@ -65,6 +67,8 @@ async function loadLevel(index) {
     }
 
     loadingLevel = true;
+    running = false;
+    timer.reset();
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     let path = "/levels/" + index + ".json";
 
@@ -93,12 +97,11 @@ function setLevel(newLevel) {
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
     loadingLevel = false;
-    timer.start();
 }
 
 
 function setup() {
-    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !/Windows/i.test(navigator.userAgent));
 
     drawHtml();
 
@@ -132,7 +135,7 @@ function setup() {
             levelSelection.show();
         });
 
-        let restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
+        restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
             loadLevel(level.index);
         });
 
@@ -172,7 +175,14 @@ function drawHtml() {
 
 
 function dialogShown() {
-    return levelSelection.visible || levelDoneDialog.visible || (controlsDialog !== null && controlsDialog.visible);
+    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible;
+}
+
+
+function hideDialogs() {
+    levelSelection.hide();
+    levelDoneDialog.hide();
+    controlsDialog?.hide();
 }
 
 
@@ -180,18 +190,50 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawLib.rect(ctx, 0, 0, canvas.width, canvas.height, "#123")
 
-    cameraPos.x = player.pos.x - window.innerWidth / 2;
-    cameraPos.y = player.pos.y - window.innerHeight / 2;
+    updateCameraPos();
 
-    ctx.translate(-cameraPos.x, -cameraPos.y);
-
-    player.velocity.x = 0;
+    if ((activeKeys.length > 0 || touches.length > 0) && !running) {
+        startGame();
+    }
 
     if (dialogShown()) {
         activeKeys = [];
         touches = [];
     }
 
+    player.velocity.x = 0;
+
+    processKeys();
+    processTouchesAndClick();
+
+    if (running) {
+        computePhysics();
+    }
+
+    drawGameObjects();
+
+    ctx.resetTransform();
+
+    drawHUD();
+    setTimeout(draw, 1000 / 60);
+}
+
+
+function startGame() {
+    running = true;
+    timer.start();
+}
+
+
+function updateCameraPos() {
+    cameraPos.x = player.pos.x - window.innerWidth / 2;
+    cameraPos.y = player.pos.y - window.innerHeight / 2;
+
+    ctx.translate(-cameraPos.x, -cameraPos.y);
+}
+
+
+function processKeys() {
     for (let key of activeKeys) {
         switch (key) {
             case 'KeyA':
@@ -218,7 +260,10 @@ function draw() {
                 break;
         }
     }
+}
 
+
+function processTouchesAndClick() {
     if (isMobile) {
         for (let touch of touches) {
             processTouchOrClick(touch.clientX, touch.clientY, touch.identifier);
@@ -245,40 +290,6 @@ function draw() {
             colorWheel.isDragging = false;
         }
     }
-
-    player.clearCollisions();
-
-    for (let obstacle of level.obstacles) {
-        player.detectCollision(obstacle);
-        obstacle.draw();
-    }
-
-    for (let colorOrb of level.colorOrbs) {
-        colorOrb.detectCollision(player, colorWheel);
-        colorOrb.draw();
-    }
-
-    level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
-
-    level.finish.draw();
-
-    player.update();
-    player.draw();
-    level.key.draw(player);
-
-    level.key.detectCollision(player);
-    level.finish.detectCollision(player);
-
-    ctx.resetTransform();
-
-    colorWheel.draw();
-
-    for (let button of buttons) {
-        button.draw();
-    }
-
-    timer.draw();
-    setTimeout(draw, 1000 / 60);
 }
 
 
@@ -297,9 +308,59 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
 }
 
 
+function computePhysics() {
+    player.clearCollisions();
+
+    for (let colorOrb of level.colorOrbs) {
+        colorOrb.detectCollision(player, colorWheel);
+    }
+
+    for (let obstacle of level.obstacles) {
+        player.detectCollision(obstacle);
+    }
+
+    level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
+    player.update();
+    level.key.detectCollision(player);
+    level.finish.detectCollision(player);
+
+    timer.update();
+}
+
+
+function drawGameObjects() {
+    for (let obstacle of level.obstacles) {
+        obstacle.draw();
+    }
+
+    for (let colorOrb of level.colorOrbs) {
+        colorOrb.draw();
+    }
+
+    level.finish.draw();
+    player.draw();
+    level.key.draw(player);
+}
+
+
+function drawHUD() {
+    colorWheel.draw();
+
+    for (let button of buttons) {
+        button.draw();
+    }
+
+    timer.draw();
+}
+
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    if (restartButton !== null) {
+        restartButton.pos.x = window.innerWidth - 125;
+    }
 
     if (leftButton !== null) {
         leftButton.pos.y = window.innerHeight - 100;
@@ -367,6 +428,17 @@ function addKeyEventListener() {
         keyEvent.preventDefault();
 
         activeKeys = activeKeys.filter(key => key !== keyEvent.code);
+
+        if (dialogShown()) {
+            if (keyEvent.code === 'KeyR') {
+                hideDialogs();
+                loadLevel(level.index);
+            }
+            else if (keyEvent.code === 'ShiftLeft') {
+                hideDialogs();
+                levelSelection.nextLevel();
+            }
+        }
     });
 
     window.addEventListener('mousedown', (mouseEvent) => {

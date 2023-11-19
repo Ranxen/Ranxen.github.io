@@ -81,8 +81,12 @@ export class LevelDoneDialog {
         this.timesContainer.innerHTML = "";
 
         let totalTime = this.document.createElement("div");
-        totalTime.innerText = "Total Time: " + formatTime(times.reduce((acc, cur) => acc + cur.time, 0));
+        totalTime.innerText = `Total Time: ${formatTime(times.reduce((acc, cur) => acc + cur.time, 0))}`;
         this.timesContainer.appendChild(totalTime);
+
+        let totalTicks = this.document.createElement("div");
+        totalTicks.innerText = "Total Ticks: " + times.reduce((acc, cur) => acc + cur.ticks, 0);
+        this.timesContainer.appendChild(totalTicks);
 
         let table = this.document.createElement("table");
         table.classList.add("level-times-table");
@@ -95,6 +99,10 @@ export class LevelDoneDialog {
         time.innerText = "Time";
         table.appendChild(time);
 
+        let ticks = this.document.createElement("th");
+        ticks.innerText = "Ticks";
+        table.appendChild(ticks);
+
         for (const levelTime of times) {
             let row = this.document.createElement("tr");
 
@@ -105,6 +113,10 @@ export class LevelDoneDialog {
             let time = this.document.createElement("td");
             time.innerText = formatTime(levelTime.time);
             row.appendChild(time);
+
+            let ticks = this.document.createElement("td");
+            ticks.innerText = levelTime.ticks;
+            row.appendChild(ticks);
 
             table.appendChild(row);
         }
