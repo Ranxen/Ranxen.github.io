@@ -98,7 +98,7 @@ function setLevel(newLevel) {
 
 
 function setup() {
-    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+    isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !/Windows/i.test(navigator.userAgent));
 
     drawHtml();
 
@@ -182,12 +182,12 @@ function draw() {
 
     updateCameraPos();
 
-    player.velocity.x = 0;
-
     if (dialogShown()) {
         activeKeys = [];
         touches = [];
     }
+
+    player.velocity.x = 0;
 
     processKeys();
     processTouchesAndClick();
@@ -301,6 +301,8 @@ function handleCollisions() {
     player.update();
     level.key.detectCollision(player);
     level.finish.detectCollision(player);
+
+    timer.update();
 }
 
 
