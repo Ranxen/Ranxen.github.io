@@ -6,6 +6,19 @@ export function rect(ctx, x, y, w, h, fillStyle = "#fff", strokeStyle = "#000", 
     ctx.strokeRect(x, y, w, h);
 }
 
+export function triangle(ctx, x, y, w, h, fillStyle = "#fff", strokeStyle = "#000", lineWidth = 1) {
+    ctx.fillStyle = fillStyle;
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = strokeStyle;
+    ctx.beginPath();
+    ctx.moveTo(x + w / 2, y);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+}
+
 export function line(ctx, x1, y1, x2, y2, strokeStyle = "#000", lineWidth = 1) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = strokeStyle;

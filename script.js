@@ -78,7 +78,7 @@ async function loadLevel(index) {
             loadingLevel = false;
         })
         .then(json => {
-            setLevel(new Level(json.index, json.startPos, json.startColor, new Key(ctx, json.keyPos), new Finish(ctx, json.finish.pos, json.finish.size), json.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color)), json.obstacles.map(obstacle => new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color))));
+            setLevel(new Level(ctx, json, { restartLevel: restartLevel }));
         }).catch(error => { 
             loadingLevel = false;
         });
@@ -97,6 +97,11 @@ function setLevel(newLevel) {
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
     loadingLevel = false;
+}
+
+
+function restartLevel() {
+    loadLevel(level.index);
 }
 
 
@@ -135,9 +140,7 @@ function setup() {
             levelSelection.show();
         });
 
-        restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
-            loadLevel(level.index);
-        });
+        restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", restartLevel);
 
         jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
             if (isMobile) {
@@ -164,7 +167,7 @@ function drawHtml() {
     levelSelection = new LevelSelection(document, loadLevel);
     parentContainer.appendChild(levelSelection.createElement());
 
-    levelDoneDialog = new LevelDoneDialog(document, () => levelSelection.nextLevel(), () => loadLevel(level.index));
+    levelDoneDialog = new LevelDoneDialog(document, () => levelSelection.nextLevel(), restartLevel);
     parentContainer.appendChild(levelDoneDialog.createElement());
 
     if (!isMobile) {
@@ -253,7 +256,7 @@ function processKeys() {
                 activeKeys = activeKeys.filter(key => key !== 'KeyE' && key !== 'ArrowRight');
                 break;
             case 'KeyR':
-                loadLevel(level.index);
+                restartLevel();
                 break;
             case 'Space':
                 player.jump();
@@ -311,13 +314,9 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
 function computePhysics() {
     player.clearCollisions();
 
-    for (let colorOrb of level.colorOrbs) {
-        colorOrb.detectCollision(player, colorWheel);
-    }
-
-    for (let obstacle of level.obstacles) {
-        player.detectCollision(obstacle);
-    }
+    level.detectColorOrbCollisions(player, colorWheel);
+    level.detectSpikeCollisions(player);
+    level.detectObstacleCollisions(player);
 
     level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
     player.update();
@@ -329,17 +328,13 @@ function computePhysics() {
 
 
 function drawGameObjects() {
-    for (let obstacle of level.obstacles) {
-        obstacle.draw();
-    }
+    level.drawObstacles();
+    level.drawSpikes();
+    level.drawColorOrbs();
 
-    for (let colorOrb of level.colorOrbs) {
-        colorOrb.draw();
-    }
-
-    level.finish.draw();
+    level.drawFinish();
     player.draw();
-    level.key.draw(player);
+    level.drawKey(player);
 }
 
 
@@ -432,7 +427,7 @@ function addKeyEventListener() {
         if (dialogShown()) {
             if (keyEvent.code === 'KeyR') {
                 hideDialogs();
-                loadLevel(level.index);
+                restartLevel();
             }
             else if (keyEvent.code === 'ShiftLeft') {
                 hideDialogs();

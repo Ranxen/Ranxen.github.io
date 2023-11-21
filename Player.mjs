@@ -1,4 +1,5 @@
 import * as drawLib from './drawLib.mjs';
+import * as physicsLib from './physicsLib.mjs';
 
 
 export class Player {
@@ -69,8 +70,7 @@ export class Player {
 
     detectCollision(obstacle) {
         if (this.color !== obstacle.color) {
-            if (this.pos.x + this.size + this.velocity.x >= obstacle.pos.x && this.pos.x + this.velocity.x <= obstacle.pos.x + obstacle.size.width
-                && this.pos.y + this.size + this.velocity.y >= obstacle.pos.y && this.pos.y + this.velocity.y <= obstacle.pos.y + obstacle.size.height) {
+            if (physicsLib.AABBCollisionPredicted(this, obstacle)) {
                 this.collisions.push(obstacle);
             }
         }
