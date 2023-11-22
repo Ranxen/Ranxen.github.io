@@ -209,12 +209,25 @@
         {
             "pos": {
                 "x": 1200,
+                "y": 1075
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": -90,
+            "color": "purple"
+        },
+        {
+            "pos": {
+                "x": 1200,
                 "y": 1050
             },
             "size": {
                 "width": 25,
                 "height": 25
             },
+            "rotation": -90,
             "color": "purple"
         },
         {
@@ -226,6 +239,7 @@
                 "width": 25,
                 "height": 25
             },
+            "rotation": -90,
             "color": "purple"
         },
         {
@@ -237,6 +251,7 @@
                 "width": 25,
                 "height": 25
             },
+            "rotation": -90,
             "color": "purple"
         },
         {
@@ -248,17 +263,7 @@
                 "width": 25,
                 "height": 25
             },
-            "color": "purple"
-        },
-        {
-            "pos": {
-                "x": 1200,
-                "y": 950
-            },
-            "size": {
-                "width": 25,
-                "height": 25
-            },
+            "rotation": -90,
             "color": "purple"
         }
     ],
