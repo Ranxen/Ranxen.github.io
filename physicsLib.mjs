@@ -8,44 +8,14 @@ export function AABBCollision(obj1, obj2) {
 }
 
 
-// export function triangleRectCollision(triangle, rect) {
-//     let edges = triangle.getEdges();
-//     for (let edge of edges) {
-//         if (edge.x >= rect.pos.x && edge.x <= rect.pos.x + rect.size.width && edge.y >= rect.pos.y && edge.y <= rect.pos.y + rect.size.height) {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-
-
-// export function trianglePlayerCollision(triangle, player) {
-//     return triangleRectCollision(triangle, { pos: player.pos, size: { width: player.size, height: player.size }});
-// }
-
-
-export function buildVectors(edges) {
-    let vectors = [];
-    for (let i = 0; i < edges.length; i++) {
-        let start = edges[i];
-        let end = edges[(i + 1) % edges.length];
-        vectors.push({ start: start, end: end });
-    }
-    return vectors;
-}
-
-
-export function trianglePlayerCollision(triangle, player) {
-    let triangleVectors = buildVectors(triangle.getEdges());
-    let playerVectors = buildVectors(player.getEdges());
-
-    for (let triangleVector of triangleVectors) {
-        for (let playerVector of playerVectors) {
-            if (intersects(triangleVector.start, triangleVector.end, playerVector.start, playerVector.end)) {
-                return true;
-            }
+export function triangleRectCollision(triangle, rect) {
+    let edges = triangle.getEdges();
+    for (let edge of edges) {
+        if (edge.x >= rect.pos.x && edge.x <= rect.pos.x + rect.size.width && edge.y >= rect.pos.y && edge.y <= rect.pos.y + rect.size.height) {
+            return true;
         }
     }
+    return false;
 }
 
 
@@ -59,4 +29,24 @@ export function intersects(vectorA1, vectorA2, vectorB1, vectorB2) {
     let t = (s2_x * (vectorA1.y - vectorB1.y) - s2_y * (vectorA1.x - vectorB1.x)) / (-s2_x * s1_y + s1_x * s2_y);
 
     return s >= 0 && s <= 1 && t >= 0 && t <= 1;
+}
+
+
+export function trianglePlayerCollision(triangle, player) {
+    for (let edge of player.getEdges()) {
+        if (pointInsideTriangle(edge, triangle.getEdges())) {
+            return true;
+        }
+    }
+
+    return triangleRectCollision(triangle, { pos: player.pos, size: { width: player.size, height: player.size } });
+}
+
+
+export function pointInsideTriangle(point, triangle) {
+    let area = 1 / 2 * (-triangle[1].y * triangle[2].x + triangle[0].y * (-triangle[1].x + triangle[2].x) + triangle[0].x * (triangle[1].y - triangle[2].y) + triangle[1].x * triangle[2].y);
+    let s = 1 / (2 * area) * (triangle[0].y * triangle[2].x - triangle[0].x * triangle[2].y + (triangle[2].y - triangle[0].y) * point.x + (triangle[0].x - triangle[2].x) * point.y);
+    let t = 1 / (2 * area) * (triangle[0].x * triangle[1].y - triangle[0].y * triangle[1].x + (triangle[0].y - triangle[1].y) * point.x + (triangle[1].x - triangle[0].x) * point.y);
+
+    return s >= 0 && t >= 0 && 1 - s - t >= 0;
 }
