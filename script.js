@@ -1,22 +1,20 @@
-import { Player } from "./Player.mjs";
-import { Obstacle } from "./Obstacle.mjs";
-import { Button } from "./Button.mjs";
-import { JumpButton } from "./JumpButton.mjs";
-import { ColorOrb } from "./ColorOrb.mjs";
-import { ColorWheel } from "./ColorWheel.mjs";
-import { Finish } from "./Finish.mjs";
-import { Key } from "./Key.mjs";
-import { Level } from "./Level.mjs";
-import { LevelSelection } from "./LevelSelection.mjs";
-import { LevelDoneDialog } from "./LevelDoneDialog.mjs";
-import { ControlsDialog } from "./ControlsDialog.mjs";
-import { Timer } from "./Timer.mjs";
-import * as drawLib from "./drawLib.mjs";
+import { Player } from "./Game/Player.mjs";
+import { Button } from "./UI/Canvas/Button.mjs";
+import { JumpButton } from "./UI/Canvas/JumpButton.mjs";
+import { ColorWheel } from "./UI/Canvas/ColorWheel.mjs";
+import { Level } from "./Game/Level.mjs";
+import { LevelSelection } from "./UI/HtmlDialogs/LevelSelection.mjs";
+import { LevelDoneDialog } from "./UI/HtmlDialogs/LevelDoneDialog.mjs";
+import { SettingsDialog } from "./UI/HtmlDialogs/SettingsDialog.mjs";
+import { ControlsDialog } from "./UI/HtmlDialogs/ControlsDialog.mjs";
+import { Timer } from "./UI/Canvas/Timer.mjs";
+import * as drawLib from "./Helper/drawLib.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-var controlsDialog = null
+var settingsDialog = null;
+var controlsDialog = null;
 var levelSelection = null;
 var levelDoneDialog = null;
 
@@ -129,11 +127,11 @@ function setup() {
             buttons.push(leftButton);
             buttons.push(rightButton);
         } else {
-            let showControlsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "?", () => {
-                controlsDialog.show();
+            let showSettingsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "⚙", () => {
+                settingsDialog.show();
             });
 
-            buttons.push(showControlsButton);
+            buttons.push(showSettingsButton);
         }
 
         let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
@@ -174,6 +172,9 @@ function drawHtml() {
         controlsDialog = new ControlsDialog(document);
         parentContainer.appendChild(controlsDialog.createElement());
     }
+
+    settingsDialog = new SettingsDialog(document, controlsDialog);
+    parentContainer.appendChild(settingsDialog.createElement());
 }
 
 

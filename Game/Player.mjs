@@ -1,5 +1,5 @@
-import * as drawLib from './drawLib.mjs';
-import * as physicsLib from './physicsLib.mjs';
+import * as drawLib from '../Helper/drawLib.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
 export class Player {

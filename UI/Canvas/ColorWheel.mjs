@@ -1,4 +1,4 @@
-import * as drawLib from './drawLib.mjs';
+import * as drawLib from '../../Helper/drawLib.mjs';
 
 
 export class ColorWheel {

@@ -1,4 +1,4 @@
-import { formatTime } from "./formatTime.mjs";
+import { formatTime } from "../../Helper/formatTime.mjs";
 
 
 export class LevelDoneDialog {

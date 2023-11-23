@@ -1,5 +1,5 @@
-import * as drawLib from './drawLib.mjs';
-import { formatTime } from './formatTime.mjs';
+import * as drawLib from '../../Helper/drawLib.mjs';
+import { formatTime } from '../../Helper/formatTime.mjs';
 
 
 export class Timer {
