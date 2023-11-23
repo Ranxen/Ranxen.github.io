@@ -9,6 +9,7 @@ import { SettingsDialog } from "./UI/HtmlDialogs/SettingsDialog.mjs";
 import { ControlsDialog } from "./UI/HtmlDialogs/ControlsDialog.mjs";
 import { Timer } from "./UI/Canvas/Timer.mjs";
 import * as drawLib from "./Helper/drawLib.mjs";
+import * as levelLoader from "./Helper/levelLoader.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -41,6 +42,7 @@ var cameraPos = { x: 0, y: 0 };
 var loadingLevel = false;
 var running = false;
 var isMobile = true;
+var levelCode = null;
 
 var buttonColor = '#414e5c';
 
@@ -60,7 +62,7 @@ async function loadAvailableLevels() {
 
 
 async function loadLevel(index) {
-    if (loadingLevel) {
+    if (loadingLevel || index < 0) {
         return;
     }
 
@@ -83,6 +85,17 @@ async function loadLevel(index) {
 }
 
 
+function loadEncodedLevel(encodedLevel) {
+    loadingLevel = true;
+    running = false;
+    timer.reset();
+
+    levelCode = encodedLevel;
+    level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
+    setLevel(level);
+}
+
+
 function setLevel(newLevel) {
     level = newLevel;
     levelSelection.setCurrentLevel(level.index);
@@ -99,7 +112,11 @@ function setLevel(newLevel) {
 
 
 function restartLevel() {
-    loadLevel(level.index);
+    if (level.isCustom) {
+        loadEncodedLevel(levelCode);
+    } else {
+        loadLevel(level.index);
+    }
 }
 
 
@@ -173,13 +190,13 @@ function drawHtml() {
         parentContainer.appendChild(controlsDialog.createElement());
     }
 
-    settingsDialog = new SettingsDialog(document, controlsDialog);
+    settingsDialog = new SettingsDialog(document, controlsDialog, loadEncodedLevel);
     parentContainer.appendChild(settingsDialog.createElement());
 }
 
 
 function dialogShown() {
-    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible;
+    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible || settingsDialog.visible;
 }
 
 
@@ -438,7 +455,9 @@ function addKeyEventListener() {
     });
 
     window.addEventListener('mousedown', (mouseEvent) => {
-        mouseEvent.preventDefault();
+        if (mouseEvent.target.id === 'overlay') {
+            mouseEvent.preventDefault();
+        }
 
         if (!dialogShown()) {
             mouseDown = true;
@@ -446,13 +465,17 @@ function addKeyEventListener() {
     });
 
     window.addEventListener('mouseup', (mouseEvent) => {
-        mouseEvent.preventDefault();
+        if (mouseEvent.target.id === 'overlay') {
+            mouseEvent.preventDefault();
+        }
 
         mouseDown = false;
     });
 
     window.addEventListener('mousemove', (mouseEvent) => {
-        mouseEvent.preventDefault();
+        if (mouseEvent.target.id === 'overlay') {
+            mouseEvent.preventDefault();
+        }
 
         mouseX = mouseEvent.clientX;
         mouseY = mouseEvent.clientY;

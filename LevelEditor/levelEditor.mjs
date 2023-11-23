@@ -1,4 +1,6 @@
+import * as levelLoader from "../Helper/levelLoader.mjs";
 import { LeftDrawer } from "./leftDrawer.mjs";
+import { Level } from "../Game/Level.mjs";
 import { Player } from "../Game/Player.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
 import { ColorOrb } from "../Game/ColorOrb.mjs";
@@ -114,12 +116,13 @@ export class LevelEditor {
 
     constructor(ctx) {
         this.ctx = ctx;
-        this.level = { player: null, obstacles: [], colorOrbs: [], spikes: [], finish: null, key: null };
+        this.level = new Level(ctx);
+        this.player = null;
     }
 
     createPlayer() {
-        this.level.player = new Player(this.ctx, { x: this.mouseX, y: this.mouseY}, 50, "red");
-        this.currentObject = this.level.player;
+        this.player = new Player(this.ctx, { x: this.mouseX, y: this.mouseY}, 50, "red");
+        this.currentObject = this.player;
     }
 
 
@@ -201,9 +204,9 @@ export class LevelEditor {
                 }
             }
 
-            if (this.level.player) {
-                if (this.level.player.detectClick(x, y)) {
-                    this.currentObject = this.level.player;
+            if (this.player) {
+                if (this.player.detectClick(x, y)) {
+                    this.currentObject = this.player;
                 }
             }
         }
@@ -255,56 +258,52 @@ export class LevelEditor {
     }
 
 
+    levelIsValid() {
+        return this.level.obstacles.length > 0 && this.level.finish !== null && this.level.key !== null && this.player !== null;
+    }
+
+
     copyEncodedLevel() {
-        navigator.clipboard.writeText(this.encodeLevelToBase64());
+        if (this.levelIsValid()) {
+            navigator.clipboard.writeText(this.encodeLevelToBase64());
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 
     encodeLevelToBase64() {
-        let level = JSON.stringify(this.level);
-        let encodedLevel = btoa(level);
+        let encodedLevel = btoa(levelLoader.levelToJSON(this.level, this.player));
 
         return encodedLevel;
     }
 
 
     loadLevelFromBase64(encodedLevel) {
-        let level = JSON.parse(atob(encodedLevel));
-        this.level.player = new Player(this.ctx, level.player.pos, level.player.size, level.player.color);
-        this.level.obstacles = level.obstacles.map(obstacle => new Obstacle(this.ctx, obstacle.pos, obstacle.size, obstacle.color));
-        this.level.colorOrbs = level.colorOrbs.map(colorOrb => new ColorOrb(this.ctx, colorOrb.pos, colorOrb.size, colorOrb.color));
-        this.level.spikes = level.spikes.map(spike => new Spike(this.ctx, spike.pos, spike.size, spike.rotation, spike.color));
-        this.level.finish = new Finish(this.ctx, level.finish.pos, level.finish.size);
-        this.level.key = new Key(this.ctx, level.key.pos);
+        this.level = levelLoader.loadLevel(ctx, encodedLevel);
+        this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
     }
 
 
     draw() {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (let obstacle of this.level.obstacles) {
-            obstacle.draw();
-        }
-
-        for (let spike of this.level.spikes) {
-            spike.draw();
-        }
-
-        for (let colorOrb of this.level.colorOrbs) {
-            colorOrb.draw();
-        }
-
+        this.level.drawObstacles();
+        this.level.drawSpikes();
+        this.level.drawColorOrbs();
         if (this.level.finish) {
-            this.level.finish.draw();
+            this.level.drawFinish();
         }
 
-        if (this.level.player) {
-            this.level.player.draw();
+        if (this.player) {
+            this.player.draw();
         }
 
         if (this.level.key) {
-            if (this.level.player) {
-                this.level.key.draw(this.level.player);
+            if (this.player) {
+                this.level.drawKey(this.player);
             }
             else {
                 this.level.key.draw({ hasKey: false });

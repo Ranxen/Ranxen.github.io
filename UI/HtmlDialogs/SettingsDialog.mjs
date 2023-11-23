@@ -4,9 +4,10 @@ export class SettingsDialog {
 
     container = null;
 
-    constructor(document, controlsDialog) {
+    constructor(document, controlsDialog, loadEncodedLevel) {
         this.document = document;
         this.controlsDialog = controlsDialog;
+        this.loadEncodedLevel = loadEncodedLevel;
     }
 
 
@@ -35,13 +36,9 @@ export class SettingsDialog {
         });
         header.appendChild(closeButton);
 
-        let createLevelButton = this.document.createElement("button");
-        createLevelButton.classList.add("create-level-button");
-        createLevelButton.innerText = "Create Level";
-        createLevelButton.addEventListener("click", () => {
-            window.location.href = "/levelEditor.html";
-        });
-        this.container.appendChild(createLevelButton);
+
+        let buttonContainer = this.document.createElement("div");
+        buttonContainer.classList.add("vertical");
 
         if (this.controlsDialog) {
             let controlsButton = this.document.createElement("button");
@@ -51,8 +48,38 @@ export class SettingsDialog {
                 this.hide();
                 this.controlsDialog.show();
             });
-            this.container.appendChild(controlsButton);
+            buttonContainer.appendChild(controlsButton);
         }
+
+        let createLevelButton = this.document.createElement("button");
+        createLevelButton.innerText = "Create Level";
+        createLevelButton.addEventListener("click", () => {
+            window.location.href = "/levelEditor.html";
+        });
+        buttonContainer.appendChild(createLevelButton);
+
+
+        let loadLevelContainer = this.document.createElement("div");
+        loadLevelContainer.classList.add("horizontal");
+
+        let encodedLevelField = this.document.createElement("input");
+        encodedLevelField.classList.add("margin");
+        encodedLevelField.placeholder = "Paste level here";
+        encodedLevelField.draggable = false;
+        loadLevelContainer.appendChild(encodedLevelField);
+
+        let loadEncodedButton = this.document.createElement("button");
+        loadEncodedButton.classList.add("margin");
+        loadEncodedButton.innerText = "Load Encoded";
+        loadEncodedButton.addEventListener("click", () => {
+            this.hide();
+            this.loadEncodedLevel(encodedLevelField.value);
+        });
+        loadLevelContainer.appendChild(loadEncodedButton);
+
+        buttonContainer.appendChild(loadLevelContainer);
+
+        this.container.appendChild(buttonContainer);
 
         return this.container;
     }

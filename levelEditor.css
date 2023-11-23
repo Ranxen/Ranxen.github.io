@@ -39,10 +39,9 @@ button {
 }
 
 
-textarea {
+input {
     background-color: #1e1e1e;
     border: rgba(255, 255, 255, 0.4) 1px solid;
-    cursor: pointer;
     color: aliceblue;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
@@ -51,12 +50,18 @@ textarea {
     min-height: 48px;
     min-width: 72px;
     border-radius: 8px;
-    transition: background-color 0.2s;
 }
 
 
 .margin {
     margin: 8px;
+}
+
+
+.object-container {
+    margin: 8px;
+    background: rgba(158, 158, 158, 0.2);
+    border-radius: 10px;
 }
 
 
@@ -82,4 +87,26 @@ textarea {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.2);
     -webkit-backdrop-filter: blur(10px);
+}
+
+
+.horizontal {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+
+.toast {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 8px;
+    padding: 8px;
+    color: #fff;
+    text-align: center;
+    background-color: rgba(60, 214, 55, 0.5) !important
 }

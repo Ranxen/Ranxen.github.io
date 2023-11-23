@@ -6,7 +6,7 @@ export class Player {
 
 
     velocity = {x: 0, y: 0};
-    gravitiy = .75;
+    gravity = .75;
     collisions = [];
     isGrounded = false;
     colors = [];
@@ -24,7 +24,7 @@ export class Player {
 
 
     update() {
-        this.velocity.y += this.gravitiy;
+        this.velocity.y += this.gravity;
         this.isGrounded = false;
 
         for (let obstacle of this.collisions) {

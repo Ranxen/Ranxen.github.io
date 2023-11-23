@@ -213,6 +213,39 @@ button:disabled {
 }
 
 
+input {
+    background-color: #1e1e1e;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    color: aliceblue;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: calc(min(2vh, 24px));
+    padding: 8px;
+    min-height: 48px;
+    min-width: 72px;
+    border-radius: 8px;
+}
+
+
+.vertical {
+    margin: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.horizontal {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+
 @media screen and (max-width: 1000px) and (orientation: landscape) {
     .level-selection, .controls-dialog, .settings-dialog, .level-done-dialog {
         font-size: 4vmin;
