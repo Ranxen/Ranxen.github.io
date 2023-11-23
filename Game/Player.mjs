@@ -77,6 +77,11 @@ export class Player {
     }
 
 
+    detectClick(x, y) {
+        return physicsLib.pointInsideRect({ x: x, y: y }, { pos: this.pos, size: { width: this.size, height: this.size } });
+    }
+
+
     moveLeft() {
         this.velocity.x = -5;
     }
@@ -114,6 +119,11 @@ export class Player {
 
     getEdges() {
         return [{ x: this.pos.x, y: this.pos.y }, { x: this.pos.x + this.size, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size }, { x: this.pos.x + this.size, y: this.pos.y + this.size }];
+    }
+
+
+    rotate(degree) {
+
     }
 
 

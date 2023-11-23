@@ -4,9 +4,10 @@ export class LeftDrawer {
     actionsPerRow = 2;
 
 
-    constructor(document, createObjectFunctions) {
+    constructor(document, createObjectFunctions, editorActions) {
         this.document = document;
         this.createObjectFunctions = createObjectFunctions;
+        this.editorActions = editorActions;
     }
 
 
@@ -33,6 +34,27 @@ export class LeftDrawer {
             objectContainer.appendChild(button);
         }
         this.container.appendChild(objectContainer);
+
+        let encodedLevelField = this.document.createElement("textarea");
+        encodedLevelField.classList.add("margin");
+        encodedLevelField.id = "encodedLevel";
+        this.container.appendChild(encodedLevelField);
+
+        let loadEncodedButton = this.document.createElement("button");
+        loadEncodedButton.classList.add("margin");
+        loadEncodedButton.innerText = "Load Encoded";
+        loadEncodedButton.addEventListener("click", () => {
+            this.editorActions.loadEncodedLevel(encodedLevelField.value);
+        });
+        this.container.appendChild(loadEncodedButton);
+
+        let copyEncodedButton = this.document.createElement("button");
+        copyEncodedButton.classList.add("margin");
+        copyEncodedButton.innerText = "Copy Encoded";
+        copyEncodedButton.addEventListener("click", () => {
+            this.editorActions.copyEncoded();
+        });
+        this.container.appendChild(copyEncodedButton);
 
         return this.container;
     }

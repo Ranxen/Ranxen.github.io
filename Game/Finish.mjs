@@ -1,4 +1,5 @@
 import * as drawLib from '../Helper/drawLib.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
 export class Finish {
@@ -28,6 +29,16 @@ export class Finish {
             this.onFinish();
             this.finished = true;
         }
+    }
+
+
+    detectClick(x, y) {
+        return physicsLib.pointInsideRect({ x: x, y: y }, this);
+    }
+
+
+    rotate(degree) {
+
     }
 
 }

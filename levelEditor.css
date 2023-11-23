@@ -39,6 +39,22 @@ button {
 }
 
 
+textarea {
+    background-color: #1e1e1e;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    cursor: pointer;
+    color: aliceblue;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: calc(min(2vh, 24px));
+    padding: 8px;
+    min-height: 48px;
+    min-width: 72px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+
 .margin {
     margin: 8px;
 }

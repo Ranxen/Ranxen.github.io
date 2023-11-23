@@ -40,6 +40,11 @@ export class Spike {
     }
 
 
+    detectClick(x, y) {
+        return physicsLib.pointInsideTriangle({ x: x, y: y }, this.getEdges());
+    }
+
+
     getEdges() {
         let edges = [];
         edges.push({ x: this.size.width / 2, y: 0 });
@@ -54,6 +59,11 @@ export class Spike {
         }
 
         return edges;
+    }
+
+
+    rotate(degree) {
+        this.rotation += (degree * Math.PI) / 180;
     }
 
 }

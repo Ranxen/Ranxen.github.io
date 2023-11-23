@@ -50,4 +50,9 @@ export class ColorOrb {
     }
 
 
+    rotate(degree) {
+        
+    }
+
+
 }
