@@ -66,15 +66,26 @@ export class LeftDrawer {
 
         buttonsContainer.appendChild(loadLevelContainer);
 
+        let copyOrSaveContainer = this.document.createElement("div");
+        copyOrSaveContainer.classList.add("horizontal", "center");
+
         let copyEncodedButton = this.document.createElement("button");
-        copyEncodedButton.classList.add("margin");
         copyEncodedButton.innerText = "Copy Level";
         copyEncodedButton.addEventListener("click", () => {
             if (this.editorActions.copyEncoded()) {
                 this.showCopiedToast();
             }
         });
-        buttonsContainer.appendChild(copyEncodedButton);
+        copyOrSaveContainer.appendChild(copyEncodedButton);
+
+        let saveLevelButton = this.document.createElement("button");
+        saveLevelButton.innerText = "Download Level";
+        saveLevelButton.addEventListener("click", () => {
+            this.editorActions.saveLevel();
+        });
+        copyOrSaveContainer.appendChild(saveLevelButton);
+
+        buttonsContainer.appendChild(copyOrSaveContainer);
 
 
         let toggleGridContainer = this.document.createElement("div");

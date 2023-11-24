@@ -19,7 +19,7 @@ let leftDrawer;
 function drawHtml() {
     let parentContainer = document.getElementById("overlay");
 
-    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid()});
+    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel() });
     parentContainer.appendChild(leftDrawer.createElement());
 }
 
@@ -361,6 +361,19 @@ export class LevelEditor {
 
     levelIsValid() {
         return this.level.obstacles.length > 0 && this.level.finish !== null && this.level.key !== null && this.player !== null;
+    }
+
+
+    saveLevel() {
+        if (this.levelIsValid()) {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(levelLoader.levelToJSON(this.level, this.player));
+            let downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "level.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
     }
 
 
