@@ -46,6 +46,9 @@ export class LeftDrawer {
         }
         this.container.appendChild(objectContainer);
 
+        let buttonsContainer = this.document.createElement("div");
+        buttonsContainer.classList.add("vertical");
+
         let loadLevelContainer = this.document.createElement("div");
         loadLevelContainer.classList.add("horizontal", "margin");
 
@@ -61,7 +64,7 @@ export class LeftDrawer {
         });
         loadLevelContainer.appendChild(loadEncodedButton);
 
-        this.container.appendChild(loadLevelContainer);
+        buttonsContainer.appendChild(loadLevelContainer);
 
         let copyEncodedButton = this.document.createElement("button");
         copyEncodedButton.classList.add("margin");
@@ -71,7 +74,28 @@ export class LeftDrawer {
                 this.showCopiedToast();
             }
         });
-        this.container.appendChild(copyEncodedButton);
+        buttonsContainer.appendChild(copyEncodedButton);
+
+
+        let toggleGridContainer = this.document.createElement("div");
+        toggleGridContainer.classList.add("horizontal", "margin");
+
+        let toggleGridButton = this.document.createElement("input");
+        toggleGridButton.type = "checkbox";
+        toggleGridButton.checked = true;
+        toggleGridButton.addEventListener("click", () => {
+            this.editorActions.toggleGrid();
+        });
+        toggleGridContainer.appendChild(toggleGridButton);
+
+        let toggleGridLabel = this.document.createElement("div");
+        toggleGridLabel.classList.add("center");
+        toggleGridLabel.innerText = "Enable Grid";
+        toggleGridContainer.appendChild(toggleGridLabel);
+
+        buttonsContainer.appendChild(toggleGridContainer);
+
+        this.container.appendChild(buttonsContainer);
 
         return this.container;
     }

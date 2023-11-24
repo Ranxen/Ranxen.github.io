@@ -70,7 +70,7 @@ export class SettingsDialog {
 
         let loadEncodedButton = this.document.createElement("button");
         loadEncodedButton.classList.add("margin");
-        loadEncodedButton.innerText = "Load Encoded";
+        loadEncodedButton.innerText = "Load";
         loadEncodedButton.addEventListener("click", () => {
             this.hide();
             this.loadEncodedLevel(encodedLevelField.value);

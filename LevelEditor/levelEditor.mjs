@@ -19,7 +19,7 @@ let leftDrawer;
 function drawHtml() {
     let parentContainer = document.getElementById("overlay");
 
-    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel)});
+    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid()});
     parentContainer.appendChild(leftDrawer.createElement());
 }
 
@@ -58,14 +58,14 @@ function addEventListener() {
     window.addEventListener("mousedown", (event) => {
         if (event.target.id === "overlay") {
             event.preventDefault();
-            levelEditor.mouseClicked(event.clientX, event.clientY);
+            levelEditor.mouseClicked(event.button, event.clientX, event.clientY);
         }
     });
 
     window.addEventListener("mouseup", (event) => {
         if (event.target.id === "overlay") {
             event.preventDefault();
-            levelEditor.mouseReleased();
+            levelEditor.mouseReleased(event.button);
         }
     });
 
@@ -79,13 +79,15 @@ function addEventListener() {
 
     window.addEventListener("keyup", (event) => {
         if (levelEditor.usesKey(event.code) && event.target.id === "overlay") {
-            if (levelEditor.usesKey(event.code)) {
-                event.preventDefault();
-            }
-
-            levelEditor.keyReleased(event.code);
+            event.preventDefault();
         }
+
+        levelEditor.keyReleased(event.code);
     })
+
+    window.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+    });
 }
 
 
@@ -104,14 +106,20 @@ export class LevelEditor {
     colors = ["red", "green", "blue", "yellow", "purple", "orange", "pink"];
 
     currentObject = null;
+    camera = { x: 0, y: 0, zoom: 1 };
 
     keysPressed = [];
-    keyMap = { "KeyR" : () => this.rotate(), "KeyC" : () => this.changeColor()}
+    keyMap = { "KeyR" : () => this.rotate(), "KeyC" : () => this.changeColor(), "KeyX" : () => this.deleteCurrentObject()}
+    otherKeys = ["ShiftLeft"];
 
 
+    activeMouseButtons = [];
     mouseX = 0;
     mouseY = 0;
+    mouseXInGridTranslated = 0;
+    mouseYInGridTranslated = 0;
     gridSize = 25;
+    gridEnabled = true;
 
 
     constructor(ctx) {
@@ -120,38 +128,44 @@ export class LevelEditor {
         this.player = null;
     }
 
+
+    toggleGrid() {
+        this.gridEnabled = !this.gridEnabled;
+    }
+
+
     createPlayer() {
-        this.player = new Player(this.ctx, { x: this.mouseX, y: this.mouseY}, 50, "red");
+        this.player = new Player(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, 50, "red");
         this.currentObject = this.player;
     }
 
 
     createObstacle() {
-        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.mouseX, y: this.mouseY}, { width: 200, height: 25}, "green"));
+        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 200, height: 25}, "green"));
         this.currentObject = this.level.obstacles[this.level.obstacles.length - 1];
     }
 
 
     createColorOrb() {
-        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.mouseX, y: this.mouseY}, 25, "blue"));
+        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, 25, "orange"));
         this.currentObject = this.level.colorOrbs[this.level.colorOrbs.length - 1];
     }
 
 
     createSpike() {
-        this.level.spikes.push(new Spike(this.ctx, { x: this.mouseX, y: this.mouseY}, { width: 25, height: 25}, 0, "yellow"));
+        this.level.spikes.push(new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 25, height: 25}, 0, "yellow"));
         this.currentObject = this.level.spikes[this.level.spikes.length - 1];
     }
 
 
     createFinish() {
-        this.level.finish = new Finish(this.ctx, { x: this.mouseX, y: this.mouseY}, { width: 50, height: 100});
+        this.level.finish = new Finish(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 50, height: 100});
         this.currentObject = this.level.finish;
     }
 
 
     createKey() {
-        this.level.key = new Key(this.ctx, { x: this.mouseX, y: this.mouseY});
+        this.level.key = new Key(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated});
         this.currentObject = this.level.key;
     }
 
@@ -162,64 +176,115 @@ export class LevelEditor {
 
 
     mouseMoved(x, y) {
-        this.mouseX = Math.floor(x / this.gridSize) * this.gridSize;
-        this.mouseY = Math.floor(y / this.gridSize) * this.gridSize;
+        if (this.activeMouseButtons.includes(2)) {
+            this.camera.x += (x - this.mouseX) / this.camera.zoom;
+            this.camera.y += (y - this.mouseY) / this.camera.zoom;
+        }
 
         if (this.currentObject) {
-            this.currentObject.pos.x = this.mouseX;
-            this.currentObject.pos.y = this.mouseY;
+            if (this.gridEnabled) {
+                this.mouseXInGridTranslated = Math.floor((x - this.camera.x) / this.gridSize) * this.gridSize;
+                this.mouseYInGridTranslated = Math.floor((y - this.camera.y) / this.gridSize) * this.gridSize;
+            }
+            else {
+                this.mouseXInGridTranslated = x - this.camera.x;
+                this.mouseYInGridTranslated = y - this.camera.y;
+            }
+
+            this.currentObject.pos.x = this.mouseXInGridTranslated;
+            this.currentObject.pos.y = this.mouseYInGridTranslated;
+        }
+
+        this.mouseX = x;
+        this.mouseY = y;
+    }
+
+
+    mouseClicked(button, x, y) {
+        if (!this.activeMouseButtons.includes(button)) {
+            this.activeMouseButtons.push(button);
+        }
+
+        if (button === 0 && !this.currentObject) {
+            let result = this.detectClickOnObject(x, y);
+
+            if (result) {
+                this.currentObject = result;
+            }
         }
     }
 
 
-    mouseClicked(x, y) {
-        if (!this.currentObject) {
-            for (let obstacle of this.level.obstacles) {
-                if (obstacle.detectClick(x, y)) {
-                    this.currentObject = obstacle;
-                }
-            }
+    detectClickOnObject(x, y) {
+        x -= this.camera.x;
+        y -= this.camera.y;
 
-            for (let spike of this.level.spikes) {
-                if (spike.detectClick(x, y)) {
-                    this.currentObject = spike;
-                }
-            }
-
-            for (let colorOrb of this.level.colorOrbs) {
-                if (colorOrb.detectClick(x, y)) {
-                    this.currentObject = colorOrb;
-                }
-            }
-
-            if (this.level.finish) {
-                if (this.level.finish.detectClick(x, y)) {
-                    this.currentObject = this.level.finish;
-                }
-            }
-
-            if (this.level.key) {
-                if (this.level.key.detectClick(x, y)) {
-                    this.currentObject = this.level.key;
-                }
-            }
-
-            if (this.player) {
-                if (this.player.detectClick(x, y)) {
-                    this.currentObject = this.player;
-                }
+        for (let obstacle of this.level.obstacles) {
+            if (obstacle.detectClick(x, y)) {
+                return obstacle;
             }
         }
+
+        for (let spike of this.level.spikes) {
+            if (spike.detectClick(x, y)) {
+                return spike;
+            }
+        }
+
+        for (let colorOrb of this.level.colorOrbs) {
+            if (colorOrb.detectClick(x, y)) {
+                return colorOrb;
+            }
+        }
+
+        if (this.level.finish) {
+            if (this.level.finish.detectClick(x, y)) {
+                return this.level.finish;
+            }
+        }
+
+        if (this.level.key) {
+            if (this.level.key.detectClick(x, y)) {
+                return this.level.key;
+            }
+        }
+
+        if (this.player) {
+            if (this.player.detectClick(x, y)) {
+                return this.player;
+            }
+        }
+
+        return null;
     }
 
     
-    mouseReleased() {
-        this.currentObject = null;
+    mouseReleased(button) {
+        this.activeMouseButtons.splice(this.activeMouseButtons.indexOf(button), 1);
+
+        if (button === 0) {
+            if (this.keysPressed.includes("ShiftLeft")) {
+                if (this.currentObject) {
+                    if (this.currentObject instanceof Obstacle) {
+                        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
+                    }
+                    else if (this.currentObject instanceof ColorOrb) {
+                        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
+                    }
+                    else if (this.currentObject instanceof Spike) {
+                        this.level.spikes.push(new Spike(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.rotation, this.currentObject.color));
+                    }
+                }
+            }
+            else {
+                this.currentObject = null;
+            }
+        }
     }
 
 
     usesKey(key) {
-        return this.keyMap[key] !== undefined;
+        return this.keyMap[key] !== undefined || this.otherKeys.includes(key);
     }
 
     
@@ -235,7 +300,7 @@ export class LevelEditor {
 
 
     keyReleased(key) {
-        this.keysPressed.splice(this.keysPressed.indexOf(key), 1);
+        this.keysPressed = this.keysPressed.filter((pressedKey) => pressedKey !== key);
     }
 
 
@@ -249,6 +314,42 @@ export class LevelEditor {
     changeColor() {
         if (this.currentObject?.color && this.currentObject.color !== "gold") {
             this.currentObject.color = this.nextColor(this.currentObject.color);
+        }
+    }
+
+
+    deleteCurrentObject() {
+        if (this.currentObject) {
+            this.deleteObject(this.currentObject);
+            this.currentObject = null;
+        }
+        else {
+            let result = this.detectClickOnObject(this.mouseX, this.mouseY);
+            if (result) {
+                this.deleteObject(result);
+            }
+        }
+    }
+
+
+    deleteObject(object) {
+        if (object instanceof Player) {
+            this.player = null;
+        }
+        else if (object instanceof Obstacle) {
+            this.level.obstacles.splice(this.level.obstacles.indexOf(object), 1);
+        }
+        else if (object instanceof ColorOrb) {
+            this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(object), 1);
+        }
+        else if (object instanceof Spike) {
+            this.level.spikes.splice(this.level.spikes.indexOf(object), 1);
+        }
+        else if (object instanceof Finish) {
+            this.level.finish = null;
+        }
+        else if (object instanceof Key) {
+            this.level.key = null;
         }
     }
 
@@ -289,6 +390,7 @@ export class LevelEditor {
 
     draw() {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.ctx.translate(this.camera.x, this.camera.y);
 
         this.level.drawObstacles();
         this.level.drawSpikes();
@@ -309,5 +411,7 @@ export class LevelEditor {
                 this.level.key.draw({ hasKey: false });
             }
         }
+
+        this.ctx.resetTransform();
     }
 }

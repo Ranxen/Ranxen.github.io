@@ -42,3 +42,8 @@ export function pointInsideTriangle(point, triangle) {
 export function pointInsideRect(point, rect) {
     return point.x > rect.pos.x && point.x < rect.pos.x + rect.size.width && point.y > rect.pos.y && point.y < rect.pos.y + rect.size.height;
 }
+
+
+export function pointInsideCircle(point, circle) {
+    return Math.sqrt(Math.pow(point.x - circle.pos.x, 2) + Math.pow(point.y - circle.pos.y, 2)) < circle.size;
+}

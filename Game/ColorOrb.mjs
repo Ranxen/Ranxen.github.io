@@ -1,4 +1,5 @@
 import * as drawLib from '../Helper/drawLib.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
 export class ColorOrb {
@@ -24,7 +25,6 @@ export class ColorOrb {
 
 
     detectCollision(player, colorWheel) {
-
         if (player.pos.x < this.pos.x && player.pos.x + player.size > this.pos.x && player.pos.y < this.pos.y && player.pos.y + player.size > this.pos.y) {
             this.hitDetected(player, colorWheel);
             return;
@@ -39,6 +39,11 @@ export class ColorOrb {
                 break;
             }
         }
+    }
+
+
+    detectClick(x, y) {
+        return physicsLib.pointInsideCircle({ x: x, y: y}, this);
     }
 
     
