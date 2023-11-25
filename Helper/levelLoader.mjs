@@ -22,9 +22,13 @@ export function loadLevelFromFile(ctx, file, actions, setLevel) {
 
 
 export function levelToJSON(level, player) {
+    if (level.levelName === undefined) {
+        level.levelName = "Custom Level";
+    }
+
     let json = {
         index: -1,
-        levelName: "Custom Level",
+        levelName: level.levelName,
         isCustom: true,
         startPos: player.pos,
         startColor: player.color,

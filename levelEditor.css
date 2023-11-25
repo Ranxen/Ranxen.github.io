@@ -39,6 +39,28 @@ button {
 }
 
 
+.delete-button {
+    padding: 4px;
+    min-height: 0px;
+    min-width: 0px;
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    background-color: rgb(180, 42, 42) !important;
+}
+
+
+button:hover:enabled {
+    background-color: #2e2e2e;
+}
+
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+
 input {
     background-color: #1e1e1e;
     border: rgba(255, 255, 255, 0.4) 1px solid;
@@ -128,4 +150,75 @@ input {
 
 .toast.error {
     background-color: rgba(214, 55, 55, 0.5) !important
+}
+
+
+.dialog {
+    text-align: center;
+    color: aliceblue;
+    min-width: 30vmax;
+    min-height: 30vmax;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    margin-top: 8px;
+}
+
+
+.header h1 {
+    margin: auto;
+}
+
+
+.close-button {
+    cursor: pointer;
+    height: 100%;
+}
+
+
+.level-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 16px;
+}
+
+
+.level-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    min-height: 36px;
+}
+
+
+.level {
+    padding: 16px;
+    border-radius: 8px;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    cursor: pointer;
+    transition: scale 0.1s ease-in-out;
+}
+
+
+.level:hover {
+    scale: 1.1;
+}
+
+
+.button-container {
+    position: absolute;
+    bottom: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
 }

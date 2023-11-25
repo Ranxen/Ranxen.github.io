@@ -2,10 +2,12 @@ export class LeftDrawer {
 
 
     objectsPerRow = 2;
+    levelNameInput = null;
 
 
-    constructor(document, createObjectFunctions, editorActions) {
+    constructor(document, localLevels, createObjectFunctions, editorActions) {
         this.document = document;
+        this.localLevels = localLevels;
         this.createObjectFunctions = createObjectFunctions;
         this.editorActions = editorActions;
     }
@@ -53,7 +55,6 @@ export class LeftDrawer {
         loadLevelContainer.classList.add("horizontal", "margin");
 
         let encodedLevelField = this.document.createElement("input");
-        encodedLevelField.id = "encodedLevel";
         loadLevelContainer.appendChild(encodedLevelField);
 
         let loadEncodedButton = this.document.createElement("button");
@@ -75,7 +76,6 @@ export class LeftDrawer {
         uploadLevelContainer.classList.add("horizontal", "margin");
 
         let uploadLevelField = this.document.createElement("input");
-        uploadLevelField.id = "uploadLevel";
         uploadLevelField.type = "file";
         uploadLevelField.accept = ".json";
         uploadLevelContainer.appendChild(uploadLevelField);
@@ -94,6 +94,14 @@ export class LeftDrawer {
 
         buttonsContainer.appendChild(uploadLevelContainer);
 
+
+        this.levelNameInput = this.document.createElement("input");
+        this.levelNameInput.placeholder = "Level Name";
+        this.levelNameInput.classList.add("margin");
+        this.levelNameInput.addEventListener("change", () => {
+            this.editorActions.changeLevelName(this.levelNameInput.value);
+        });
+        buttonsContainer.appendChild(this.levelNameInput);
 
         let copyOrSaveContainer = this.document.createElement("div");
         copyOrSaveContainer.classList.add("horizontal", "center");
@@ -116,6 +124,20 @@ export class LeftDrawer {
 
         buttonsContainer.appendChild(copyOrSaveContainer);
 
+        let saveToBrowserCache = this.document.createElement("button");
+        saveToBrowserCache.innerText = "Save to Browser Cache";
+        saveToBrowserCache.classList.add("margin");
+        saveToBrowserCache.addEventListener("click", () => {
+            try {
+                if (this.editorActions.saveToBrowserCache()) {
+                    this.showSuccessToast("Level saved");
+                }
+            }
+            catch (error) {
+                this.showInvalidToast("Could not save level");
+            }
+        });
+        buttonsContainer.appendChild(saveToBrowserCache);
 
         let toggleGridContainer = this.document.createElement("div");
         toggleGridContainer.classList.add("horizontal", "margin");
@@ -135,16 +157,46 @@ export class LeftDrawer {
 
         buttonsContainer.appendChild(toggleGridContainer);
 
+        let showLocalLevelsButton = this.document.createElement("button");
+        showLocalLevelsButton.innerText = "Show Local Levels";
+        showLocalLevelsButton.classList.add("margin");
+        showLocalLevelsButton.addEventListener("click", () => {
+            this.localLevels.show();
+        });
+        buttonsContainer.appendChild(showLocalLevelsButton);
+
         this.container.appendChild(buttonsContainer);
 
         return this.container;
     }
 
 
-    showCopiedToast() {
+    setLevelName(levelName) {
+        this.levelNameInput.value = levelName;
+    }
+
+
+    showSuccessToast(title) {
         let toast = this.document.createElement("div");
         toast.classList.add("toast", "glassy");
-        toast.innerText = "Copied level to clipboard";
+        toast.innerText = title;
+        this.container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+
+    showCopiedToast() {
+        this.showSuccessToast("Copied level to clipboard");
+    }
+
+
+    showErrorToast(title) {
+        let toast = this.document.createElement("div");
+        toast.classList.add("toast", "glassy", "error");
+        toast.innerText = title;
         this.container.appendChild(toast);
 
         setTimeout(() => {
@@ -154,14 +206,7 @@ export class LeftDrawer {
 
 
     showInvalidLevelToast() {
-        let toast = this.document.createElement("div");
-        toast.classList.add("toast", "glassy", "error");
-        toast.innerText = "Could not Load level";
-        this.container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        this.showErrorToast("Could not Load level");
     }
 
 

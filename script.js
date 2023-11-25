@@ -89,6 +89,7 @@ function loadEncodedLevel(encodedLevel) {
 
     levelCode = encodedLevel;
     level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
+    level.isCustom = true;
     setLevel(level);
 }
 
@@ -101,6 +102,7 @@ function uploadLevel(file) {
     stopGame();
 
     this.level = levelLoader.loadLevelFromFile(ctx, file, { restartLevel: restartLevel }, (level) => {
+        level.isCustom = true;
         setLevel(level);
     });
 }

@@ -1,5 +1,6 @@
 import * as levelLoader from "../Helper/levelLoader.mjs";
 import { LeftDrawer } from "./leftDrawer.mjs";
+import { LocalLevels } from "../UI/HtmlDialogs/LocalLevels.mjs";
 import { Level } from "../Game/Level.mjs";
 import { Player } from "../Game/Player.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
@@ -14,12 +15,16 @@ var ctx = canvas.getContext("2d");
 
 let levelEditor;
 let leftDrawer;
+let localLevels;
 
 
 function drawHtml() {
     let parentContainer = document.getElementById("overlay");
 
-    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json) });
+    localLevels = new LocalLevels(document, (level) => levelEditor.loadLevelFromJSON(level));
+    parentContainer.appendChild(localLevels.createElement());
+
+    leftDrawer = new LeftDrawer(document, localLevels, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
     parentContainer.appendChild(leftDrawer.createElement());
 }
 
@@ -434,16 +439,42 @@ export class LevelEditor {
     }
 
 
+    changeLevelName(name) {
+        this.level.levelName = name;
+    }
+
+
     saveLevel() {
         if (this.levelIsValid()) {
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(levelLoader.levelToJSON(this.level, this.player));
             let downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "level.json");
+            downloadAnchorNode.setAttribute("download", this.level.levelName + ".json");
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
         }
+    }
+
+
+    saveToBrowserCache() {
+        if (this.levelIsValid()) {
+            let levels = localStorage.getItem("levels");
+            if (levels) {
+                levels = JSON.parse(levels);
+            }
+            else {
+                levels = [];
+            }
+
+            levels.push(levelLoader.levelToJSON(this.level, this.player));
+            localStorage.setItem("levels", JSON.stringify(levels));
+            localLevels.updateLevels();
+
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -466,7 +497,15 @@ export class LevelEditor {
         this.level = levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
             this.level = level;
             this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+            leftDrawer.setLevelName(this.level.levelName);
         });
+    }
+
+
+    loadLevelFromJSON(json) {
+        this.level = new Level(this.ctx, json);
+        this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+        leftDrawer.setLevelName(this.level.levelName);
     }
 
 
