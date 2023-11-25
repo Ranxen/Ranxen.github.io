@@ -8,6 +8,7 @@ import { ColorOrb } from "../Game/ColorOrb.mjs";
 import { Spike } from "../Game/Spike.mjs";
 import { Finish } from "../Game/Finish.mjs";
 import { Key } from "../Game/Key.mjs";
+import { EditorControls } from "./EditorControls.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -16,6 +17,7 @@ var ctx = canvas.getContext("2d");
 let levelEditor;
 let leftDrawer;
 let localLevels;
+let editorControls;
 
 
 function drawHtml() {
@@ -24,7 +26,10 @@ function drawHtml() {
     localLevels = new LocalLevels(document, (level) => levelEditor.loadLevelFromJSON(level));
     parentContainer.appendChild(localLevels.createElement());
 
-    leftDrawer = new LeftDrawer(document, localLevels, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
+    editorControls = new EditorControls(document);
+    parentContainer.appendChild(editorControls.createElement());
+
+    leftDrawer = new LeftDrawer(document, localLevels, editorControls, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
     parentContainer.appendChild(leftDrawer.createElement());
 }
 
@@ -114,7 +119,7 @@ export class LevelEditor {
     camera = { x: 0, y: 0, zoom: 1 };
 
     keysPressed = [];
-    keyMap = { "KeyR" : () => this.rotate(), "KeyC" : () => this.changeColor(), "KeyX" : () => this.deleteCurrentObject(), "KeyA" : () => this.decreaseCurrentObjectWidth(), "KeyD" : () => this.increaseCurrentObjectWidth(), "KeyS" : () => this.increaseCurrentObjectHeight(), "KeyW" : () => this.decreaseCurrentObjectHeight() }
+    keyMap = { "KeyR" : () => this.rotate(), "KeyC" : () => this.changeColor(), "KeyX" : () => this.deleteCurrentObject(), "KeyA" : () => this.decreaseCurrentObjectWidth(), "KeyD" : () => this.increaseCurrentObjectWidth(), "KeyS" : () => this.increaseCurrentObjectHeight(), "KeyW" : () => this.decreaseCurrentObjectHeight(), "KeyG" : () => this.toggleGrid() }
     otherKeys = ["ShiftLeft"];
 
 
@@ -136,6 +141,7 @@ export class LevelEditor {
 
     toggleGrid() {
         this.gridEnabled = !this.gridEnabled;
+        leftDrawer.toggleGrid(this.gridEnabled);
     }
 
 

@@ -3,11 +3,13 @@ export class LeftDrawer {
 
     objectsPerRow = 2;
     levelNameInput = null;
+    toggleGridButton = null;
 
 
-    constructor(document, localLevels, createObjectFunctions, editorActions) {
+    constructor(document, localLevels, editorControls, createObjectFunctions, editorActions) {
         this.document = document;
         this.localLevels = localLevels;
+        this.editorControls = editorControls;
         this.createObjectFunctions = createObjectFunctions;
         this.editorActions = editorActions;
     }
@@ -24,6 +26,13 @@ export class LeftDrawer {
         let title = this.document.createElement("h1");
         title.innerText = "Objects";
         header.appendChild(title);
+
+        let showEditorControlsButton = this.document.createElement("button");
+        showEditorControlsButton.innerText = "?";
+        showEditorControlsButton.addEventListener("click", () => {
+            this.editorControls.show();
+        });
+        header.appendChild(showEditorControlsButton);
 
         let objectContainer = this.document.createElement("div");
         objectContainer.classList.add("object-container");
@@ -142,13 +151,13 @@ export class LeftDrawer {
         let toggleGridContainer = this.document.createElement("div");
         toggleGridContainer.classList.add("horizontal", "margin");
 
-        let toggleGridButton = this.document.createElement("input");
-        toggleGridButton.type = "checkbox";
-        toggleGridButton.checked = true;
-        toggleGridButton.addEventListener("click", () => {
+        this.toggleGridButton = this.document.createElement("input");
+        this.toggleGridButton.type = "checkbox";
+        this.toggleGridButton.checked = true;
+        this.toggleGridButton.addEventListener("click", () => {
             this.editorActions.toggleGrid();
         });
-        toggleGridContainer.appendChild(toggleGridButton);
+        toggleGridContainer.appendChild(this.toggleGridButton);
 
         let toggleGridLabel = this.document.createElement("div");
         toggleGridLabel.classList.add("center");
@@ -173,6 +182,11 @@ export class LeftDrawer {
 
     setLevelName(levelName) {
         this.levelNameInput.value = levelName;
+    }
+
+
+    toggleGrid(value) {
+        this.toggleGridButton.checked = value;
     }
 
 

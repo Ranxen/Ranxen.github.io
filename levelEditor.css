@@ -222,3 +222,17 @@ input {
     justify-content: space-around;
     width: 100%;
 }
+
+
+.controls-table {
+    margin: auto;
+    padding: 16px;
+}
+
+
+.controls-table td {
+    padding: 8px;
+    background-color: #123;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+}
