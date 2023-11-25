@@ -284,6 +284,7 @@ export class LevelEditor {
                     }
                     else if (this.currentObject instanceof Spike) {
                         this.level.spikes.push(new Spike(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.rotation, this.currentObject.color));
+                        this.level.spikes[this.level.spikes.length - 1].rotation = this.currentObject.rotation;
                     }
                 }
             }
@@ -317,7 +318,12 @@ export class LevelEditor {
 
     rotate() {
         if (this.currentObject) {
-            this.currentObject.rotate(90);
+            if (this.gridEnabled) {
+                this.currentObject.rotate(90);
+            }
+            else {
+                this.currentObject.rotate(1);
+            }
         }
     }
 
