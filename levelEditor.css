@@ -124,3 +124,8 @@ input {
     text-align: center;
     background-color: rgba(60, 214, 55, 0.5) !important
 }
+
+
+.toast.error {
+    background-color: rgba(214, 55, 55, 0.5) !important
+}

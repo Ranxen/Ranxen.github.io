@@ -60,11 +60,40 @@ export class LeftDrawer {
         loadEncodedButton.innerText = "Load";
         encodedLevelField.placeholder = "Paste level here";
         loadEncodedButton.addEventListener("click", () => {
-            this.editorActions.loadEncodedLevel(encodedLevelField.value);
+            try {
+                this.editorActions.loadEncodedLevel(encodedLevelField.value);
+            }
+            catch (error) {
+                this.showInvalidLevelToast();
+            }
         });
         loadLevelContainer.appendChild(loadEncodedButton);
 
         buttonsContainer.appendChild(loadLevelContainer);
+
+        let uploadLevelContainer = this.document.createElement("div");
+        uploadLevelContainer.classList.add("horizontal", "margin");
+
+        let uploadLevelField = this.document.createElement("input");
+        uploadLevelField.id = "uploadLevel";
+        uploadLevelField.type = "file";
+        uploadLevelField.accept = ".json";
+        uploadLevelContainer.appendChild(uploadLevelField);
+
+        let uploadLevelButton = this.document.createElement("button");
+        uploadLevelButton.innerText = "Upload Level";
+        uploadLevelButton.addEventListener("click", () => {
+            try {
+                this.editorActions.uploadLevel(uploadLevelField.files[0]);
+            }
+            catch (error) {
+                this.showInvalidLevelToast();
+            }
+        });
+        uploadLevelContainer.appendChild(uploadLevelButton);
+
+        buttonsContainer.appendChild(uploadLevelContainer);
+
 
         let copyOrSaveContainer = this.document.createElement("div");
         copyOrSaveContainer.classList.add("horizontal", "center");
@@ -116,6 +145,18 @@ export class LeftDrawer {
         let toast = this.document.createElement("div");
         toast.classList.add("toast", "glassy");
         toast.innerText = "Copied level to clipboard";
+        this.container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+
+    showInvalidLevelToast() {
+        let toast = this.document.createElement("div");
+        toast.classList.add("toast", "glassy", "error");
+        toast.innerText = "Could not Load level";
         this.container.appendChild(toast);
 
         setTimeout(() => {

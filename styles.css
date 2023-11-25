@@ -227,6 +227,11 @@ input {
 }
 
 
+input[type="file"] {
+    max-width: 45%;
+}
+
+
 .vertical {
     margin: 8px;
     display: flex;
@@ -243,6 +248,11 @@ input {
     display: flex;
     flex-direction: row;
     gap: 8px;
+}
+
+
+.center {
+    margin: auto;
 }
 
 

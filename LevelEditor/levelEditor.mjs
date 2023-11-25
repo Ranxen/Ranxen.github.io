@@ -19,7 +19,7 @@ let leftDrawer;
 function drawHtml() {
     let parentContainer = document.getElementById("overlay");
 
-    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel() });
+    leftDrawer = new LeftDrawer(document, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json) });
     parentContainer.appendChild(leftDrawer.createElement());
 }
 
@@ -109,7 +109,7 @@ export class LevelEditor {
     camera = { x: 0, y: 0, zoom: 1 };
 
     keysPressed = [];
-    keyMap = { "KeyR" : () => this.rotate(), "KeyC" : () => this.changeColor(), "KeyX" : () => this.deleteCurrentObject()}
+    keyMap = { "KeyR" : () => this.rotate(), "KeyC" : () => this.changeColor(), "KeyX" : () => this.deleteCurrentObject(), "KeyA" : () => this.decreaseCurrentObjectWidth(), "KeyD" : () => this.increaseCurrentObjectWidth(), "KeyS" : () => this.increaseCurrentObjectHeight(), "KeyW" : () => this.decreaseCurrentObjectHeight() }
     otherKeys = ["ShiftLeft"];
 
 
@@ -354,6 +354,76 @@ export class LevelEditor {
     }
 
 
+    increaseCurrentObjectWidth() {
+        if (this.currentObject) {
+            let changeBy = this.gridSize;
+            if (!this.gridEnabled) {
+                changeBy = 1;
+            }
+
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+                this.currentObject.size.width += changeBy;
+            }
+        }
+    }
+
+
+    decreaseCurrentObjectWidth() {
+        if (this.currentObject) {
+            let changeBy = this.gridSize;
+            if (!this.gridEnabled) {
+                changeBy = 1;
+            }
+
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+                this.decreaseObjectWidth(this.currentObject, changeBy);
+            }
+        }
+    }
+
+
+    decreaseObjectWidth(object, width) {
+        if (object.size.width - width > 0) {
+            object.size.width -= width;
+        }
+    }
+
+
+    increaseCurrentObjectHeight() {
+        if (this.currentObject) {
+            let changeBy = this.gridSize;
+            if (!this.gridEnabled) {
+                changeBy = 1;
+            }
+
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+                this.currentObject.size.height += changeBy;
+            }
+        }
+    }
+
+
+    decreaseCurrentObjectHeight() {
+        if (this.currentObject) {
+            let changeBy = this.gridSize;
+            if (!this.gridEnabled) {
+                changeBy = 1;
+            }
+
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+                this.decreaseObjectHeight(this.currentObject, changeBy);
+            }
+        }
+    }
+
+
+    decreaseObjectHeight(object, height) {
+        if (object.size.height - height > 0) {
+            object.size.height -= height;
+        }
+    }
+
+
     nextColor(color) {
         return this.colors[(this.colors.indexOf(color) + 1) % this.colors.length];
     }
@@ -385,6 +455,18 @@ export class LevelEditor {
         else {
             return false;
         }
+    }
+
+
+    uploadLevel(file) {
+        if (!file?.name.endsWith(".json")) {
+            return;
+        }
+
+        this.level = levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
+            this.level = level;
+            this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+        });
     }
 
 

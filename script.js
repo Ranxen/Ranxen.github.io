@@ -66,9 +66,8 @@ async function loadLevel(index) {
         return;
     }
 
-    loadingLevel = true;
-    running = false;
-    timer.reset();
+    stopGame();
+
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     let path = "/levels/" + index + ".json";
 
@@ -86,13 +85,24 @@ async function loadLevel(index) {
 
 
 function loadEncodedLevel(encodedLevel) {
-    loadingLevel = true;
-    running = false;
-    timer.reset();
+    stopGame();
 
     levelCode = encodedLevel;
     level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
     setLevel(level);
+}
+
+
+function uploadLevel(file) {
+    if (!file?.name.endsWith(".json")) {
+        return;
+    }
+
+    stopGame();
+
+    this.level = levelLoader.loadLevelFromFile(ctx, file, { restartLevel: restartLevel }, (level) => {
+        setLevel(level);
+    });
 }
 
 
@@ -117,6 +127,13 @@ function restartLevel() {
     } else {
         loadLevel(level.index);
     }
+}
+
+
+function stopGame() {
+    loadingLevel = true;
+    running = false;
+    timer.reset();
 }
 
 
@@ -190,7 +207,7 @@ function drawHtml() {
         parentContainer.appendChild(controlsDialog.createElement());
     }
 
-    settingsDialog = new SettingsDialog(document, controlsDialog, loadEncodedLevel);
+    settingsDialog = new SettingsDialog(document, controlsDialog, loadEncodedLevel, uploadLevel);
     parentContainer.appendChild(settingsDialog.createElement());
 }
 

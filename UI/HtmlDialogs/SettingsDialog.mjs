@@ -4,10 +4,11 @@ export class SettingsDialog {
 
     container = null;
 
-    constructor(document, controlsDialog, loadEncodedLevel) {
+    constructor(document, controlsDialog, loadEncodedLevel, uploadLevel) {
         this.document = document;
         this.controlsDialog = controlsDialog;
         this.loadEncodedLevel = loadEncodedLevel;
+        this.uploadLevel = uploadLevel;
     }
 
 
@@ -52,7 +53,7 @@ export class SettingsDialog {
         }
 
         let createLevelButton = this.document.createElement("button");
-        createLevelButton.innerText = "Create Level";
+        createLevelButton.innerText = "Open Level Editor";
         createLevelButton.addEventListener("click", () => {
             window.location.href = "/levelEditor.html";
         });
@@ -78,6 +79,25 @@ export class SettingsDialog {
         loadLevelContainer.appendChild(loadEncodedButton);
 
         buttonContainer.appendChild(loadLevelContainer);
+
+        let uploadLevelContainer = this.document.createElement("div");
+        uploadLevelContainer.classList.add("horizontal", "center");
+
+        let uploadLevelField = this.document.createElement("input");
+        uploadLevelField.id = "uploadLevel";
+        uploadLevelField.type = "file";
+        uploadLevelField.accept = ".json";
+        uploadLevelContainer.appendChild(uploadLevelField);
+
+        let uploadLevelButton = this.document.createElement("button");
+        uploadLevelButton.innerText = "Upload Level";
+        uploadLevelButton.addEventListener("click", () => {
+            this.hide();
+            this.uploadLevel(uploadLevelField.files[0]);
+        });
+        uploadLevelContainer.appendChild(uploadLevelButton);
+
+        buttonContainer.appendChild(uploadLevelContainer);
 
         this.container.appendChild(buttonContainer);
 
