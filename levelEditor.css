@@ -174,6 +174,7 @@ input {
 
 .header h1 {
     margin: auto;
+    font-size: 30px;
 }
 
 
@@ -183,7 +184,7 @@ input {
 }
 
 
-.level-container {
+.local-level-container {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -191,7 +192,7 @@ input {
 }
 
 
-.level-row {
+.local-level-row {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -200,7 +201,7 @@ input {
 }
 
 
-.level {
+.local-level {
     padding: 16px;
     border-radius: 8px;
     border: rgba(255, 255, 255, 0.4) 1px solid;
@@ -209,7 +210,7 @@ input {
 }
 
 
-.level:hover {
+.local-level:hover {
     scale: 1.1;
 }
 

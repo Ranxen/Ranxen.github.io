@@ -23,6 +23,13 @@ export class LeftDrawer {
         header.classList.add("header");
         this.container.appendChild(header);
 
+        let backToGameButton = this.document.createElement("button");
+        backToGameButton.innerText = "<";
+        backToGameButton.addEventListener("click", () => {
+            window.location.href = "/index.html";
+        });
+        header.appendChild(backToGameButton);
+
         let title = this.document.createElement("h1");
         title.innerText = "Objects";
         header.appendChild(title);

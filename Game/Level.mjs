@@ -9,8 +9,8 @@ export class Level {
 
 
     constructor(ctx, level, actions) {
-        level = JSON.parse(JSON.stringify(level));
         if (level !== undefined) {
+            level = JSON.parse(JSON.stringify(level));
             if (actions === undefined) {
                 actions = {};
             }
