@@ -256,6 +256,24 @@ input[type="file"] {
 }
 
 
+.toast {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 8px;
+    padding: 8px;
+    color: #fff;
+    text-align: center;
+    background-color: rgba(60, 214, 55, 0.5) !important
+}
+
+
+.toast.error {
+    background-color: rgba(214, 55, 55, 0.5) !important
+}
+
+
 @media screen and (max-width: 1000px) and (orientation: landscape) {
     .level-selection, .controls-dialog, .settings-dialog, .level-done-dialog {
         font-size: 4vmin;

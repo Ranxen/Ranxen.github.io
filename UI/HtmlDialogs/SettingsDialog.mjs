@@ -73,8 +73,13 @@ export class SettingsDialog {
         loadEncodedButton.classList.add("margin");
         loadEncodedButton.innerText = "Load";
         loadEncodedButton.addEventListener("click", () => {
-            this.hide();
-            this.loadEncodedLevel(encodedLevelField.value);
+            try {
+                this.loadEncodedLevel(encodedLevelField.value);
+                this.hide();
+            }
+            catch (error) {
+                this.showInvalidLevelToast();
+            }
         });
         loadLevelContainer.appendChild(loadEncodedButton);
 
@@ -92,8 +97,13 @@ export class SettingsDialog {
         let uploadLevelButton = this.document.createElement("button");
         uploadLevelButton.innerText = "Upload Level";
         uploadLevelButton.addEventListener("click", () => {
-            this.hide();
-            this.uploadLevel(uploadLevelField.files[0]);
+            try {
+                this.uploadLevel(uploadLevelField.files[0]);
+                this.hide();
+            }
+            catch (error) {
+                this.showInvalidLevelToast();
+            }
         });
         uploadLevelContainer.appendChild(uploadLevelButton);
 
@@ -116,6 +126,18 @@ export class SettingsDialog {
         this.container.style.opacity = 1;
         this.container.style.visibility = "visible";
         this.visible = true;
+    }
+
+
+    showInvalidLevelToast() {
+        let toast = this.document.createElement("div");
+        toast.classList.add("toast", "glassy", "error");
+        toast.innerText = "Could not Load level";
+        this.container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 
 }
