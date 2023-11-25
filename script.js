@@ -7,6 +7,7 @@ import { LevelSelection } from "./UI/HtmlDialogs/LevelSelection.mjs";
 import { LevelDoneDialog } from "./UI/HtmlDialogs/LevelDoneDialog.mjs";
 import { SettingsDialog } from "./UI/HtmlDialogs/SettingsDialog.mjs";
 import { ControlsDialog } from "./UI/HtmlDialogs/ControlsDialog.mjs";
+import { LocalLevels } from "./UI/HtmlDialogs/LocalLevels.mjs";
 import { Timer } from "./UI/Canvas/Timer.mjs";
 import * as drawLib from "./Helper/drawLib.mjs";
 import * as levelLoader from "./Helper/levelLoader.mjs";
@@ -18,9 +19,11 @@ var settingsDialog = null;
 var controlsDialog = null;
 var levelSelection = null;
 var levelDoneDialog = null;
+var localLevels = null;
 
 
 var level = null;
+var levelData = null;
 var player = null;
 
 var buttons = [];
@@ -55,6 +58,7 @@ async function loadAvailableLevels() {
         })
         .then(json => {
             levelSelection.setAvailableLevels(json.availableLevels);
+            localLevels.setStartIndex(json.availableLevels.length);
         }).catch(error => {
             
         });
@@ -77,6 +81,7 @@ async function loadLevel(index) {
             loadingLevel = false;
         })
         .then(json => {
+            levelData = json;
             setLevel(new Level(ctx, json, { restartLevel: restartLevel }));
         }).catch(error => { 
             loadingLevel = false;
@@ -90,6 +95,14 @@ function loadEncodedLevel(encodedLevel) {
     levelCode = encodedLevel;
     level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
     level.isCustom = true;
+    setLevel(level);
+}
+
+
+function loadLevelFromJSON(json) {
+    level = new Level(ctx, json, { restartLevel: restartLevel });
+    level.isCustom = true;
+    levelData = json;
     setLevel(level);
 }
 
@@ -124,11 +137,9 @@ function setLevel(newLevel) {
 
 
 function restartLevel() {
-    if (level.isCustom) {
-        loadEncodedLevel(levelCode);
-    } else {
-        loadLevel(level.index);
-    }
+    stopGame();
+    level = levelLoader.loadLevelFromJSON(ctx, levelData, { restartLevel: restartLevel });
+    setLevel(level);
 }
 
 
@@ -198,7 +209,10 @@ function setup() {
 function drawHtml() {
     let parentContainer = document.getElementById("overlay");
 
-    levelSelection = new LevelSelection(document, loadLevel);
+    localLevels = new LocalLevels(document, (level) => loadLevelFromJSON(level));
+    parentContainer.appendChild(localLevels.createElement());
+
+    levelSelection = new LevelSelection(document, loadLevel, () => localLevels.show());
     parentContainer.appendChild(levelSelection.createElement());
 
     levelDoneDialog = new LevelDoneDialog(document, () => levelSelection.nextLevel(), restartLevel);
@@ -215,7 +229,7 @@ function drawHtml() {
 
 
 function dialogShown() {
-    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible || settingsDialog.visible;
+    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible || settingsDialog.visible || localLevels.visible;
 }
 
 
@@ -223,6 +237,8 @@ function hideDialogs() {
     levelSelection.hide();
     levelDoneDialog.hide();
     controlsDialog?.hide();
+    settingsDialog.hide();
+    localLevels.hide();
 }
 
 

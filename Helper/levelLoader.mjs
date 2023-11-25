@@ -9,6 +9,12 @@ export function loadLevel(ctx, encodedLevel, actions) {
 }
 
 
+export function loadLevelFromJSON(ctx, json, actions) {
+    let level = new Level(ctx, json, actions);
+    return level;
+}
+
+
 export function loadLevelFromFile(ctx, file, actions, setLevel) {
     let reader = new FileReader();
 

@@ -5,6 +5,7 @@ export class LocalLevels {
     maxRows = 2;
     currentSite = 0;
     visible = false;
+    levelStartIndex = 0;
 
     container = null;
     levelContainer = null;
@@ -18,6 +19,12 @@ export class LocalLevels {
         this.updateLevels();
     }
 
+    
+    setStartIndex(index) {
+        this.levelStartIndex = index;
+        this.updateLevels();
+    }
+
 
     updateLevels() {
         this.availableLevels = JSON.parse(localStorage.getItem("levels")) || [];
@@ -26,7 +33,7 @@ export class LocalLevels {
             if (typeof this.availableLevels[i] === "string") {
                 this.availableLevels[i] = JSON.parse(this.availableLevels[i]);
             }
-            this.availableLevels[i].index = i;
+            this.availableLevels[i].index = this.levelStartIndex + i;
         }
 
         this.updateElement = true;
@@ -35,7 +42,7 @@ export class LocalLevels {
 
     createElement() {
         this.container = this.document.createElement("div");
-        this.container.classList.add("dialog", "glassy");
+        this.container.classList.add("local-levels", "glassy");
         this.hide();
 
         let header = this.document.createElement("div");
@@ -58,7 +65,7 @@ export class LocalLevels {
         header.appendChild(closeButton);
 
         this.levelContainer = this.document.createElement("div");
-        this.levelContainer.classList.add("level-container");
+        this.levelContainer.classList.add("local-level-container");
         this.container.appendChild(this.levelContainer);
 
         let buttonContainer = this.document.createElement("div");
@@ -103,7 +110,7 @@ export class LocalLevels {
 
         for (let i = 0; i < this.maxRows; i++) {
             let row = this.document.createElement("div");
-            row.classList.add("level-row");
+            row.classList.add("local-level-row");
             for (let j = 0; j < this.maxLevelsPerRow; j++) {
                 let targetIndex = this.currentSite * this.maxLevelsPerRow * this.maxRows;
                 if (targetIndex + i * this.maxLevelsPerRow + j >= this.availableLevels.length) {
@@ -111,7 +118,7 @@ export class LocalLevels {
                 }
 
                 let level = this.document.createElement("div");
-                level.classList.add("level", "glassy", "margin");
+                level.classList.add("local-level", "glassy", "margin");
                 level.innerText = this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j].levelName;
                 level.addEventListener("click", () => {
                     this.hide();

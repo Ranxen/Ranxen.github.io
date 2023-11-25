@@ -12,9 +12,10 @@ export class LevelSelection {
     previousSiteButton = null;
     nextSiteButton = null;
 
-    constructor(document, loadLevel) {
+    constructor(document, loadLevel, showLocalLevels) {
         this.document = document;
         this.loadLevel = loadLevel;
+        this.showLocalLevels = showLocalLevels;
     }
 
 
@@ -60,6 +61,18 @@ export class LevelSelection {
             this.previousSite();
         });
         buttonContainer.appendChild(this.previousSiteButton);
+
+        let showLocalLevelsButton = this.document.createElement("button");
+        showLocalLevelsButton.innerText = "Local Levels";
+        showLocalLevelsButton.addEventListener("click", () => {
+            this.hide();
+            this.showLocalLevels();
+        });
+        showLocalLevelsButton.addEventListener("touchend", () => {
+            this.hide();
+            this.showLocalLevels();
+        });
+        buttonContainer.appendChild(showLocalLevelsButton);
 
         this.nextSiteButton = this.document.createElement("button");
         this.nextSiteButton.innerText = ">";

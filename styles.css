@@ -23,6 +23,57 @@ body {
 }
 
 
+.local-levels {
+    text-align: center;
+    color: aliceblue;
+    min-width: 30vmax;
+    min-height: 30vmax;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.local-level-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 16px;
+}
+
+
+.local-level-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    min-height: 36px;
+}
+
+
+.local-level {
+    padding: 16px;
+    border-radius: 8px;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    cursor: pointer;
+    transition: scale 0.1s ease-in-out;
+}
+
+
+.delete-button {
+    padding: 4px;
+    min-height: 0px;
+    min-width: 0px;
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    background-color: rgb(180, 42, 42) !important;
+}
+
+
+.local-level:hover {
+    scale: 1.1;
+}
+
+
 h1 {
     margin: 0;
     padding: 0;
