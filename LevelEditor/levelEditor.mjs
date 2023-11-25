@@ -506,7 +506,7 @@ export class LevelEditor {
             return;
         }
 
-        this.level = levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
+        levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
             this.level = level;
             this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
             leftDrawer.setLevelName(this.level.levelName);

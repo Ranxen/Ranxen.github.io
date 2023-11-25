@@ -95,11 +95,14 @@ function loadEncodedLevel(encodedLevel) {
     levelCode = encodedLevel;
     level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
     level.isCustom = true;
+    levelData = JSON.parse(levelLoader.levelToJSON(level, { pos: level.startPos, color: level.startColor }));
     setLevel(level);
 }
 
 
 function loadLevelFromJSON(json) {
+    stopGame();
+
     level = new Level(ctx, json, { restartLevel: restartLevel });
     level.isCustom = true;
     levelData = json;
@@ -114,8 +117,9 @@ function uploadLevel(file) {
 
     stopGame();
 
-    this.level = levelLoader.loadLevelFromFile(ctx, file, { restartLevel: restartLevel }, (level) => {
+    levelLoader.loadLevelFromFile(ctx, file, { restartLevel: restartLevel }, (level) => {
         level.isCustom = true;
+        levelData = JSON.parse(levelLoader.levelToJSON(level, { pos: level.startPos, color: level.startColor }));
         setLevel(level);
     });
 }
@@ -199,9 +203,17 @@ function setup() {
 
         timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor, isMobile);
 
-        loadLevel(0).then(() => {
+        let params = new URLSearchParams(window.location.search);
+        let levelCode = params.get('level');
+
+        if (levelCode !== null) {
+            loadEncodedLevel(levelCode);
             draw();
-        });
+        } else {
+            loadLevel(0).then(() => {
+                draw();
+            });
+        }
     });
 }
 
