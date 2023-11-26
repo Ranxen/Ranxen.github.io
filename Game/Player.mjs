@@ -1,11 +1,12 @@
-import * as drawLib from './drawLib.mjs';
+import * as drawLib from '../Helper/drawLib.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
 export class Player {
 
 
     velocity = {x: 0, y: 0};
-    gravitiy = .75;
+    gravity = .75;
     collisions = [];
     isGrounded = false;
     colors = [];
@@ -23,7 +24,7 @@ export class Player {
 
 
     update() {
-        this.velocity.y += this.gravitiy;
+        this.velocity.y += this.gravity;
         this.isGrounded = false;
 
         for (let obstacle of this.collisions) {
@@ -69,11 +70,15 @@ export class Player {
 
     detectCollision(obstacle) {
         if (this.color !== obstacle.color) {
-            if (this.pos.x + this.size + this.velocity.x >= obstacle.pos.x && this.pos.x + this.velocity.x <= obstacle.pos.x + obstacle.size.width
-                && this.pos.y + this.size + this.velocity.y >= obstacle.pos.y && this.pos.y + this.velocity.y <= obstacle.pos.y + obstacle.size.height) {
+            if (physicsLib.AABBCollisionPredicted(this, obstacle)) {
                 this.collisions.push(obstacle);
             }
         }
+    }
+
+
+    detectClick(x, y) {
+        return physicsLib.pointInsideRect({ x: x, y: y }, { pos: this.pos, size: { width: this.size, height: this.size } });
     }
 
 
@@ -114,6 +119,11 @@ export class Player {
 
     getEdges() {
         return [{ x: this.pos.x, y: this.pos.y }, { x: this.pos.x + this.size, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size }, { x: this.pos.x + this.size, y: this.pos.y + this.size }];
+    }
+
+
+    rotate(degree) {
+
     }
 
 

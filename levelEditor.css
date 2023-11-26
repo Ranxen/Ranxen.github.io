@@ -1,0 +1,239 @@
+body {
+    font: 2vmin 'Roboto', sans-serif;
+    background-color: #123;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+
+#overlay {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+
+#canvas, .dialog {
+    position: absolute;
+}
+
+
+button {
+    background-color: #1e1e1e;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    cursor: pointer;
+    color: aliceblue;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: calc(min(2vh, 24px));
+    padding: 8px;
+    min-height: 48px;
+    min-width: 72px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+
+.delete-button {
+    padding: 4px;
+    min-height: 0px;
+    min-width: 0px;
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    background-color: rgb(180, 42, 42) !important;
+}
+
+
+button:hover:enabled {
+    background-color: #2e2e2e;
+}
+
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+
+input {
+    background-color: #1e1e1e;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    color: aliceblue;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: calc(min(2vh, 24px));
+    padding: 8px;
+    min-height: 48px;
+    min-width: 72px;
+    border-radius: 8px;
+}
+
+
+.margin {
+    margin: 8px;
+}
+
+
+.object-container {
+    margin: 8px;
+    background: rgba(158, 158, 158, 0.2);
+    border-radius: 10px;
+}
+
+
+.left-drawer {
+    position: absolute;
+    text-align: center;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 15vw;
+    min-width: 300px;
+    color: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 8px;
+    border-radius: 8px;
+}
+
+
+.glassy {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.2);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+
+.horizontal {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+
+.vertical {
+    margin: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.center {
+    margin: auto;
+}
+
+
+.toast {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 8px;
+    padding: 8px;
+    color: #fff;
+    text-align: center;
+    background-color: rgba(60, 214, 55, 0.5) !important
+}
+
+
+.toast.error {
+    background-color: rgba(214, 55, 55, 0.5) !important
+}
+
+
+.local-levels, .dialog {
+    text-align: center;
+    color: aliceblue;
+    min-width: 30vmax;
+    min-height: 30vmax;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    margin-top: 8px;
+}
+
+
+.header h1 {
+    margin: auto;
+    font-size: 30px;
+}
+
+
+.close-button {
+    cursor: pointer;
+    height: 100%;
+}
+
+
+.local-level-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 16px;
+}
+
+
+.local-level-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    min-height: 36px;
+}
+
+
+.local-level {
+    padding: 16px;
+    border-radius: 8px;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    cursor: pointer;
+    transition: scale 0.1s ease-in-out;
+}
+
+
+.local-level:hover {
+    scale: 1.1;
+}
+
+
+.button-container {
+    position: absolute;
+    bottom: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+
+.controls-table {
+    margin: auto;
+    padding: 16px;
+}
+
+
+.controls-table td {
+    padding: 8px;
+    background-color: #123;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+}

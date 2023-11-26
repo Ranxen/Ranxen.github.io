@@ -1,4 +1,5 @@
-import * as drawLib from './drawLib.mjs';
+import * as drawLib from '../Helper/drawLib.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
 export class Key {
@@ -33,9 +34,19 @@ export class Key {
 
 
     detectCollision(player) {
-        if (player.pos.x + player.size > this.pos.x && player.pos.x < this.pos.x + this.size.width && player.pos.y + player.size > this.pos.y && player.pos.y < this.pos.y + this.size.height) {
+        if (physicsLib.AABBCollision(player, this)) {
             player.hasKey = true;
         }
+    }
+
+
+    detectClick(x, y) {
+        return physicsLib.pointInsideRect({ x: x, y: y}, this);
+    }
+
+
+    rotate(degree) {
+
     }
 
 

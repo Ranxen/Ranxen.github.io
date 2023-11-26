@@ -23,6 +23,57 @@ body {
 }
 
 
+.local-levels {
+    text-align: center;
+    color: aliceblue;
+    min-width: 30vmax;
+    min-height: 30vmax;
+    transition: all 0.1s ease-in-out;
+}
+
+
+.local-level-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 16px;
+}
+
+
+.local-level-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    min-height: 36px;
+}
+
+
+.local-level {
+    padding: 16px;
+    border-radius: 8px;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    cursor: pointer;
+    transition: scale 0.1s ease-in-out;
+}
+
+
+.delete-button {
+    padding: 4px;
+    min-height: 0px;
+    min-width: 0px;
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    background-color: rgb(180, 42, 42) !important;
+}
+
+
+.local-level:hover {
+    scale: 1.1;
+}
+
+
 h1 {
     margin: 0;
     padding: 0;
@@ -98,7 +149,7 @@ h1 {
 }
 
 
-.level-selection, .level-done-dialog {
+.level-selection, .level-done-dialog, .settings-dialog {
     text-align: center;
     color: aliceblue;
     width: 30vmax;
@@ -194,8 +245,7 @@ button {
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
     font-size: calc(min(2vh, 24px));
-    height: calc(max(5vh, 48px));
-    width: calc(max(8vh, 72px));
+    padding: 8px;
     min-height: 48px;
     min-width: 72px;
     border-radius: 8px;
@@ -214,8 +264,69 @@ button:disabled {
 }
 
 
+input {
+    background-color: #1e1e1e;
+    border: rgba(255, 255, 255, 0.4) 1px solid;
+    color: aliceblue;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: calc(min(2vh, 24px));
+    padding: 8px;
+    min-height: 48px;
+    min-width: 72px;
+    border-radius: 8px;
+}
+
+
+input[type="file"] {
+    max-width: 45%;
+}
+
+
+.vertical {
+    margin: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.horizontal {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+
+.center {
+    margin: auto;
+}
+
+
+.toast {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 8px;
+    padding: 8px;
+    color: #fff;
+    text-align: center;
+    background-color: rgba(60, 214, 55, 0.5) !important
+}
+
+
+.toast.error {
+    background-color: rgba(214, 55, 55, 0.5) !important
+}
+
+
 @media screen and (max-width: 1000px) and (orientation: landscape) {
-    .level-selection, .controls-dialog, .level-done-dialog {
+    .level-selection, .controls-dialog, .settings-dialog, .level-done-dialog {
         font-size: 4vmin;
         width: 80vmax;
         height: 80vmax;
@@ -247,7 +358,7 @@ button:disabled {
 
 
 @media screen and (max-width: 1000px) and (orientation: portrait) {
-    .level-selection, .controls-dialog, .level-done-dialog {
+    .level-selection, .controls-dialog, .settings-dialog, .level-done-dialog {
         font-size: 4vmin;
         width: 70vw;
         height: 50vh;

@@ -1,0 +1,506 @@
+{
+    "index": 9,
+    "levelName": "Have Fun",
+    "startPos": {
+        "x": 600,
+        "y": 425
+    },
+    "startColor": "red",
+    "keyPos": {
+        "x": 675,
+        "y": 75
+    },
+    "finish": {
+        "pos": {
+            "x": 1375,
+            "y": -275
+        },
+        "size": {
+            "width": 50,
+            "height": 100
+        }
+    },
+    "colorOrbs": [
+        {
+            "pos": {
+                "x": 800,
+                "y": 375
+            },
+            "size": 25,
+            "color": "orange"
+        }
+    ],
+    "obstacles": [
+        {
+            "pos": {
+                "x": 550,
+                "y": 475
+            },
+            "size": {
+                "width": 925,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 525,
+                "y": -350
+            },
+            "size": {
+                "width": 25,
+                "height": 850
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 525,
+                "y": -375
+            },
+            "size": {
+                "width": 975,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 550,
+                "y": 150
+            },
+            "size": {
+                "width": 125,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1275,
+                "y": 325
+            },
+            "size": {
+                "width": 200,
+                "height": 25
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 1000,
+                "y": 150
+            },
+            "size": {
+                "width": 475,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 1475,
+                "y": -350
+            },
+            "size": {
+                "width": 25,
+                "height": 850
+            },
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 1225,
+                "y": -175
+            },
+            "size": {
+                "width": 250,
+                "height": 25
+            },
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 925,
+                "y": -50
+            },
+            "size": {
+                "width": 75,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 550,
+                "y": -50
+            },
+            "size": {
+                "width": 150,
+                "height": 25
+            },
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 825,
+                "y": -350
+            },
+            "size": {
+                "width": 25,
+                "height": 300
+            },
+            "color": "orange"
+        }
+    ],
+    "spikes": [
+        {
+            "pos": {
+                "x": 1000,
+                "y": 350
+            },
+            "size": {
+                "width": 325,
+                "height": 200
+            },
+            "rotation": 180,
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 975,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 675,
+                "y": -50
+            },
+            "size": {
+                "width": 325,
+                "height": 200
+            },
+            "rotation": 360,
+            "color": "green"
+        },
+        {
+            "pos": {
+                "x": 1275,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1325,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1375,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1350,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1400,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1425,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1450,
+                "y": 300
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "orange"
+        },
+        {
+            "pos": {
+                "x": 1000,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1025,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1050,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1075,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1100,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1125,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1150,
+                "y": 450
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 0,
+            "color": "red"
+        },
+        {
+            "pos": {
+                "x": 1250,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1275,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 1000,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 975,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 950,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 700,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 675,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 650,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 575,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 600,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        },
+        {
+            "pos": {
+                "x": 625,
+                "y": -325
+            },
+            "size": {
+                "width": 25,
+                "height": 25
+            },
+            "rotation": 180,
+            "color": "yellow"
+        }
+    ]
+}

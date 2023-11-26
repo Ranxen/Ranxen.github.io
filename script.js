@@ -1,27 +1,29 @@
-import { Player } from "./Player.mjs";
-import { Obstacle } from "./Obstacle.mjs";
-import { Button } from "./Button.mjs";
-import { JumpButton } from "./JumpButton.mjs";
-import { ColorOrb } from "./ColorOrb.mjs";
-import { ColorWheel } from "./ColorWheel.mjs";
-import { Finish } from "./Finish.mjs";
-import { Key } from "./Key.mjs";
-import { Level } from "./Level.mjs";
-import { LevelSelection } from "./LevelSelection.mjs";
-import { LevelDoneDialog } from "./LevelDoneDialog.mjs";
-import { ControlsDialog } from "./ControlsDialog.mjs";
-import { Timer } from "./Timer.mjs";
-import * as drawLib from "./drawLib.mjs";
+import { Player } from "./Game/Player.mjs";
+import { Button } from "./UI/Canvas/Button.mjs";
+import { JumpButton } from "./UI/Canvas/JumpButton.mjs";
+import { ColorWheel } from "./UI/Canvas/ColorWheel.mjs";
+import { Level } from "./Game/Level.mjs";
+import { LevelSelection } from "./UI/HtmlDialogs/LevelSelection.mjs";
+import { LevelDoneDialog } from "./UI/HtmlDialogs/LevelDoneDialog.mjs";
+import { SettingsDialog } from "./UI/HtmlDialogs/SettingsDialog.mjs";
+import { ControlsDialog } from "./UI/HtmlDialogs/ControlsDialog.mjs";
+import { LocalLevels } from "./UI/HtmlDialogs/LocalLevels.mjs";
+import { Timer } from "./UI/Canvas/Timer.mjs";
+import * as drawLib from "./Helper/drawLib.mjs";
+import * as levelLoader from "./Helper/levelLoader.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-var controlsDialog = null
+var settingsDialog = null;
+var controlsDialog = null;
 var levelSelection = null;
 var levelDoneDialog = null;
+var localLevels = null;
 
 
 var level = null;
+var levelData = null;
 var player = null;
 
 var buttons = [];
@@ -43,6 +45,7 @@ var cameraPos = { x: 0, y: 0 };
 var loadingLevel = false;
 var running = false;
 var isMobile = true;
+var levelCode = null;
 
 var buttonColor = '#414e5c';
 
@@ -55,6 +58,7 @@ async function loadAvailableLevels() {
         })
         .then(json => {
             levelSelection.setAvailableLevels(json.availableLevels);
+            localLevels.setStartIndex(json.availableLevels.length);
         }).catch(error => {
             
         });
@@ -62,13 +66,12 @@ async function loadAvailableLevels() {
 
 
 async function loadLevel(index) {
-    if (loadingLevel) {
+    if (loadingLevel || index < 0) {
         return;
     }
 
-    loadingLevel = true;
-    running = false;
-    timer.reset();
+    stopGame();
+
     let currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     let path = "/levels/" + index + ".json";
 
@@ -78,10 +81,47 @@ async function loadLevel(index) {
             loadingLevel = false;
         })
         .then(json => {
-            setLevel(new Level(json.index, json.startPos, json.startColor, new Key(ctx, json.keyPos), new Finish(ctx, json.finish.pos, json.finish.size), json.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color)), json.obstacles.map(obstacle => new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color))));
+            levelData = json;
+            setLevel(new Level(ctx, json, { restartLevel: restartLevel }));
         }).catch(error => { 
             loadingLevel = false;
         });
+}
+
+
+function loadEncodedLevel(encodedLevel) {
+    stopGame();
+
+    levelCode = encodedLevel;
+    level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
+    level.isCustom = true;
+    levelData = JSON.parse(levelLoader.levelToJSON(level, { pos: level.startPos, color: level.startColor }));
+    setLevel(level);
+}
+
+
+function loadLevelFromJSON(json) {
+    stopGame();
+
+    level = new Level(ctx, json, { restartLevel: restartLevel });
+    level.isCustom = true;
+    levelData = json;
+    setLevel(level);
+}
+
+
+function uploadLevel(file) {
+    if (!file?.name.endsWith(".json")) {
+        return;
+    }
+
+    stopGame();
+
+    levelLoader.loadLevelFromFile(ctx, file, { restartLevel: restartLevel }, (level) => {
+        level.isCustom = true;
+        levelData = JSON.parse(levelLoader.levelToJSON(level, { pos: level.startPos, color: level.startColor }));
+        setLevel(level);
+    });
 }
 
 
@@ -97,6 +137,20 @@ function setLevel(newLevel) {
     player = new Player(ctx, level.startPos, 50, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
     loadingLevel = false;
+}
+
+
+function restartLevel() {
+    stopGame();
+    level = levelLoader.loadLevelFromJSON(ctx, levelData, { restartLevel: restartLevel });
+    setLevel(level);
+}
+
+
+function stopGame() {
+    loadingLevel = true;
+    running = false;
+    timer.reset();
 }
 
 
@@ -124,20 +178,18 @@ function setup() {
             buttons.push(leftButton);
             buttons.push(rightButton);
         } else {
-            let showControlsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "?", () => {
-                controlsDialog.show();
+            let showSettingsButton = new Button(ctx, { x: 150, y: 25 }, { width: 50, height: 50 }, buttonColor, "⚙", () => {
+                settingsDialog.show();
             });
 
-            buttons.push(showControlsButton);
+            buttons.push(showSettingsButton);
         }
 
         let showLevelSelectionButton = new Button(ctx, { x: 25, y: 25 }, { width: 100, height: 50 }, buttonColor, "Levels", () => {
             levelSelection.show();
         });
 
-        restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", () => {
-            loadLevel(level.index);
-        });
+        restartButton = new Button(ctx, { x: window.innerWidth - 125, y: 25 }, { width: 100, height: 50 }, buttonColor, "Restart", restartLevel);
 
         jumpButton = new JumpButton(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 100, "#111", () => {
             if (isMobile) {
@@ -151,9 +203,17 @@ function setup() {
 
         timer = new Timer(ctx, { x: 25, y: 100 }, { width: 100, height: 50 }, buttonColor, isMobile);
 
-        loadLevel(0).then(() => {
+        let params = new URLSearchParams(window.location.search);
+        let levelCode = params.get('level');
+
+        if (levelCode !== null) {
+            loadEncodedLevel(levelCode);
             draw();
-        });
+        } else {
+            loadLevel(0).then(() => {
+                draw();
+            });
+        }
     });
 }
 
@@ -161,21 +221,27 @@ function setup() {
 function drawHtml() {
     let parentContainer = document.getElementById("overlay");
 
-    levelSelection = new LevelSelection(document, loadLevel);
+    localLevels = new LocalLevels(document, (level) => loadLevelFromJSON(level));
+    parentContainer.appendChild(localLevels.createElement());
+
+    levelSelection = new LevelSelection(document, loadLevel, () => localLevels.show());
     parentContainer.appendChild(levelSelection.createElement());
 
-    levelDoneDialog = new LevelDoneDialog(document, () => levelSelection.nextLevel(), () => loadLevel(level.index));
+    levelDoneDialog = new LevelDoneDialog(document, () => levelSelection.nextLevel(), restartLevel);
     parentContainer.appendChild(levelDoneDialog.createElement());
 
     if (!isMobile) {
         controlsDialog = new ControlsDialog(document);
         parentContainer.appendChild(controlsDialog.createElement());
     }
+
+    settingsDialog = new SettingsDialog(document, controlsDialog, loadEncodedLevel, uploadLevel);
+    parentContainer.appendChild(settingsDialog.createElement());
 }
 
 
 function dialogShown() {
-    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible;
+    return levelSelection.visible || levelDoneDialog.visible || controlsDialog?.visible || settingsDialog.visible || localLevels.visible;
 }
 
 
@@ -183,6 +249,8 @@ function hideDialogs() {
     levelSelection.hide();
     levelDoneDialog.hide();
     controlsDialog?.hide();
+    settingsDialog.hide();
+    localLevels.hide();
 }
 
 
@@ -253,7 +321,7 @@ function processKeys() {
                 activeKeys = activeKeys.filter(key => key !== 'KeyE' && key !== 'ArrowRight');
                 break;
             case 'KeyR':
-                loadLevel(level.index);
+                restartLevel();
                 break;
             case 'Space':
                 player.jump();
@@ -311,13 +379,9 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
 function computePhysics() {
     player.clearCollisions();
 
-    for (let colorOrb of level.colorOrbs) {
-        colorOrb.detectCollision(player, colorWheel);
-    }
-
-    for (let obstacle of level.obstacles) {
-        player.detectCollision(obstacle);
-    }
+    level.detectColorOrbCollisions(player, colorWheel);
+    level.detectSpikeCollisions(player);
+    level.detectObstacleCollisions(player);
 
     level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
     player.update();
@@ -329,17 +393,13 @@ function computePhysics() {
 
 
 function drawGameObjects() {
-    for (let obstacle of level.obstacles) {
-        obstacle.draw();
-    }
+    level.drawObstacles();
+    level.drawSpikes();
+    level.drawColorOrbs();
 
-    for (let colorOrb of level.colorOrbs) {
-        colorOrb.draw();
-    }
-
-    level.finish.draw();
+    level.drawFinish();
     player.draw();
-    level.key.draw(player);
+    level.drawKey(player);
 }
 
 
@@ -432,7 +492,7 @@ function addKeyEventListener() {
         if (dialogShown()) {
             if (keyEvent.code === 'KeyR') {
                 hideDialogs();
-                loadLevel(level.index);
+                restartLevel();
             }
             else if (keyEvent.code === 'ShiftLeft') {
                 hideDialogs();
@@ -442,7 +502,9 @@ function addKeyEventListener() {
     });
 
     window.addEventListener('mousedown', (mouseEvent) => {
-        mouseEvent.preventDefault();
+        if (mouseEvent.target.id === 'overlay') {
+            mouseEvent.preventDefault();
+        }
 
         if (!dialogShown()) {
             mouseDown = true;
@@ -450,13 +512,17 @@ function addKeyEventListener() {
     });
 
     window.addEventListener('mouseup', (mouseEvent) => {
-        mouseEvent.preventDefault();
+        if (mouseEvent.target.id === 'overlay') {
+            mouseEvent.preventDefault();
+        }
 
         mouseDown = false;
     });
 
     window.addEventListener('mousemove', (mouseEvent) => {
-        mouseEvent.preventDefault();
+        if (mouseEvent.target.id === 'overlay') {
+            mouseEvent.preventDefault();
+        }
 
         mouseX = mouseEvent.clientX;
         mouseY = mouseEvent.clientY;

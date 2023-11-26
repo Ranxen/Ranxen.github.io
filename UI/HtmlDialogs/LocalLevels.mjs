@@ -1,27 +1,48 @@
-export class LevelSelection {
+export class LocalLevels {
 
     availableLevels = [];
-    currentLevel = null;
     maxLevelsPerRow = 3;
     maxRows = 2;
     currentSite = 0;
     visible = false;
+    levelStartIndex = 0;
 
     container = null;
     levelContainer = null;
     previousSiteButton = null;
     nextSiteButton = null;
 
-    constructor(document, loadLevel) {
+    constructor(document, onLevelSelected) {
         this.document = document;
-        this.loadLevel = loadLevel;
+        this.onLevelSelected = onLevelSelected;
+        this.updateElement = true;
+        this.updateLevels();
     }
 
+    
+    setStartIndex(index) {
+        this.levelStartIndex = index;
+        this.updateLevels();
+    }
+
+
+    updateLevels() {
+        this.availableLevels = JSON.parse(localStorage.getItem("levels")) || [];
+
+        for (let i = 0; i < this.availableLevels.length; i++) {
+            if (typeof this.availableLevels[i] === "string") {
+                this.availableLevels[i] = JSON.parse(this.availableLevels[i]);
+            }
+            this.availableLevels[i].index = this.levelStartIndex + i;
+        }
+
+        this.updateElement = true;
+    }
 
 
     createElement() {
         this.container = this.document.createElement("div");
-        this.container.classList.add("dialog", "level-selection", "glassy");
+        this.container.classList.add("local-levels", "glassy");
         this.hide();
 
         let header = this.document.createElement("div");
@@ -29,7 +50,7 @@ export class LevelSelection {
         this.container.appendChild(header);
 
         let title = this.document.createElement("h1");
-        title.innerText = "Levels";
+        title.innerText = "Local Levels";
         header.appendChild(title);
 
         let closeButton = this.document.createElement("button");
@@ -44,7 +65,7 @@ export class LevelSelection {
         header.appendChild(closeButton);
 
         this.levelContainer = this.document.createElement("div");
-        this.levelContainer.classList.add("level-container");
+        this.levelContainer.classList.add("local-level-container");
         this.container.appendChild(this.levelContainer);
 
         let buttonContainer = this.document.createElement("div");
@@ -80,9 +101,16 @@ export class LevelSelection {
     drawLevelSite() {
         this.levelContainer.innerHTML = "";
 
+        if (this.availableLevels.length === 0) {
+            let noLevels = this.document.createElement("div");
+            noLevels.innerText = "No levels found :(";
+            this.levelContainer.appendChild(noLevels);
+            return;
+        }
+
         for (let i = 0; i < this.maxRows; i++) {
             let row = this.document.createElement("div");
-            row.classList.add("level-row");
+            row.classList.add("local-level-row");
             for (let j = 0; j < this.maxLevelsPerRow; j++) {
                 let targetIndex = this.currentSite * this.maxLevelsPerRow * this.maxRows;
                 if (targetIndex + i * this.maxLevelsPerRow + j >= this.availableLevels.length) {
@@ -90,16 +118,30 @@ export class LevelSelection {
                 }
 
                 let level = this.document.createElement("div");
-                level.classList.add("level", "glassy");
-                level.innerText = this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j];
+                level.classList.add("local-level", "glassy", "margin");
+                level.innerText = this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j].levelName;
                 level.addEventListener("click", () => {
                     this.hide();
-                    this.loadLevel(this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j]);
+                    this.onLevelSelected(this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j]);
                 });
                 level.addEventListener("touchend", () => {
                     this.hide();
-                    this.loadLevel(this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j]);
+                    this.onLevelSelected(this.availableLevels[targetIndex + i * this.maxLevelsPerRow + j]);
                 });
+
+                let deleteButton = this.document.createElement("button");
+                deleteButton.classList.add("delete-button");
+                deleteButton.innerText = "x";
+                deleteButton.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    this.removeLevel(targetIndex + i * this.maxLevelsPerRow + j);
+                });
+                deleteButton.addEventListener("touchend", (event) => {
+                    event.stopPropagation();
+                    this.removeLevel(targetIndex + i * this.maxLevelsPerRow + j);
+                });
+                level.appendChild(deleteButton);
+
                 row.appendChild(level);
             }
             this.levelContainer.appendChild(row);
@@ -107,6 +149,15 @@ export class LevelSelection {
 
         this.previousSiteButton.disabled = this.currentSite === 0;
         this.nextSiteButton.disabled = (this.currentSite + 1) * this.maxLevelsPerRow * this.maxRows >= this.availableLevels.length;
+        this.updateElement = false;
+    }
+
+
+    removeLevel(index) {
+        this.availableLevels.splice(index, 1);
+        localStorage.setItem("levels", JSON.stringify(this.availableLevels));
+        this.updateLevels();
+        this.drawLevelSite();
     }
 
 
@@ -138,42 +189,13 @@ export class LevelSelection {
 
 
     show() {
+        if (this.updateElement) {
+            this.drawLevelSite();
+        }
+
         this.container.style.opacity = 1;
         this.container.style.visibility = "visible";
         this.visible = true;
-    }
-
-
-    setAvailableLevels(availableLevels) {
-        this.availableLevels = availableLevels;
-        this.drawLevelSite();
-    }
-
-
-    nextLevel() {
-        let index = this.availableLevels.indexOf(this.currentLevel);
-        if (index === -1) {
-            return;
-        }
-
-        if (index + 1 < this.availableLevels.length) {
-            this.loadLevel(this.availableLevels[index + 1]);
-        }
-    }
-
-
-    hasNextLevel() {
-        let index = this.availableLevels.indexOf(this.currentLevel);
-        if (index === -1) {
-            return false;
-        }
-
-        return index + 1 < this.availableLevels.length;
-    }
-
-
-    setCurrentLevel(level) {
-        this.currentLevel = level;
     }
 
 }

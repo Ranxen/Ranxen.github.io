@@ -1,4 +1,4 @@
-import * as drawLib from './drawLib.mjs';
+import * as drawLib from '../../Helper/drawLib.mjs';
 import { Button } from './Button.mjs';
 
 export class JumpButton extends Button {
