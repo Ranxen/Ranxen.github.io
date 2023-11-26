@@ -19,6 +19,12 @@ export class Timer {
         this.currentTime = this.time;
         this.ticks = 0;
         this.currentColor = color;
+
+        let times = localStorage.getItem('times');
+
+        if (times !== null) {
+            this.times = JSON.parse(times);
+        }
     }
 
 
@@ -92,6 +98,7 @@ export class Timer {
         }
 
         this.times.sort((a, b) => a.level - b.level);
+        localStorage.setItem('times', JSON.stringify(this.times));
     }
 
 
