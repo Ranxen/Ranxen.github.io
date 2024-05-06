@@ -269,7 +269,7 @@ function draw() {
         touches = [];
     }
 
-    player.velocity.x = 0;
+    player.direction = 'none';
 
     processKeys();
     processTouchesAndClick();
