@@ -11,7 +11,14 @@ export class Player {
     isGrounded = false;
     colors = [];
     hasKey = false;
+    direction = 'right';
     maxVelocity = 50;
+    maxVelHorizontal = 5;
+    accelHorizontal = .5;
+    dragGround = .9;
+    dragAir = .95;
+    jumpVelocity = -17.5;
+    jumpMultiplier = .5;
 
 
     constructor(ctx, pos, size, color) {
@@ -26,6 +33,16 @@ export class Player {
     update() {
         this.velocity.y += this.gravity;
         this.isGrounded = false;
+
+        if (this.direction === 'left') {
+            this.velocity.x -= this.accelHorizontal;
+        }
+        else if (this.direction === 'right') {
+            this.velocity.x += this.accelHorizontal;
+        }
+        else if (Math.abs(this.velocity.x) < .1) {
+            this.velocity.x = 0;
+        }
 
         for (let obstacle of this.collisions) {
             if (this.velocity.y > 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
@@ -44,13 +61,21 @@ export class Player {
             }
         }
 
-
-        if (this.velocity.x > this.maxVelocity) {
-            this.velocity.x = this.maxVelocity;
+        if (this.direction == 'none') {
+            if (this.isGrounded) {
+                this.velocity.x *= this.dragGround;
+            }
+            else {
+                this.velocity.x *= this.dragAir;
+            }
         }
 
-        if (this.velocity.x < -this.maxVelocity) {
-            this.velocity.x = -this.maxVelocity;
+        if (this.velocity.x > this.maxVelHorizontal) {
+            this.velocity.x = this.maxVelHorizontal;
+        }
+
+        if (this.velocity.x < -this.maxVelHorizontal) {
+            this.velocity.x = -this.maxVelHorizontal;
         }
 
         if (this.velocity.y > this.maxVelocity) {
@@ -83,18 +108,18 @@ export class Player {
 
 
     moveLeft() {
-        this.velocity.x = -5;
+        this.direction = 'left';
     }
 
 
     moveRight() {
-        this.velocity.x = 5;
+        this.direction = 'right';
     }
 
 
     jump() {
         if (this.isGrounded) {
-            this.velocity.y = -20;
+            this.velocity.y = -Math.abs(this.velocity.x) * this.jumpMultiplier + this.jumpVelocity;
             this.isGrounded = false;
         }
     }
