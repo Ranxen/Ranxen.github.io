@@ -1,3 +1,4 @@
+import { Time } from '../Helper/Time.mjs';
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
 
@@ -6,19 +7,21 @@ export class Player {
 
 
     velocity = {x: 0, y: 0};
-    gravity = .75;
+    gravity = .75 * 60 * 60;
     collisions = [];
     isGrounded = false;
     colors = [];
     hasKey = false;
     direction = 'right';
-    maxVelocity = 50;
-    maxVelHorizontal = 5;
-    accelHorizontal = .5;
+    terminalVelocityF = 50 * 60;
+    terminalVelocityS = 40 * 60;
+    maxVelHorizontal = 5 * 60;
+    accelHorizontal = .5 * 60 * 60;
     dragGround = .9;
     dragAir = .95;
-    jumpVelocity = -17.5;
+    jumpVelocity = -17.5 * 60;
     jumpMultiplier = .5;
+    jumpCoef = 2;
 
 
     constructor(ctx, pos, size, color) {
@@ -31,19 +34,22 @@ export class Player {
 
 
     update() {
-        this.velocity.y += this.gravity;
+        //Gravity
+        this.velocity.y += this.gravity * this.jumpCoef * Time.deltaTime;
         this.isGrounded = false;
 
+        //Movement
         if (this.direction === 'left') {
-            this.velocity.x -= this.accelHorizontal;
+            this.velocity.x -= this.accelHorizontal * Time.deltaTime;
         }
         else if (this.direction === 'right') {
-            this.velocity.x += this.accelHorizontal;
+            this.velocity.x += this.accelHorizontal * Time.deltaTime;
         }
         else if (Math.abs(this.velocity.x) < .1) {
             this.velocity.x = 0;
         }
 
+        //Collision
         for (let obstacle of this.collisions) {
             if (this.velocity.y > 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
                 this.pos.y = obstacle.pos.y - this.size;
@@ -60,7 +66,8 @@ export class Player {
                 this.velocity.x = 0;
             }
         }
-
+    
+        //Drag
         if (this.direction == 'none') {
             if (this.isGrounded) {
                 this.velocity.x *= this.dragGround;
@@ -70,6 +77,7 @@ export class Player {
             }
         }
 
+        //Limit Velocity
         if (this.velocity.x > this.maxVelHorizontal) {
             this.velocity.x = this.maxVelHorizontal;
         }
@@ -78,15 +86,29 @@ export class Player {
             this.velocity.x = -this.maxVelHorizontal;
         }
 
-        if (this.velocity.y > this.maxVelocity) {
-            this.velocity.y = this.maxVelocity;
+        let terminalVelocity = (this.jumpCoef > 1 ? this.terminalVelocityF : this.terminalVelocityS)
+        if (this.velocity.y > terminalVelocity) {
+            this.velocity.y -= this.gravity * 3;
+            if(this.velocity.y < terminalVelocity)
+                this.velocity.y = terminalVelocity;
         }
+        this.jumpCoef = 2;
 
+        //Update Position
+        this.pos.x += this.velocity.x * Time.deltaTime;
+        this.pos.y += this.velocity.y * Time.deltaTime;
 
-        this.pos.x += this.velocity.x;
-        this.pos.y += this.velocity.y;
+        // console.log(this.velocity);
     }
 
+    checkGroundedAtStart() {
+        for (let obstacle of this.collisions) {
+            if(this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+                this.isGrounded = true;
+                break;
+            }
+        }
+    }
 
     clearCollisions() {
         this.collisions = [];
@@ -117,11 +139,12 @@ export class Player {
     }
 
 
-    jump() {
-        if (this.isGrounded) {
+    jump(toggle) {
+        if (this.isGrounded && !toggle) {
             this.velocity.y = -Math.abs(this.velocity.x) * this.jumpMultiplier + this.jumpVelocity;
             this.isGrounded = false;
         }
+        this.jumpCoef = 1;
     }
 
 

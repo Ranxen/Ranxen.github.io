@@ -1,5 +1,8 @@
+import { Time } from "./Time.mjs";
+
 export function AABBCollisionPredicted(movingObj, other) {
-    return movingObj.pos.x + movingObj.size + movingObj.velocity.x >= other.pos.x && movingObj.pos.x + movingObj.velocity.x <= other.pos.x + other.size.width && movingObj.pos.y + movingObj.size + movingObj.velocity.y >= other.pos.y && movingObj.pos.y + movingObj.velocity.y <= other.pos.y + other.size.height;
+    return movingObj.pos.x + movingObj.size + movingObj.velocity.x * Time.deltaTime >= other.pos.x && movingObj.pos.x + movingObj.velocity.x * Time.deltaTime <= other.pos.x + other.size.width
+     && movingObj.pos.y + movingObj.size + movingObj.velocity.y * Time.deltaTime >= other.pos.y && movingObj.pos.y + movingObj.velocity.y * Time.deltaTime <= other.pos.y + other.size.height;
 }
 
 

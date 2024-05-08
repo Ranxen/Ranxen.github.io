@@ -11,6 +11,7 @@ import { LocalLevels } from "./UI/HtmlDialogs/LocalLevels.mjs";
 import { Timer } from "./UI/Canvas/Timer.mjs";
 import * as drawLib from "./Helper/drawLib.mjs";
 import * as levelLoader from "./Helper/levelLoader.mjs";
+import { Time } from "./Helper/Time.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -253,20 +254,19 @@ function hideDialogs() {
     localLevels.hide();
 }
 
+function draw(time) {
+    Time.updateDelta(time);
 
-function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawLib.rect(ctx, 0, 0, canvas.width, canvas.height, "#123")
-
-    updateCameraPos();
-
-    if ((activeKeys.length > 0 || touches.length > 0) && !running) {
-        startGame();
-    }
 
     if (dialogShown()) {
         activeKeys = [];
         touches = [];
+    }
+
+    if (!running && (activeKeys.length > 0 || touches.length > 0)) {
+        startGame();
     }
 
     player.direction = 'none';
@@ -278,16 +278,21 @@ function draw() {
         computePhysics();
     }
 
+    updateCameraPos(); //Changed Pos in Code
+
     drawGameObjects();
 
     ctx.resetTransform();
 
     drawHUD();
-    setTimeout(draw, 1000 / 60);
+    requestAnimationFrame(draw);
 }
 
 
 function startGame() {
+    level.detectObstacleCollisions(player);
+    player.checkGroundedAtStart();
+    player.clearCollisions();
     running = true;
     timer.start();
 }
@@ -300,8 +305,9 @@ function updateCameraPos() {
     ctx.translate(-cameraPos.x, -cameraPos.y);
 }
 
-
+var toggle = false;
 function processKeys() {
+    let space = false;
     for (let key of activeKeys) {
         switch (key) {
             case 'KeyA':
@@ -324,10 +330,14 @@ function processKeys() {
                 restartLevel();
                 break;
             case 'Space':
-                player.jump();
+                space = true;
+                player.jump(toggle);
+                if(!toggle) toggle = true;
                 break;
         }
     }
+
+    if(!space) toggle = false;
 }
 
 
