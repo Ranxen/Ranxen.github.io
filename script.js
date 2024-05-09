@@ -321,6 +321,7 @@ function processKeys() {
                 activeKeys = activeKeys.filter(key => key !== 'KeyE' && key !== 'ArrowRight');
                 break;
             case 'KeyR':
+                activeKeys = activeKeys.filter(key => key !== 'KeyR');
                 restartLevel();
                 break;
             case 'Space':
