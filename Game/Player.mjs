@@ -5,13 +5,7 @@ import * as physicsLib from '../Helper/physicsLib.mjs';
 export class Player {
 
 
-    velocity = {x: 0, y: 0};
     gravity = .75;
-    collisions = [];
-    isGrounded = false;
-    colors = [];
-    hasKey = false;
-    direction = 'right';
     maxVelocity = 50;
     maxVelHorizontal = 5;
     accelHorizontal = .5;
@@ -22,6 +16,13 @@ export class Player {
 
 
     constructor(ctx, pos, size, color) {
+        this.direction = 'none';
+        this.velocity = { x: 0, y: 0 };
+        this.collisions = [];
+        this.isGrounded = false;
+        this.hasKey = false;
+        this.colors = [];
+
         this.ctx = ctx;
         this.pos = pos;
         this.size = size;
