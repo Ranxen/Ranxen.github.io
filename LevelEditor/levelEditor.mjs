@@ -9,6 +9,8 @@ import { Spike } from "../Game/Spike.mjs";
 import { Finish } from "../Game/Finish.mjs";
 import { Key } from "../Game/Key.mjs";
 import { EditorControls } from "./EditorControls.mjs";
+import { Inspector } from "./Inspector.mjs";
+import { ColorPalette } from "./ColorPalette.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -18,6 +20,8 @@ let levelEditor;
 let leftDrawer;
 let localLevels;
 let editorControls;
+let inspector;
+let colorPalette;
 
 
 function drawHtml() {
@@ -29,8 +33,15 @@ function drawHtml() {
     editorControls = new EditorControls(document);
     parentContainer.appendChild(editorControls.createElement());
 
-    leftDrawer = new LeftDrawer(document, localLevels, editorControls, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
+    leftDrawer = new LeftDrawer(document, localLevels, editorControls, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), showGrid : () => levelEditor.showGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
     parentContainer.appendChild(leftDrawer.createElement());
+
+    inspector = new Inspector(document, () => levelEditor.getUsedColors());
+    parentContainer.appendChild(inspector.createElement());
+    inspector.hide();
+
+    colorPalette = new ColorPalette(document, levelEditor.colors, (color) => levelEditor.selectColor(color));
+    parentContainer.appendChild(colorPalette.createElement());
 }
 
 
@@ -113,6 +124,7 @@ window.onload = setup;
 export class LevelEditor {
 
 
+    originalColors = ["red", "green", "blue", "yellow", "purple", "orange", "pink"];
     colors = ["red", "green", "blue", "yellow", "purple", "orange", "pink"];
 
     currentObject = null;
@@ -130,12 +142,14 @@ export class LevelEditor {
     mouseYInGridTranslated = 0;
     gridSize = 25;
     gridEnabled = true;
+    gridShown = false;
 
 
     constructor(ctx) {
         this.ctx = ctx;
         this.level = new Level(ctx);
         this.player = null;
+        this.currentColor = this.colors[0];
     }
 
 
@@ -145,39 +159,101 @@ export class LevelEditor {
     }
 
 
+    showGrid() {
+        this.gridShown = !this.gridShown;
+        leftDrawer.showGrid(this.gridShown);
+    }
+
+
     createPlayer() {
-        this.player = new Player(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, 50, "red");
-        this.currentObject = this.player;
+        this.player = new Player(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, 50, this.currentColor);
+        this.selectObject(this.player);
     }
 
 
     createObstacle() {
-        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 200, height: 25}, "green"));
-        this.currentObject = this.level.obstacles[this.level.obstacles.length - 1];
+        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor));
+        this.selectObject(this.level.obstacles[this.level.obstacles.length - 1]);
     }
 
 
     createColorOrb() {
-        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, 25, "orange"));
-        this.currentObject = this.level.colorOrbs[this.level.colorOrbs.length - 1];
+        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor));
+        this.selectObject(this.level.colorOrbs[this.level.colorOrbs.length - 1]);
     }
 
 
     createSpike() {
-        this.level.spikes.push(new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 25, height: 25}, 0, "yellow"));
-        this.currentObject = this.level.spikes[this.level.spikes.length - 1];
+        this.level.spikes.push(new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, 0, this.currentColor));
+        this.selectObject(this.level.spikes[this.level.spikes.length - 1]);
     }
 
 
     createFinish() {
         this.level.finish = new Finish(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 50, height: 100});
-        this.currentObject = this.level.finish;
+        this.selectObject(this.level.finish);
     }
 
 
     createKey() {
         this.level.key = new Key(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated});
-        this.currentObject = this.level.key;
+        this.selectObject(this.level.key);
+    }
+
+
+    selectObject(object) {
+        this.currentObject = object;
+        inspector.setObject(object);
+    }
+
+
+    getUsedColors() {
+        let usedColors = [];
+        for (let obstacle of this.level.obstacles) {
+            if (!usedColors.includes(obstacle.color)) {
+                usedColors.push(obstacle.color);
+            }
+        }
+
+        for (let colorOrb of this.level.colorOrbs) {
+            if (!usedColors.includes(colorOrb.color)) {
+                usedColors.push(colorOrb.color);
+            }
+        }
+
+        for (let spike of this.level.spikes) {
+            if (!usedColors.includes(spike.color)) {
+                usedColors.push(spike.color);
+            }
+        }
+
+        if (this.player) {
+            if (!usedColors.includes(this.player.color)) {
+                usedColors.push(this.player.color);
+            }
+        }
+
+        this.colors = [...this.originalColors];
+        usedColors.forEach((color) => {
+            if (!this.colors.includes(color)) {
+                this.colors.push(color);
+            }
+        });
+
+        colorPalette.updateColors(this.colors);
+    }
+
+
+    selectColor(color) {
+        this.currentColor = color;
+        if (this.currentObject && this.currentObject?.color && !(this.currentObject instanceof Key)) {
+            this.currentObject.color = color;
+            inspector.setObject(this.currentObject);
+        }
+        else if (inspector.object?.color && !(inspector.object instanceof Key)) {
+            inspector.object.color = color;
+            inspector.setObject(inspector.object);
+        }
     }
 
 
@@ -204,6 +280,8 @@ export class LevelEditor {
 
             this.currentObject.pos.x = this.mouseXInGridTranslated;
             this.currentObject.pos.y = this.mouseYInGridTranslated;
+
+            inspector.setObject(this.currentObject);
         }
 
         this.mouseX = x;
@@ -221,6 +299,11 @@ export class LevelEditor {
 
             if (result) {
                 this.currentObject = result;
+                inspector.setObject(result);
+            }
+            else {
+                inspector.hide();
+                inspector.object = null;
             }
         }
     }
@@ -324,12 +407,14 @@ export class LevelEditor {
             else {
                 this.currentObject.rotate(1);
             }
+
+            inspector.setObject(this.currentObject);
         }
     }
 
 
     changeColor() {
-        if (this.currentObject?.color && this.currentObject.color !== "gold") {
+        if (this.currentObject?.color && !(this.currentObject instanceof Key)) {
             this.currentObject.color = this.nextColor(this.currentObject.color);
         }
     }
@@ -339,17 +424,24 @@ export class LevelEditor {
         if (this.currentObject) {
             this.deleteObject(this.currentObject);
             this.currentObject = null;
+            inspector.hide();
+            this.getUsedColors();
         }
         else {
             let result = this.detectClickOnObject(this.mouseX, this.mouseY);
             if (result) {
                 this.deleteObject(result);
+                this.getUsedColors();
             }
         }
     }
 
 
     deleteObject(object) {
+        if (object === inspector.object) {
+            inspector.hide();
+        }
+
         if (object instanceof Player) {
             this.player = null;
         }
@@ -378,8 +470,9 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.currentObject.size.width += changeBy;
+                inspector.setObject(this.currentObject);
             }
         }
     }
@@ -392,8 +485,9 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.decreaseObjectWidth(this.currentObject, changeBy);
+                inspector.setObject(this.currentObject);
             }
         }
     }
@@ -413,8 +507,9 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.currentObject.size.height += changeBy;
+                inspector.setObject(this.currentObject);
             }
         }
     }
@@ -427,8 +522,9 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.decreaseObjectHeight(this.currentObject, changeBy);
+                inspector.setObject(this.currentObject);
             }
         }
     }
@@ -506,18 +602,28 @@ export class LevelEditor {
             return;
         }
 
+        inspector.hide();
+        this.colors = [];
+        this.originalColors = [];
+
         levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
             this.level = level;
             this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
             leftDrawer.setLevelName(this.level.levelName);
+            this.getUsedColors();
         });
     }
 
 
     loadLevelFromJSON(json) {
+        inspector.hide();
+        this.colors = [];
+        this.originalColors = [];
+
         this.level = new Level(this.ctx, json);
         this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
         leftDrawer.setLevelName(this.level.levelName);
+        this.getUsedColors();
     }
 
 
@@ -529,14 +635,24 @@ export class LevelEditor {
 
 
     loadLevelFromBase64(encodedLevel) {
+        inspector.hide();
+        this.colors = [];
+        this.originalColors = [];
+
         this.level = levelLoader.loadLevel(ctx, encodedLevel);
         this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+        leftDrawer.setLevelName(this.level.levelName);
+        this.getUsedColors();
     }
 
 
     draw() {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
         this.ctx.translate(this.camera.x, this.camera.y);
+
+        if (this.gridShown) {
+            this.drawGrid();
+        }
 
         this.level.drawObstacles();
         this.level.drawSpikes();
@@ -559,5 +675,24 @@ export class LevelEditor {
         }
 
         this.ctx.resetTransform();
+    }
+
+
+    drawGrid() {
+        this.ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+        this.ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += this.gridSize) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(i, 0);
+            this.ctx.lineTo(i, canvas.height);
+            this.ctx.stroke();
+        }
+
+        for (let i = 0; i < canvas.height; i += this.gridSize) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, i);
+            this.ctx.lineTo(canvas.width, i);
+            this.ctx.stroke();
+        }
     }
 }

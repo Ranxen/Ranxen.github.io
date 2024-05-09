@@ -60,4 +60,35 @@ export class ColorOrb {
     }
 
 
+    getEditableAttributes() {
+        return [{
+            name: 'Color',
+            type: 'color',
+            value: this.color,
+            callback: (value) => {
+                this.color = value;
+            }
+        }, {
+            name: 'Position',
+            type: 'vector',
+            value: this.pos,
+            callback: (attribute, value) => {
+                if (attribute === 'x') {
+                    this.pos.x = value;
+                }
+                else if (attribute === 'y') {
+                    this.pos.y = value;
+                }
+            }
+        }, {
+            name: 'Size',
+            type: 'number',
+            value: this.size,
+            callback: (value) => {
+                this.size = value;
+            }
+        }]
+    }
+
+
 }

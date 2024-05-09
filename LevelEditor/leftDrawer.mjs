@@ -4,6 +4,7 @@ export class LeftDrawer {
     objectsPerRow = 2;
     levelNameInput = null;
     toggleGridButton = null;
+    showGridButton = null;
 
 
     constructor(document, localLevels, editorControls, createObjectFunctions, editorActions) {
@@ -71,6 +72,7 @@ export class LeftDrawer {
         loadLevelContainer.classList.add("horizontal", "margin");
 
         let encodedLevelField = this.document.createElement("input");
+        encodedLevelField.name = "encodedLevel";
         loadLevelContainer.appendChild(encodedLevelField);
 
         let loadEncodedButton = this.document.createElement("button");
@@ -171,6 +173,13 @@ export class LeftDrawer {
         toggleGridLabel.innerText = "Enable Grid";
         toggleGridContainer.appendChild(toggleGridLabel);
 
+        this.showGridButton = this.document.createElement("button");
+        this.showGridButton.innerText = "Show";
+        this.showGridButton.addEventListener("click", () => {
+            this.editorActions.showGrid();
+        });
+        toggleGridContainer.appendChild(this.showGridButton);
+
         buttonsContainer.appendChild(toggleGridContainer);
 
         let showLocalLevelsButton = this.document.createElement("button");
@@ -194,6 +203,11 @@ export class LeftDrawer {
 
     toggleGrid(value) {
         this.toggleGridButton.checked = value;
+    }
+
+
+    showGrid(shown) {
+        this.showGridButton.innerText = shown ? "Hide" : "Show";
     }
 
 

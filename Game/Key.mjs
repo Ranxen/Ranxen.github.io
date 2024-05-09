@@ -50,4 +50,21 @@ export class Key {
     }
 
 
+    getEditableAttributes() {
+        return [{
+            name: 'Position',
+            type: 'vector',
+            value: this.pos,
+            callback: (attribute, value) => {
+                if (attribute === 'x') {
+                    this.pos.x = value;
+                }
+                else if (attribute === 'y') {
+                    this.pos.y = value;
+                }
+            }
+        }]
+    }
+
+
 }

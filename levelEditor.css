@@ -103,6 +103,60 @@ input {
 }
 
 
+.right-drawer {
+    position: absolute;
+    text-align: center;
+    right: 0;
+    bottom: 0;
+    width: 15vw;
+    min-width: 300px;
+    color: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 8px;
+    border-radius: 8px;
+}
+
+
+.top-drawer {
+    position: absolute;
+    text-align: center;
+    top: 0;
+    right: 0;
+    color: #fff;
+    max-height: 40vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin: 8px;
+    border-radius: 8px;
+}
+
+
+.top-drawer::-webkit-scrollbar {
+    display: none;
+}
+
+
+.palette-color {
+    padding: 4px;
+    margin: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+
+.palette-color:hover {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+
+.palette-color.selected {
+    border: 1px solid rgba(0, 0, 0, 1);
+}
+
+
 .glassy {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
@@ -236,4 +290,12 @@ input {
     background-color: #123;
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 8px;
+}
+
+
+.attribute-container {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    padding: 8px;
+    margin: 8px;
 }
