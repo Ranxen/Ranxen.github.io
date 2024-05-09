@@ -64,6 +64,50 @@ export class Spike {
 
     rotate(degree) {
         this.rotation += (degree * Math.PI) / 180;
+        this.rotation = this.rotation % (2 * Math.PI);
+    }
+
+
+    getEditableAttributes() {
+        return [{
+            name: 'Color',
+            type: 'color',
+            value: this.color,
+            callback: (value) => {
+                this.color = value;
+            }
+        }, {
+            name: 'Position',
+            type: 'vector',
+            value: this.pos,
+            callback: (attribute, value) => {
+                if (attribute === 'x') {
+                    this.pos.x = value;
+                }
+                else if (attribute === 'y') {
+                    this.pos.y = value;
+                }
+            }
+        }, {
+            name: 'Size',
+            type: 'vector',
+            value: { x: this.size.width, y: this.size.height },
+            callback: (attribute, value) => {
+                if (attribute === 'x') {
+                    this.size.width = value;
+                }
+                else if (attribute === 'y') {
+                    this.size.height = value;
+                }
+            }
+        }, {
+            name: 'Rotation',
+            type: 'number',
+            value: this.rotation * 180 / Math.PI,
+            callback: (value) => {
+                this.rotation = (value * Math.PI) / 180;
+            }
+        }]
     }
 
 }
