@@ -1,3 +1,4 @@
+import * as drawLib from "../Helper/drawLib.mjs";
 import * as levelLoader from "../Helper/levelLoader.mjs";
 import { LeftDrawer } from "./leftDrawer.mjs";
 import { LocalLevels } from "../UI/HtmlDialogs/LocalLevels.mjs";
@@ -680,6 +681,7 @@ export class LevelEditor {
         }
 
         this.level.drawObstacles();
+        this.drawMovingObstaclesPaths();
         this.level.drawSpikes();
         this.level.drawColorOrbs();
         if (this.level.finish) {
@@ -700,6 +702,22 @@ export class LevelEditor {
         }
 
         this.ctx.resetTransform();
+    }
+
+
+    drawMovingObstaclesPaths() {
+        for (let movingObstacle of this.level.movingObstacles) {
+            ctx.save();
+            ctx.translate(movingObstacle.size.width / 2, movingObstacle.size.height / 2);
+            drawLib.circle(ctx, movingObstacle.pos.x, movingObstacle.pos.y, 5, 'grey');
+            ctx.strokeStyle = 'grey';
+            ctx.beginPath();
+            ctx.moveTo(movingObstacle.pos.x, movingObstacle.pos.y);
+            ctx.lineTo(movingObstacle.targetPos.x, movingObstacle.targetPos.y);
+            ctx.stroke();
+            drawLib.circle(ctx, movingObstacle.targetPos.x, movingObstacle.targetPos.y, 5, 'grey');
+            ctx.restore();
+        }
     }
 
 
