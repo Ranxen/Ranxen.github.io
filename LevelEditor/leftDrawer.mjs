@@ -1,7 +1,7 @@
 export class LeftDrawer {
 
 
-    objectsPerRow = 2;
+    objectsPerRow = 1;
     levelNameInput = null;
     toggleGridButton = null;
     showGridButton = null;

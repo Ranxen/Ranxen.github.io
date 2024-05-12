@@ -4,6 +4,7 @@ import { LocalLevels } from "../UI/HtmlDialogs/LocalLevels.mjs";
 import { Level } from "../Game/Level.mjs";
 import { Player } from "../Game/Player.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
+import { MovingObstacle } from "../Game/MovingObstacle.mjs";
 import { ColorOrb } from "../Game/ColorOrb.mjs";
 import { Spike } from "../Game/Spike.mjs";
 import { Finish } from "../Game/Finish.mjs";
@@ -177,6 +178,12 @@ export class LevelEditor {
     }
 
 
+    createMovingObstacle() {
+        this.level.movingObstacles.push(new MovingObstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 1));
+        this.selectObject(this.level.movingObstacles[this.level.movingObstacles.length - 1]);
+    }
+
+
     createColorOrb() {
         this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor));
         this.selectObject(this.level.colorOrbs[this.level.colorOrbs.length - 1]);
@@ -212,6 +219,12 @@ export class LevelEditor {
         for (let obstacle of this.level.obstacles) {
             if (!usedColors.includes(obstacle.color)) {
                 usedColors.push(obstacle.color);
+            }
+        }
+
+        for (let movingObstacle of this.level.movingObstacles) {
+            if (!usedColors.includes(movingObstacle.color)) {
+                usedColors.push(movingObstacle.color);
             }
         }
 
@@ -258,7 +271,7 @@ export class LevelEditor {
 
 
     createActions() {
-        return [{ "name" : "Player", "action" : () => this.createPlayer()}, { "name" : "Obstacle", "action" : () => this.createObstacle()}, { "name" : "Color Orb", "action" : () => this.createColorOrb()}, { "name" : "Spike", "action" : () => this.createSpike()}, { "name" : "Finish", "action" : () => this.createFinish()}, { "name" : "Key", "action" : () => this.createKey()}];
+        return [{ "name": "Player", "action": () => this.createPlayer() }, { "name": "Obstacle", "action": () => this.createObstacle() }, { "name": "Moving Obstacle", "action": () => this.createMovingObstacle() }, { "name" : "Color Orb", "action" : () => this.createColorOrb()}, { "name" : "Spike", "action" : () => this.createSpike()}, { "name" : "Finish", "action" : () => this.createFinish()}, { "name" : "Key", "action" : () => this.createKey()}];
     }
 
 
@@ -319,6 +332,12 @@ export class LevelEditor {
             }
         }
 
+        for (let movingObstacle of this.level.movingObstacles) {
+            if (movingObstacle.detectClick(x, y)) {
+                return movingObstacle;
+            }
+        }
+
         for (let spike of this.level.spikes) {
             if (spike.detectClick(x, y)) {
                 return spike;
@@ -361,6 +380,9 @@ export class LevelEditor {
                 if (this.currentObject) {
                     if (this.currentObject instanceof Obstacle) {
                         this.level.obstacles.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
+                    }
+                    else if (this.currentObject instanceof MovingObstacle) {
+                        this.level.movingObstacles.push(new MovingObstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color, this.currentObject.targetPos, this.currentObject.speed));
                     }
                     else if (this.currentObject instanceof ColorOrb) {
                         this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
@@ -448,6 +470,9 @@ export class LevelEditor {
         else if (object instanceof Obstacle) {
             this.level.obstacles.splice(this.level.obstacles.indexOf(object), 1);
         }
+        else if (object instanceof MovingObstacle) {
+            this.level.movingObstacles.splice(this.level.movingObstacles.indexOf(object), 1);
+        }
         else if (object instanceof ColorOrb) {
             this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(object), 1);
         }
@@ -470,7 +495,7 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof MovingObstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.currentObject.size.width += changeBy;
                 inspector.setObject(this.currentObject);
             }
@@ -485,7 +510,7 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof MovingObstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.decreaseObjectWidth(this.currentObject, changeBy);
                 inspector.setObject(this.currentObject);
             }
@@ -507,7 +532,7 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof MovingObstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.currentObject.size.height += changeBy;
                 inspector.setObject(this.currentObject);
             }
@@ -522,7 +547,7 @@ export class LevelEditor {
                 changeBy = 1;
             }
 
-            if (this.currentObject instanceof Obstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
+            if (this.currentObject instanceof Obstacle || this.currentObject instanceof MovingObstacle || this.currentObject instanceof Spike || this.currentObject instanceof Finish) {
                 this.decreaseObjectHeight(this.currentObject, changeBy);
                 inspector.setObject(this.currentObject);
             }

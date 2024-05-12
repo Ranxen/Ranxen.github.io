@@ -57,6 +57,16 @@ export function levelToJSON(level, player) {
                 color: obstacle.color
             }
         }),
+        movingObstacles: level.movingObstacles.map(movingObstacle => {
+            return {
+                pos: movingObstacle.pos,
+                size: movingObstacle.size,
+                color: movingObstacle.color,
+                targetPos: movingObstacle.targetPos,
+                speed: movingObstacle.speed,
+                movePlayer: movingObstacle.movePlayer
+            }
+        }),
         spikes: level.spikes.map(spike => {
             return {
                 pos: spike.pos,
