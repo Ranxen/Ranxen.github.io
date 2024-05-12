@@ -103,6 +103,11 @@ input {
 }
 
 
+.left-drawer::-webkit-scrollbar {
+    display: none;
+}
+
+
 .right-drawer {
     position: absolute;
     text-align: center;

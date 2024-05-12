@@ -46,8 +46,12 @@ export class Player {
             this.velocity.x = 0;
         }
 
+        this.collisions.sort((a, b) => {
+            return b.pos.y - a.pos.y;
+        });
+
         for (let obstacle of this.collisions) {
-            if (this.velocity.y > 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+            if (this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
                 this.pos.y = obstacle.pos.y - this.size;
                 this.velocity.y = 0;
                 this.isGrounded = true;
@@ -107,7 +111,6 @@ export class Player {
             }
         }
     }
-
 
     detectClick(x, y) {
         return physicsLib.pointInsideRect({ x: x, y: y }, { pos: this.pos, size: { width: this.size, height: this.size } });

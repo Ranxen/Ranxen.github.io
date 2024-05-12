@@ -378,11 +378,11 @@ export class LevelEditor {
         if (button === 0) {
             if (this.keysPressed.includes("ShiftLeft")) {
                 if (this.currentObject) {
-                    if (this.currentObject instanceof Obstacle) {
-                        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
-                    }
-                    else if (this.currentObject instanceof MovingObstacle) {
+                    if (this.currentObject instanceof MovingObstacle) {
                         this.level.movingObstacles.push(new MovingObstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color, this.currentObject.targetPos, this.currentObject.speed));
+                    }
+                    else if (this.currentObject instanceof Obstacle) {
+                        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
                     }
                     else if (this.currentObject instanceof ColorOrb) {
                         this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
@@ -467,11 +467,11 @@ export class LevelEditor {
         if (object instanceof Player) {
             this.player = null;
         }
-        else if (object instanceof Obstacle) {
-            this.level.obstacles.splice(this.level.obstacles.indexOf(object), 1);
-        }
         else if (object instanceof MovingObstacle) {
             this.level.movingObstacles.splice(this.level.movingObstacles.indexOf(object), 1);
+        }
+        else if (object instanceof Obstacle) {
+            this.level.obstacles.splice(this.level.obstacles.indexOf(object), 1);
         }
         else if (object instanceof ColorOrb) {
             this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(object), 1);
