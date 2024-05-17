@@ -51,7 +51,7 @@ export class Player {
         });
 
         for (let obstacle of this.collisions) {
-            if (this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+            if (this.velocity.y >= 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
                 this.pos.y = obstacle.pos.y - this.size;
                 this.velocity.y = 0;
                 this.isGrounded = true;
