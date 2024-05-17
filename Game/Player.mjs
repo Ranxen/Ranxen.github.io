@@ -63,12 +63,18 @@ export class Player {
             } else if (this.velocity.y < 0 && this.pos.y > obstacle.pos.y && this.pos.y + this.size > obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
                 this.pos.y = obstacle.pos.y + obstacle.size.height;
                 this.velocity.y = 0;
-            } else if (this.velocity.x > 0 && this.pos.x < obstacle.pos.x && this.pos.x + this.size < obstacle.pos.x + obstacle.size.width && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
+            } else if (this.pos.x <= obstacle.pos.x && this.pos.x + this.size >= obstacle.pos.x && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
                 this.pos.x = obstacle.pos.x - this.size;
-                this.velocity.x = 0;
-            } else if (this.velocity.x < 0 && this.pos.x > obstacle.pos.x && this.pos.x + this.size > obstacle.pos.x + obstacle.size.width && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
+
+                if (this.velocity.x > 0) {
+                    this.velocity.x = 0;
+                }
+            } else if (this.pos.x <= obstacle.pos.x + obstacle.size.width && this.pos.x + this.size >= obstacle.pos.x + obstacle.size.width && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
                 this.pos.x = obstacle.pos.x + obstacle.size.width;
-                this.velocity.x = 0;
+
+                if (this.velocity.x < 0) {
+                    this.velocity.x = 0;
+                }
             }
         }
 
