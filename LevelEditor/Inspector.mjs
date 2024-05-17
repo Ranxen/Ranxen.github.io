@@ -88,6 +88,15 @@ export class Inspector {
             });
             return input;
         }
+        else if (type === 'checkbox') {
+            let input = this.document.createElement("input");
+            input.type = "checkbox";
+            input.checked = value;
+            input.addEventListener("change", () => {
+                callback(input.checked);
+            });
+            return input;
+        }
         else {
             let input = this.document.createElement("input");
             input.type = "text"

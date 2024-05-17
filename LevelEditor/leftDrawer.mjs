@@ -46,6 +46,7 @@ export class LeftDrawer {
         objectContainer.classList.add("object-container");
 
         let objectRow = this.document.createElement("div");
+        objectContainer.appendChild(objectRow);
 
         let objectsCreated = 0;
         for (let objectFunction of this.createObjectFunctions) {
@@ -59,8 +60,8 @@ export class LeftDrawer {
             objectsCreated++;
 
             if (objectsCreated % this.objectsPerRow === 0) {
-                objectContainer.appendChild(objectRow);
                 objectRow = this.document.createElement("div");
+                objectContainer.appendChild(objectRow);
             }
         }
         this.container.appendChild(objectContainer);

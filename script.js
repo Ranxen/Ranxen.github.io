@@ -383,6 +383,7 @@ function computePhysics() {
     level.detectColorOrbCollisions(player, colorWheel);
     level.detectSpikeCollisions(player);
     level.detectObstacleCollisions(player);
+    level.moveObstacles();
 
     level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
     player.update();
