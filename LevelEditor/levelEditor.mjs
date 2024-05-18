@@ -1,4 +1,3 @@
-import * as drawLib from "../Helper/drawLib.mjs";
 import * as levelLoader from "../Helper/levelLoader.mjs";
 import { LeftDrawer } from "./leftDrawer.mjs";
 import { LocalLevels } from "../UI/HtmlDialogs/LocalLevels.mjs";
@@ -6,6 +5,7 @@ import { Level } from "../Game/Level.mjs";
 import { Player } from "../Game/Player.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
 import { MovingObstacle } from "../Game/MovingObstacle.mjs";
+import { MovingObstaclePath } from "./MovingObstaclePath.mjs";
 import { ColorOrb } from "../Game/ColorOrb.mjs";
 import { Spike } from "../Game/Spike.mjs";
 import { Finish } from "../Game/Finish.mjs";
@@ -13,12 +13,14 @@ import { Key } from "../Game/Key.mjs";
 import { EditorControls } from "./EditorControls.mjs";
 import { Inspector } from "./Inspector.mjs";
 import { ColorPalette } from "./ColorPalette.mjs";
+import { EditorGameManager } from "./EditorGameManager.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
 
 let levelEditor;
+let gameManager;
 let leftDrawer;
 let localLevels;
 let editorControls;
@@ -49,6 +51,7 @@ function drawHtml() {
 
 function setup() {
     levelEditor = new LevelEditor(ctx);
+    gameManager = new EditorGameManager();
     addEventListener();
 
     drawHtml();
@@ -168,43 +171,67 @@ export class LevelEditor {
 
 
     createPlayer() {
+        if (this.player) {
+            gameManager.removeEntity(this.player);
+        }
+
         this.player = new Player(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 50, height: 50 }, this.currentColor);
+        gameManager.addEntity(this.player);
         this.selectObject(this.player);
     }
 
 
     createObstacle() {
-        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor));
-        this.selectObject(this.level.obstacles[this.level.obstacles.length - 1]);
+        let obstacle = new Obstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor);
+        this.level.obstacles.push(obstacle);
+        gameManager.addEntity(obstacle);
+        this.selectObject(obstacle);
     }
 
 
     createMovingObstacle() {
-        this.level.movingObstacles.push(new MovingObstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 1));
-        this.selectObject(this.level.movingObstacles[this.level.movingObstacles.length - 1]);
+        let movingObstacle = new MovingObstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 1);
+        this.level.movingObstacles.push(movingObstacle);
+        gameManager.addEntity(movingObstacle);
+        gameManager.addEntity(new MovingObstaclePath(this.ctx, movingObstacle));
+        this.selectObject(movingObstacle);
     }
 
 
     createColorOrb() {
-        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor));
-        this.selectObject(this.level.colorOrbs[this.level.colorOrbs.length - 1]);
+        let colorOrb = new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor);
+        this.level.colorOrbs.push(colorOrb);
+        gameManager.addEntity(colorOrb);
+        this.selectObject(colorOrb);
     }
 
 
     createSpike() {
-        this.level.spikes.push(new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, 0, this.currentColor));
-        this.selectObject(this.level.spikes[this.level.spikes.length - 1]);
+        let spike = new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, 0, this.currentColor);
+        this.level.spikes.push(spike);
+        gameManager.addEntity(spike);
+        this.selectObject(spike);
     }
 
 
     createFinish() {
+        if (this.level.finish) {
+            gameManager.removeEntity(this.level.finish);
+        }
+
         this.level.finish = new Finish(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 50, height: 100});
+        gameManager.addEntity(this.level.finish);
         this.selectObject(this.level.finish);
     }
 
 
     createKey() {
+        if (this.level.key) {
+            gameManager.removeEntity(this.level.key);
+        }
+
         this.level.key = new Key(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated});
+        gameManager.addEntity(this.level.key);
         this.selectObject(this.level.key);
     }
 
@@ -633,10 +660,7 @@ export class LevelEditor {
         this.originalColors = [];
 
         levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
-            this.level = level;
-            this.player = new Player(this.ctx, this.level.startPos, { width: 50, height: 50 }, this.level.startColor);
-            leftDrawer.setLevelName(this.level.levelName);
-            this.getUsedColors();
+            this.setLevel(level);
         });
     }
 
@@ -646,10 +670,7 @@ export class LevelEditor {
         this.colors = [];
         this.originalColors = [];
 
-        this.level = new Level(this.ctx, json);
-        this.player = new Player(this.ctx, this.level.startPos, { width: 50, height: 50 }, this.level.startColor);
-        leftDrawer.setLevelName(this.level.levelName);
-        this.getUsedColors();
+        this.setLevel(new Level(this.ctx, json));
     }
 
 
@@ -665,9 +686,14 @@ export class LevelEditor {
         this.colors = [];
         this.originalColors = [];
 
-        this.level = levelLoader.loadLevel(ctx, encodedLevel);
+        this.setLevel(levelLoader.loadLevel(ctx, encodedLevel));
+    }
+
+    setLevel(level) {
+        this.level = level;
         this.player = new Player(this.ctx, this.level.startPos, { width: 50, height: 50 }, this.level.startColor);
         leftDrawer.setLevelName(this.level.levelName);
+        gameManager.buildEntities(this.level, this.player);
         this.getUsedColors();
     }
 
@@ -680,62 +706,28 @@ export class LevelEditor {
             this.drawGrid();
         }
 
-        this.level.drawObstacles();
-        this.drawMovingObstaclesPaths();
-        this.level.drawSpikes();
-        this.level.drawColorOrbs();
-        if (this.level.finish) {
-            this.level.drawFinish();
-        }
-
-        if (this.player) {
-            this.player.draw();
-        }
-
-        if (this.level.key) {
-            if (this.player) {
-                this.level.drawKey(this.player);
-            }
-            else {
-                this.level.key.draw({ hasKey: false });
-            }
-        }
+        gameManager.draw();
 
         this.ctx.resetTransform();
-    }
-
-
-    drawMovingObstaclesPaths() {
-        for (let movingObstacle of this.level.movingObstacles) {
-            ctx.save();
-            ctx.translate(movingObstacle.size.width / 2, movingObstacle.size.height / 2);
-            drawLib.circle(ctx, movingObstacle.pos.x, movingObstacle.pos.y, 5, 'grey');
-            ctx.strokeStyle = 'grey';
-            ctx.beginPath();
-            ctx.moveTo(movingObstacle.pos.x, movingObstacle.pos.y);
-            ctx.lineTo(movingObstacle.targetPos.x, movingObstacle.targetPos.y);
-            ctx.stroke();
-            drawLib.circle(ctx, movingObstacle.targetPos.x, movingObstacle.targetPos.y, 5, 'grey');
-            ctx.restore();
-        }
     }
 
 
     drawGrid() {
         this.ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
         this.ctx.lineWidth = 1;
-        for (let i = 0; i < canvas.width; i += this.gridSize) {
+        for (let i = 0; i < canvas.width - this.camera.x; i += this.gridSize) {
             this.ctx.beginPath();
             this.ctx.moveTo(i, 0);
-            this.ctx.lineTo(i, canvas.height);
+            this.ctx.lineTo(i, canvas.height - this.camera.y);
             this.ctx.stroke();
         }
 
-        for (let i = 0; i < canvas.height; i += this.gridSize) {
+        for (let i = 0; i < canvas.height - this.camera.y; i += this.gridSize) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, i);
-            this.ctx.lineTo(canvas.width, i);
+            this.ctx.lineTo(canvas.width - this.camera.x, i);
             this.ctx.stroke();
         }
     }
+
 }

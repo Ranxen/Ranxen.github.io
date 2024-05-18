@@ -16,11 +16,16 @@ export class GameManager {
         this.entities = [];
         this.updateEntities = [];
         this.player = null;
-        this.buildEntities(level, player);
+        if (level !== undefined && player !== undefined) {
+            this.buildEntities(level, player);
+        }
     }
 
     buildEntities(level, player) {
+        this.entities = [];
+        this.updateEntities = [];
         this.player = player;
+
         for (let obstacle of level.obstacles) {
             this.addEntity(obstacle);
         }

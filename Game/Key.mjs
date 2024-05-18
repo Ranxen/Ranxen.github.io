@@ -12,7 +12,7 @@ export class Key extends Entity {
     draw() {
         this.ctx.save();
 
-        if (!this.player.hasKey) {
+        if (this.player == null || !this.player.hasKey) {
             this.ctx.translate(this.pos.x, this.pos.y);
         }
         else {

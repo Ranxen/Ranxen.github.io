@@ -57,14 +57,6 @@ export class Level {
         }
     }
 
-    updateObstacles() {
-        if (this.movingObstacles) {
-            for (let movingObstacle of this.movingObstacles) {
-                movingObstacle.update();
-            }
-        }
-    }
-
     drawSpikes() {
         for (let spike of this.spikes) {
             spike.draw();
@@ -83,30 +75,6 @@ export class Level {
 
     drawKey(player) {
         this.key.draw(player);
-    }
-
-    detectColorOrbCollisions(player, colorWheel) {
-        for (let colorOrb of this.colorOrbs) {
-            colorOrb.detectCollision(player, colorWheel);
-        }
-    }
-
-    detectSpikeCollisions(player) {
-        for (let spike of this.spikes) {
-            spike.detectCollision(player);
-        }
-    }
-
-    detectObstacleCollisions(player) {
-        for (let obstacle of this.obstacles) {
-            player.detectCollision(obstacle);
-        }
-
-        if (this.movingObstacles) {
-            for (let movingObstacle of this.movingObstacles) {
-                player.detectCollision(movingObstacle);
-            }
-        }
     }
 
 }
