@@ -28,6 +28,10 @@ export class Inspector {
 
 
     setObject(object) {
+        if (object.getEditableAttributes === undefined) {
+            return;
+        }
+
         this.attributeContainer.innerHTML = "";
         this.object = object;
         this.title.innerText = object.constructor.name;

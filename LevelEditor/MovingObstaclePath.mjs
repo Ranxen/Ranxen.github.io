@@ -1,4 +1,5 @@
 import * as drawLib from '../Helper/drawLib.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
 export class MovingObstaclePath {
@@ -6,8 +7,8 @@ export class MovingObstaclePath {
     constructor(ctx, movingObstacle) {
         this.ctx = ctx;
         this.movingObstacle = movingObstacle;
+        this.pos = this.movingObstacle.targetPos;
     }
-
 
     draw() {
         this.ctx.save();
@@ -20,6 +21,14 @@ export class MovingObstaclePath {
         this.ctx.stroke();
         drawLib.circle(this.ctx, this.movingObstacle.targetPos.x, this.movingObstacle.targetPos.y, 5, 'grey');
         this.ctx.restore();
+    }
+
+    detectClick(x, y) {
+        return physicsLib.pointInsideCircle({ x: x, y: y }, { pos: { x: this.movingObstacle.targetPos.x + this.movingObstacle.size.width / 2, y: this.movingObstacle.targetPos.y + this.movingObstacle.size.height / 2 }, size: 5 });
+    }
+
+    rotate(degree) {
+        this.movingObstacle.rotate(degree);
     }
 
 

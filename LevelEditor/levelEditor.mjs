@@ -322,7 +322,12 @@ export class LevelEditor {
             this.currentObject.pos.x = this.mouseXInGridTranslated;
             this.currentObject.pos.y = this.mouseYInGridTranslated;
 
-            inspector.setObject(this.currentObject);
+            if (this.currentObject instanceof MovingObstaclePath) {
+                inspector.setObject(this.currentObject.movingObstacle);
+            }
+            else {
+                inspector.setObject(this.currentObject);
+            }
         }
 
         this.mouseX = x;
@@ -340,7 +345,12 @@ export class LevelEditor {
 
             if (result) {
                 this.currentObject = result;
-                inspector.setObject(result);
+                if (this.currentObject instanceof MovingObstaclePath) {
+                    inspector.setObject(this.currentObject.movingObstacle);
+                }
+                else {
+                    inspector.setObject(result);
+                }
             }
             else {
                 inspector.hide();
@@ -354,45 +364,9 @@ export class LevelEditor {
         x -= this.camera.x;
         y -= this.camera.y;
 
-        for (let obstacle of this.level.obstacles) {
-            if (obstacle.detectClick(x, y)) {
-                return obstacle;
-            }
-        }
-
-        for (let movingObstacle of this.level.movingObstacles) {
-            if (movingObstacle.detectClick(x, y)) {
-                return movingObstacle;
-            }
-        }
-
-        for (let spike of this.level.spikes) {
-            if (spike.detectClick(x, y)) {
-                return spike;
-            }
-        }
-
-        for (let colorOrb of this.level.colorOrbs) {
-            if (colorOrb.detectClick(x, y)) {
-                return colorOrb;
-            }
-        }
-
-        if (this.level.finish) {
-            if (this.level.finish.detectClick(x, y)) {
-                return this.level.finish;
-            }
-        }
-
-        if (this.level.key) {
-            if (this.level.key.detectClick(x, y)) {
-                return this.level.key;
-            }
-        }
-
-        if (this.player) {
-            if (this.player.detectClick(x, y)) {
-                return this.player;
+        for (let entity of gameManager.entities) {
+            if (entity.detectClick(x, y)) {
+                return entity;
             }
         }
 
@@ -491,6 +465,12 @@ export class LevelEditor {
         if (object === inspector.object) {
             inspector.hide();
         }
+
+        if (object instanceof MovingObstaclePath) {
+            object = object.movingObstacle;
+        }
+
+        gameManager.removeEntity(object);
 
         if (object instanceof Player) {
             this.player = null;

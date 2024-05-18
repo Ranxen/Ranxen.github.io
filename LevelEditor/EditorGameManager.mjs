@@ -36,6 +36,13 @@ export class EditorGameManager extends GameManager {
     }
 
     removeEntity(entity) {
+        if (entity instanceof MovingObstacle) {
+            let path = this.entities.find(e => e instanceof MovingObstaclePath && e.movingObstacle === entity);
+            if (path) {
+                this.removeEntity(path);
+            }
+        }
+        
         this.entities = this.entities.filter(e => e !== entity);
     }
 
