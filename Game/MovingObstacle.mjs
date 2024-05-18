@@ -1,9 +1,7 @@
-import * as drawLib from '../Helper/drawLib.mjs';
-import { Obstacle } from './Obstacle.mjs';
+import { MovingEntity } from './MovingEntity.mjs';
 
 
-export class MovingObstacle extends Obstacle {
-
+export class MovingObstacle extends MovingEntity {
 
     constructor(ctx, pos, size, color, targetPos, speed, movePlayer = true) {
         super(ctx, pos, size, color);
@@ -11,21 +9,9 @@ export class MovingObstacle extends Obstacle {
         this.targetPos = targetPos;
         this.speed = speed;
         this.movePlayer = movePlayer;
-        this.velocity = { x: 0, y: 0 };
     }
 
-
-
-    draw() {
-        this.ctx.save();
-        this.ctx.translate(this.pos.x, this.pos.y);
-        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
-
-        this.ctx.restore();
-    }
-
-
-    move() {
+    update() {
         let distance = Math.sqrt(Math.pow(this.targetPos.x - this.pos.x, 2) + Math.pow(this.targetPos.y - this.pos.y, 2));
         if (distance < this.speed) {
             this.pos = this.targetPos;
@@ -41,6 +27,11 @@ export class MovingObstacle extends Obstacle {
         }
     }
 
+    rotate(degree) {
+        let temp = this.size.width;
+        this.size.width = this.size.height;
+        this.size.height = temp;
+    }
 
     getEditableAttributes() {
         let attributes = super.getEditableAttributes();

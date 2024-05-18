@@ -168,7 +168,7 @@ export class LevelEditor {
 
 
     createPlayer() {
-        this.player = new Player(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, 50, this.currentColor);
+        this.player = new Player(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated}, { width: 50, height: 50 }, this.currentColor);
         this.selectObject(this.player);
     }
 
@@ -634,7 +634,7 @@ export class LevelEditor {
 
         levelLoader.loadLevelFromFile(this.ctx, file, undefined, (level) => {
             this.level = level;
-            this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+            this.player = new Player(this.ctx, this.level.startPos, { width: 50, height: 50 }, this.level.startColor);
             leftDrawer.setLevelName(this.level.levelName);
             this.getUsedColors();
         });
@@ -647,7 +647,7 @@ export class LevelEditor {
         this.originalColors = [];
 
         this.level = new Level(this.ctx, json);
-        this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+        this.player = new Player(this.ctx, this.level.startPos, { width: 50, height: 50 }, this.level.startColor);
         leftDrawer.setLevelName(this.level.levelName);
         this.getUsedColors();
     }
@@ -666,7 +666,7 @@ export class LevelEditor {
         this.originalColors = [];
 
         this.level = levelLoader.loadLevel(ctx, encodedLevel);
-        this.player = new Player(this.ctx, this.level.startPos, 50, this.level.startColor);
+        this.player = new Player(this.ctx, this.level.startPos, { width: 50, height: 50 }, this.level.startColor);
         leftDrawer.setLevelName(this.level.levelName);
         this.getUsedColors();
     }

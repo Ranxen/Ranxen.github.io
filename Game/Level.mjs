@@ -8,7 +8,6 @@ import { Spike } from "./Spike.mjs";
 
 export class Level {
 
-
     constructor(ctx, level, actions) {
         if (level !== undefined) {
             level = JSON.parse(JSON.stringify(level));
@@ -46,7 +45,6 @@ export class Level {
         }
     }
 
-
     drawObstacles() {
         for (let obstacle of this.obstacles) {
             obstacle.draw();
@@ -59,15 +57,13 @@ export class Level {
         }
     }
 
-
-    moveObstacles() {
+    updateObstacles() {
         if (this.movingObstacles) {
             for (let movingObstacle of this.movingObstacles) {
-                movingObstacle.move();
+                movingObstacle.update();
             }
         }
     }
-
 
     drawSpikes() {
         for (let spike of this.spikes) {
@@ -75,23 +71,19 @@ export class Level {
         }
     }
 
-
     drawColorOrbs() {
         for (let colorOrb of this.colorOrbs) {
             colorOrb.draw();
         }
     }
 
-
     drawFinish() {
         this.finish.draw();
     }
 
-
     drawKey(player) {
         this.key.draw(player);
     }
-
 
     detectColorOrbCollisions(player, colorWheel) {
         for (let colorOrb of this.colorOrbs) {
@@ -99,13 +91,11 @@ export class Level {
         }
     }
 
-
     detectSpikeCollisions(player) {
         for (let spike of this.spikes) {
             spike.detectCollision(player);
         }
     }
-
 
     detectObstacleCollisions(player) {
         for (let obstacle of this.obstacles) {
@@ -118,6 +108,5 @@ export class Level {
             }
         }
     }
-
 
 }

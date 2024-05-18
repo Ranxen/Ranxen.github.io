@@ -1,9 +1,9 @@
-import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
+import { MovingEntity } from './MovingEntity.mjs';
 import { MovingObstacle } from './MovingObstacle.mjs';
 
 
-export class Player {
+export class Player extends MovingEntity {
 
 
     gravity = .75;
@@ -17,6 +17,7 @@ export class Player {
 
 
     constructor(ctx, pos, size, color) {
+        super(ctx, pos, size, color);
         this.direction = 'none';
         this.velocity = { x: 0, y: 0 };
         this.collisions = [];
@@ -26,11 +27,9 @@ export class Player {
 
         this.ctx = ctx;
         this.pos = pos;
-        this.size = size;
         this.color = color;
         this.colors.push(color);
     }
-
 
     update() {
         this.velocity.y += this.gravity;
@@ -51,8 +50,8 @@ export class Player {
         });
 
         for (let obstacle of this.collisions) {
-            if (this.velocity.y >= 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
-                this.pos.y = obstacle.pos.y - this.size;
+            if (this.velocity.y >= 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size.height < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size.width > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+                this.pos.y = obstacle.pos.y - this.size.height;
                 this.velocity.y = 0;
                 this.isGrounded = true;
 
@@ -60,16 +59,16 @@ export class Player {
                     this.pos.x += obstacle.velocity.x;
                 }
 
-            } else if (this.velocity.y < 0 && this.pos.y > obstacle.pos.y && this.pos.y + this.size > obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+            } else if (this.velocity.y < 0 && this.pos.y > obstacle.pos.y && this.pos.y + this.size.height > obstacle.pos.y + obstacle.size.height && this.pos.x + this.size.width > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
                 this.pos.y = obstacle.pos.y + obstacle.size.height;
                 this.velocity.y = 0;
-            } else if (this.pos.x <= obstacle.pos.x && this.pos.x + this.size >= obstacle.pos.x && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
-                this.pos.x = obstacle.pos.x - this.size;
+            } else if (this.pos.x <= obstacle.pos.x && this.pos.x + this.size.width >= obstacle.pos.x && this.pos.y + this.size.height > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
+                this.pos.x = obstacle.pos.x - this.size.width;
 
                 if (this.velocity.x > 0) {
                     this.velocity.x = 0;
                 }
-            } else if (this.pos.x <= obstacle.pos.x + obstacle.size.width && this.pos.x + this.size >= obstacle.pos.x + obstacle.size.width && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
+            } else if (this.pos.x <= obstacle.pos.x + obstacle.size.width && this.pos.x + this.size.width >= obstacle.pos.x + obstacle.size.width && this.pos.y + this.size.height > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
                 this.pos.x = obstacle.pos.x + obstacle.size.width;
 
                 if (this.velocity.x < 0) {
@@ -104,11 +103,9 @@ export class Player {
         this.pos.y += this.velocity.y;
     }
 
-
     clearCollisions() {
         this.collisions = [];
     }
-
 
     detectCollision(obstacle) {
         if (this.color !== obstacle.color) {
@@ -118,20 +115,13 @@ export class Player {
         }
     }
 
-    detectClick(x, y) {
-        return physicsLib.pointInsideRect({ x: x, y: y }, { pos: this.pos, size: { width: this.size, height: this.size } });
-    }
-
-
     moveLeft() {
         this.direction = 'left';
     }
 
-
     moveRight() {
         this.direction = 'right';
     }
-
 
     jump() {
         if (this.isGrounded) {
@@ -140,33 +130,15 @@ export class Player {
         }
     }
 
-
     addColor(color) {
         if (!this.colors.includes(color)) {
             this.colors.push(color);
         }
     }
 
-
-    draw() {
-        this.ctx.save();
-
-        this.ctx.translate(this.pos.x, this.pos.y);
-        drawLib.rect(this.ctx, 0, 0, this.size, this.size, this.color);
-
-        this.ctx.restore();
-    }
-
-
-    getEdges() {
-        return [{ x: this.pos.x, y: this.pos.y }, { x: this.pos.x + this.size, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size }, { x: this.pos.x + this.size, y: this.pos.y + this.size }];
-    }
-
-
     rotate(degree) {
 
     }
-
 
     getEditableAttributes() {
         return [{
@@ -190,6 +162,5 @@ export class Player {
             }
         }]
     }
-
 
 }

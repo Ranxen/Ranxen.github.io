@@ -1,17 +1,14 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
 
 
-export class ColorOrb {
-
+export class ColorOrb extends Entity {
 
     constructor(ctx, pos, size, color) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = size;
-        this.color = color;
+        super(ctx, pos, size, color);
+        this.edges = this.getEdges();
     }
-
 
     draw() {
         this.ctx.save();
@@ -23,30 +20,28 @@ export class ColorOrb {
         this.ctx.restore();
     }
 
-
     detectCollision(player, colorWheel) {
-        if (player.pos.x < this.pos.x && player.pos.x + player.size > this.pos.x && player.pos.y < this.pos.y && player.pos.y + player.size > this.pos.y) {
-            this.hitDetected(player, colorWheel);
-            return;
-        }
-
         let edgesOfPlayer = player.getEdges();
 
         for (let edge of edgesOfPlayer) {
-            let distance = Math.sqrt(Math.pow(edge.x - this.pos.x, 2) + Math.pow(edge.y - this.pos.y, 2));
-            if (distance < this.size) {
+            if (physicsLib.pointInsideCircle(edge, this)) {
+                this.hitDetected(player, colorWheel);
+                break;
+            }
+        }
+
+        for (let edge of this.getEdges()) {
+            if (physicsLib.pointInsideRect(edge, player)) {
                 this.hitDetected(player, colorWheel);
                 break;
             }
         }
     }
 
-
     detectClick(x, y) {
         return physicsLib.pointInsideCircle({ x: x, y: y}, this);
     }
 
-    
     hitDetected(player, colorWheel) {
         player.addColor(this.color);
         player.color = this.color;
@@ -54,41 +49,12 @@ export class ColorOrb {
         this.delete = true;
     }
 
+    getEdges() {
+        if (this.edges) {
+            return this.edges;
+        }
 
-    rotate(degree) {
-        
+        return [{ x: this.pos.x, y: this.pos.y - this.size }, { x: this.pos.x + this.size, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size }, { x: this.pos.x - this.size, y: this.pos.y }];
     }
-
-
-    getEditableAttributes() {
-        return [{
-            name: 'Color',
-            type: 'color',
-            value: this.color,
-            callback: (value) => {
-                this.color = value;
-            }
-        }, {
-            name: 'Position',
-            type: 'vector',
-            value: this.pos,
-            callback: (attribute, value) => {
-                if (attribute === 'x') {
-                    this.pos.x = value;
-                }
-                else if (attribute === 'y') {
-                    this.pos.y = value;
-                }
-            }
-        }, {
-            name: 'Size',
-            type: 'number',
-            value: this.size,
-            callback: (value) => {
-                this.size = value;
-            }
-        }]
-    }
-
 
 }

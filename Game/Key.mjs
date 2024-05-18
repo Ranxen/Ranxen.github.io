@@ -1,17 +1,12 @@
 import * as drawLib from '../Helper/drawLib.mjs';
-import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
 
 
-export class Key {
-
+export class Key extends Entity {
 
     constructor(ctx, pos) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = { width: 20, height: 30}
-        this.color = 'gold';
+        super(ctx, pos, { width: 20, height: 30 }, 'gold');
     }
-
 
     draw(player) {
         this.ctx.save();
@@ -32,23 +27,11 @@ export class Key {
         this.ctx.restore();
     }
 
-
     detectCollision(player) {
-        if (physicsLib.AABBCollision(player, this)) {
+        if (super.detectCollision(player)) {
             player.hasKey = true;
         }
     }
-
-
-    detectClick(x, y) {
-        return physicsLib.pointInsideRect({ x: x, y: y}, this);
-    }
-
-
-    rotate(degree) {
-
-    }
-
 
     getEditableAttributes() {
         return [{
@@ -65,6 +48,5 @@ export class Key {
             }
         }]
     }
-
 
 }

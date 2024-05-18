@@ -1,29 +1,36 @@
 import * as drawLib from '../Helper/drawLib.mjs';
-import { Entity } from './Entity.mjs';
+import * as physicsLib from '../Helper/physicsLib.mjs';
 
 
-export class Finish extends Entity {
+export class Entity {
 
-    constructor(ctx, pos, size) {
-        super(ctx, pos, size, 'brown');
-        this.finished = false;
+    constructor(ctx, pos, size, color) {
+        this.ctx = ctx;
+        this.pos = pos;
+        this.size = size;
+        this.color = color;
+        this.edges = this.getEdges();
     }
 
     draw() {
         this.ctx.save();
 
         this.ctx.translate(this.pos.x, this.pos.y);
-        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, 'brown');
-        drawLib.rect(this.ctx, 10, this.size.height / 2, 10, 5, 'black');
+        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
 
         this.ctx.restore();
     }
 
-    detectCollision(player) {
-        if (player.hasKey && !this.finished && super.detectCollision(player)) {
-            this.onFinish();
-            this.finished = true;
-        }
+    detectClick(x, y) {
+        return physicsLib.pointInsideRect({ x: x, y: y }, this);
+    }
+
+    detectCollision(other) {
+        return physicsLib.AABBCollision(this, other);
+    }
+
+    getEdges() {
+        return [{ x: this.pos.x, y: this.pos.y }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y + this.size.height }];
     }
 
     rotate(degree) {
@@ -32,6 +39,13 @@ export class Finish extends Entity {
 
     getEditableAttributes() {
         return [{
+            name: 'Color',
+            type: 'color',
+            value: this.color,
+            callback: (value) => {
+                this.color = value;
+            }
+        }, {
             name: 'Position',
             type: 'vector',
             value: this.pos,

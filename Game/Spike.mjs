@@ -1,24 +1,21 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
 
 
-export class Spike {
-
+export class Spike extends Entity {
 
     constructor(ctx, pos, size, rotation, color, restartLevel) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = size;
+        super(ctx, pos, size, color);
         if (rotation) {
             this.rotation = (rotation * Math.PI) / 180;
         }
         else {
             this.rotation = 0;
         }
-        this.color = color;
         this.restartLevel = restartLevel;
+        this.edges = this.getEdges();
     }
-
 
 
     draw() {
@@ -30,7 +27,6 @@ export class Spike {
         this.ctx.restore();
     }
 
-
     detectCollision(player) {
         if (player.color !== this.color) {
             if (physicsLib.trianglePlayerCollision(this, player)) {
@@ -39,11 +35,9 @@ export class Spike {
         }
     }
 
-
     detectClick(x, y) {
         return physicsLib.pointInsideTriangle({ x: x, y: y }, this.getEdges());
     }
-
 
     getEdges() {
         let edges = [];
@@ -61,12 +55,10 @@ export class Spike {
         return edges;
     }
 
-
     rotate(degree) {
         this.rotation += (degree * Math.PI) / 180;
         this.rotation = this.rotation % (2 * Math.PI);
     }
-
 
     getEditableAttributes() {
         return [{

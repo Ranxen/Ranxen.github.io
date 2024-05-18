@@ -134,7 +134,7 @@ function setLevel(newLevel) {
         levelDoneDialog.drawLevelTimes(timer.times);
         levelDoneDialog.show();
     };
-    player = new Player(ctx, level.startPos, 50, level.startColor);
+    player = new Player(ctx, level.startPos, { width: 50, height: 50 }, level.startColor);
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
     loadingLevel = false;
 }
@@ -383,7 +383,7 @@ function computePhysics() {
     level.detectColorOrbCollisions(player, colorWheel);
     level.detectSpikeCollisions(player);
     level.detectObstacleCollisions(player);
-    level.moveObstacles();
+    level.updateObstacles();
 
     level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
     player.update();
