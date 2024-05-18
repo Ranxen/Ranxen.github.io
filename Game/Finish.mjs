@@ -19,8 +19,9 @@ export class Finish extends Entity {
         this.ctx.restore();
     }
 
-    detectCollision(player) {
-        if (player.hasKey && !this.finished && super.detectCollision(player)) {
+    detectCollision(args) {
+        let player = args.other;
+        if (player.hasKey && !this.finished && super.detectCollision({ other: player})) {
             this.onFinish();
             this.finished = true;
         }

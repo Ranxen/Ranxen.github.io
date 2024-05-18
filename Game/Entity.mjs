@@ -25,8 +25,8 @@ export class Entity {
         return physicsLib.pointInsideRect({ x: x, y: y }, this);
     }
 
-    detectCollision(other) {
-        return physicsLib.AABBCollision(this, other);
+    detectCollision(args) {
+        return physicsLib.AABBCollision(this, args.other);
     }
 
     getEdges() {

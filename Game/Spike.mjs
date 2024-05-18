@@ -27,7 +27,8 @@ export class Spike extends Entity {
         this.ctx.restore();
     }
 
-    detectCollision(player) {
+    detectCollision(args) {
+        let player = args.other;
         if (player.color !== this.color) {
             if (physicsLib.trianglePlayerCollision(this, player)) {
                 this.restartLevel();

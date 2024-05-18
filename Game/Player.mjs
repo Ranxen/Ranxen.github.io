@@ -1,6 +1,7 @@
 import * as physicsLib from '../Helper/physicsLib.mjs';
 import { MovingEntity } from './MovingEntity.mjs';
 import { MovingObstacle } from './MovingObstacle.mjs';
+import { Obstacle } from './Obstacle.mjs';
 
 
 export class Player extends MovingEntity {
@@ -14,6 +15,7 @@ export class Player extends MovingEntity {
     dragAir = .95;
     jumpVelocity = -17.5;
     jumpMultiplier = .5;
+    collidesWith = [Obstacle, MovingObstacle];
 
 
     constructor(ctx, pos, size, color) {
@@ -103,15 +105,19 @@ export class Player extends MovingEntity {
         this.pos.y += this.velocity.y;
     }
 
-    clearCollisions() {
-        this.collisions = [];
-    }
-
-    detectCollision(obstacle) {
-        if (this.color !== obstacle.color) {
-            if (physicsLib.AABBCollisionPredicted(this, obstacle)) {
-                this.collisions.push(obstacle);
+    detectCollision(args) {
+        let other = args.other;
+        if (this.collidesWith.includes(other.constructor)) {
+            let obstacle = other;
+            if (this.color !== obstacle.color) {
+                if (physicsLib.AABBCollisionPredicted(this, obstacle)) {
+                    this.collisions.push(obstacle);
+                }
             }
+        }
+        else {
+            args.other = this;
+            other.detectCollision(args);
         }
     }
 

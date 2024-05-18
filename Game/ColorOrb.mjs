@@ -20,7 +20,9 @@ export class ColorOrb extends Entity {
         this.ctx.restore();
     }
 
-    detectCollision(player, colorWheel) {
+    detectCollision(args) {
+        let player = args.other;
+        let colorWheel = args.colorWheel;
         let edgesOfPlayer = player.getEdges();
 
         for (let edge of edgesOfPlayer) {

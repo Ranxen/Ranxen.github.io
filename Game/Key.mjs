@@ -6,16 +6,17 @@ export class Key extends Entity {
 
     constructor(ctx, pos) {
         super(ctx, pos, { width: 20, height: 30 }, 'gold');
+        this.player = null;
     }
 
-    draw(player) {
+    draw() {
         this.ctx.save();
 
-        if (!player.hasKey) {
+        if (!this.player.hasKey) {
             this.ctx.translate(this.pos.x, this.pos.y);
         }
         else {
-            this.ctx.translate(player.pos.x - 10, player.pos.y - 40);
+            this.ctx.translate(this.player.pos.x - 10, this.player.pos.y - 40);
         }
 
         drawLib.rect(this.ctx, this.size.width / 3, 0, this.size.width / 4, this.size.height, this.color, "transparent", 0);
@@ -27,8 +28,9 @@ export class Key extends Entity {
         this.ctx.restore();
     }
 
-    detectCollision(player) {
-        if (super.detectCollision(player)) {
+    detectCollision(args) {
+        let player = args.other;
+        if (super.detectCollision({ other: player })) {
             player.hasKey = true;
         }
     }
