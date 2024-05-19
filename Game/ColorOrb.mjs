@@ -6,7 +6,7 @@ import { Entity } from './Entity.mjs';
 export class ColorOrb extends Entity {
 
     constructor(ctx, pos, size, color) {
-        super(ctx, pos, size, color);
+        super(ctx, pos, { width: size, height: size}, color);
         this.edges = this.getEdges();
     }
 
@@ -15,7 +15,7 @@ export class ColorOrb extends Entity {
 
         this.ctx.translate(this.pos.x, this.pos.y);
 
-        drawLib.circle(this.ctx, 0, 0, this.size, this.color);
+        drawLib.circle(this.ctx, 0, 0, this.size.width, this.color);
 
         this.ctx.restore();
     }
@@ -41,7 +41,9 @@ export class ColorOrb extends Entity {
     }
 
     detectClick(x, y) {
-        return physicsLib.pointInsideCircle({ x: x, y: y}, this);
+        if (physicsLib.pointInsideCircle({ x: x, y: y}, this)) {
+            return this;
+        }
     }
 
     hitDetected(player, colorWheel) {
@@ -56,7 +58,7 @@ export class ColorOrb extends Entity {
             return this.edges;
         }
 
-        return [{ x: this.pos.x, y: this.pos.y - this.size }, { x: this.pos.x + this.size, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size }, { x: this.pos.x - this.size, y: this.pos.y }];
+        return [{ x: this.pos.x, y: this.pos.y - this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x - this.size.width, y: this.pos.y }];
     }
 
 }

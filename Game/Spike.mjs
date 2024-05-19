@@ -37,7 +37,9 @@ export class Spike extends Entity {
     }
 
     detectClick(x, y) {
-        return physicsLib.pointInsideTriangle({ x: x, y: y }, this.getEdges());
+        if (physicsLib.pointInsideTriangle({ x: x, y: y }, this.getEdges())) {
+            return this;
+        }
     }
 
     getEdges() {

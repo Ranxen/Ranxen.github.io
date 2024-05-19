@@ -14,6 +14,7 @@ import { EditorControls } from "./EditorControls.mjs";
 import { Inspector } from "./Inspector.mjs";
 import { ColorPalette } from "./ColorPalette.mjs";
 import { EditorGameManager } from "./EditorGameManager.mjs";
+import { ParentChildRelation } from "./ParentChildRelation.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -40,7 +41,7 @@ function drawHtml() {
     leftDrawer = new LeftDrawer(document, localLevels, editorControls, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), showGrid : () => levelEditor.showGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
     parentContainer.appendChild(leftDrawer.createElement());
 
-    inspector = new Inspector(document, () => levelEditor.getUsedColors());
+    inspector = new Inspector(document, () => levelEditor.getUsedColors(), () => levelEditor.selectParent());
     parentContainer.appendChild(inspector.createElement());
     inspector.hide();
 
@@ -148,6 +149,7 @@ export class LevelEditor {
     gridSize = 25;
     gridEnabled = true;
     gridShown = false;
+    selectingParent = false;
 
 
     constructor(ctx) {
@@ -298,6 +300,11 @@ export class LevelEditor {
     }
 
 
+    selectParent() {
+        this.selectingParent = true;
+    }
+
+
     createActions() {
         return [{ "name": "Player", "action": () => this.createPlayer() }, { "name": "Obstacle", "action": () => this.createObstacle() }, { "name": "Moving Obstacle", "action": () => this.createMovingObstacle() }, { "name" : "Color Orb", "action" : () => this.createColorOrb()}, { "name" : "Spike", "action" : () => this.createSpike()}, { "name" : "Finish", "action" : () => this.createFinish()}, { "name" : "Key", "action" : () => this.createKey()}];
     }
@@ -319,8 +326,7 @@ export class LevelEditor {
                 this.mouseYInGridTranslated = y - this.camera.y;
             }
 
-            this.currentObject.pos.x = this.mouseXInGridTranslated;
-            this.currentObject.pos.y = this.mouseYInGridTranslated;
+            this.currentObject.setPosition(this.mouseXInGridTranslated, this.mouseYInGridTranslated);
 
             if (this.currentObject instanceof MovingObstaclePath) {
                 inspector.setObject(this.currentObject.movingObstacle);
@@ -340,7 +346,7 @@ export class LevelEditor {
             this.activeMouseButtons.push(button);
         }
 
-        if (button === 0 && !this.currentObject) {
+        if (button === 0 && !this.currentObject && !this.selectingParent) {
             let result = this.detectClickOnObject(x, y);
 
             if (result) {
@@ -357,6 +363,30 @@ export class LevelEditor {
                 inspector.object = null;
             }
         }
+        else if (button === 0 && inspector.object && this.selectingParent) {
+            let result = this.detectClickOnObject(x, y);
+            if (result && result !== inspector.object && (result instanceof MovingObstacle || result instanceof Obstacle)) {
+                result.addChild(inspector.object);
+                
+                if (inspector.object instanceof MovingObstacle) {
+                    this.level.movingObstacles.splice(this.level.movingObstacles.indexOf(inspector.object), 1);
+                }
+                else if (inspector.object instanceof Obstacle) {
+                    this.level.obstacles.splice(this.level.obstacles.indexOf(inspector.object), 1);
+                }
+                else if (inspector.object instanceof Spike) {
+                    this.level.spikes.splice(this.level.spikes.indexOf(inspector.object), 1);
+                }
+                else if (inspector.object instanceof ColorOrb) {
+                    this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(inspector.object), 1);
+                }
+                
+                gameManager.removeEntity(inspector.object);
+                gameManager.addEntity(new ParentChildRelation(this.ctx, result, inspector.object));
+            }
+
+            this.selectingParent = false;
+        }
     }
 
 
@@ -365,8 +395,9 @@ export class LevelEditor {
         y -= this.camera.y;
 
         for (let entity of gameManager.entities) {
-            if (entity.detectClick(x, y)) {
-                return entity;
+            let clicked = entity.detectClick(x, y);
+            if (clicked) {
+                return clicked;
             }
         }
 
@@ -468,6 +499,10 @@ export class LevelEditor {
 
         if (object instanceof MovingObstaclePath) {
             object = object.movingObstacle;
+        }
+
+        if (object.parent) {
+            object.parent.removeChild(object);
         }
 
         gameManager.removeEntity(object);

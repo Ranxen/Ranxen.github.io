@@ -85,6 +85,7 @@ export class LeftDrawer {
             }
             catch (error) {
                 this.showInvalidLevelToast();
+                console.error(error);
             }
         });
         loadLevelContainer.appendChild(loadEncodedButton);

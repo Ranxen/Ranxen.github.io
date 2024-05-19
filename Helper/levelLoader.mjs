@@ -1,4 +1,8 @@
+import { ColorOrb } from "../Game/ColorOrb.mjs";
 import { Level } from "../Game/Level.mjs";
+import { MovingObstacle } from "../Game/MovingObstacle.mjs";
+import { Obstacle } from "../Game/Obstacle.mjs";
+import { Spike } from "../Game/Spike.mjs";
 
 
 export function loadLevel(ctx, encodedLevel, actions) {
@@ -54,7 +58,8 @@ export function levelToJSON(level, player) {
             return {
                 pos: obstacle.pos,
                 size: obstacle.size,
-                color: obstacle.color
+                color: obstacle.color,
+                children: mapChildren(obstacle)
             }
         }),
         movingObstacles: level.movingObstacles.map(movingObstacle => {
@@ -64,7 +69,8 @@ export function levelToJSON(level, player) {
                 color: movingObstacle.color,
                 targetPos: movingObstacle.targetPos,
                 speed: movingObstacle.speed,
-                movePlayer: movingObstacle.movePlayer
+                movePlayer: movingObstacle.movePlayer,
+                children: mapChildren(movingObstacle)
             }
         }),
         spikes: level.spikes.map(spike => {
@@ -78,4 +84,51 @@ export function levelToJSON(level, player) {
     };
 
     return JSON.stringify(json);
+}
+
+
+function mapByType(child) {
+    switch (child.constructor) {
+        case Spike:
+            return {
+                constructor: "Spike",
+                pos: child.pos,
+                size: child.size,
+                rotation: child.rotation * 180 / Math.PI,
+                color: child.color
+            }
+        case MovingObstacle:
+            return {
+                constructor: "MovingObstacle",
+                pos: child.pos,
+                size: child.size,
+                color: child.color,
+                targetPos: child.targetPos,
+                speed: child.speed,
+                movePlayer: child.movePlayer,
+                children: mapChildren(child)
+            }
+        case Obstacle:
+            return {
+                constructor: "Obstacle",
+                pos: child.pos,
+                size: child.size,
+                color: child.color,
+                children: mapChildren(child)
+            }
+        case ColorOrb:
+            return {
+                constructor: "ColorOrb",
+                pos: child.pos,
+                size: child.size,
+                color: child.color
+            }
+    }
+}
+
+
+function mapChildren(entity) {
+    return entity.children.map(child => {
+        return mapByType(child);
+    });
 }

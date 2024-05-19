@@ -23,8 +23,14 @@ export class MovingObstaclePath {
         this.ctx.restore();
     }
 
+    setPosition(x, y) {
+        this.movingObstacle.targetPos = { x: x, y: y };
+    }
+
     detectClick(x, y) {
-        return physicsLib.pointInsideCircle({ x: x, y: y }, { pos: { x: this.movingObstacle.targetPos.x + this.movingObstacle.size.width / 2, y: this.movingObstacle.targetPos.y + this.movingObstacle.size.height / 2 }, size: 5 });
+        if (physicsLib.pointInsideCircle({ x: x, y: y }, { pos: { x: this.movingObstacle.targetPos.x + this.movingObstacle.size.width / 2, y: this.movingObstacle.targetPos.y + this.movingObstacle.size.height / 2 }, size: 5 })) {
+            return this;
+        }
     }
 
     rotate(degree) {

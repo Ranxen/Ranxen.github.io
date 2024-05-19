@@ -1,9 +1,12 @@
+import { Player } from "../Game/Player.mjs";
+
 export class Inspector {
 
 
-    constructor(document, colorCallback) {
+    constructor(document, colorCallback, selectParentCallback) {
         this.document = document;
         this.colorCallback = colorCallback;
+        this.selectParentCallback = selectParentCallback;
     }
 
 
@@ -18,6 +21,14 @@ export class Inspector {
         this.title = this.document.createElement("h1");
         this.title.innerText = "Object Inspector";
         header.appendChild(this.title);
+
+        this.parentButton = this.document.createElement("button");
+        this.parentButton.innerText = "Parent";
+        this.parentButton.style.margin = "4px";
+        this.parentButton.addEventListener("click", () => {
+            this.selectParentCallback();
+        });
+        header.appendChild(this.parentButton);
 
         this.attributeContainer = this.document.createElement("div");
         this.attributeContainer.style.margin = "4px";
@@ -35,6 +46,10 @@ export class Inspector {
         this.attributeContainer.innerHTML = "";
         this.object = object;
         this.title.innerText = object.constructor.name;
+
+        if (!(object instanceof Player)) {
+            this.parentButton.style.display = "block";
+        }
         
         let editableAttributes = object.getEditableAttributes();
 
@@ -58,6 +73,7 @@ export class Inspector {
 
     hide() {
         this.container.style.display = "none";
+        this.parentButton.style.display = "none";
     }
 
 

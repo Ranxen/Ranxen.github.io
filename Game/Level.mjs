@@ -23,9 +23,17 @@ export class Level {
             this.key = new Key(ctx, level.keyPos);
             this.finish = new Finish(ctx, level.finish.pos, level.finish.size);
             this.colorOrbs = level.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color));
-            this.obstacles = level.obstacles.map(obstacle => new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color));
+            this.obstacles = level.obstacles.map(obstacle => {
+                let obs = new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color);
+                this.createChildren(ctx, obstacle, actions, obs);
+                return obs;
+            });
             if (level.movingObstacles) {
-                this.movingObstacles = level.movingObstacles.map(movingObstacle => new MovingObstacle(ctx, movingObstacle.pos, movingObstacle.size, movingObstacle.color, movingObstacle.targetPos, movingObstacle.speed, movingObstacle.movePlayer));
+                this.movingObstacles = level.movingObstacles.map(movingObstacle => {
+                    let obs = new MovingObstacle(ctx, movingObstacle.pos, movingObstacle.size, movingObstacle.color, movingObstacle.targetPos, movingObstacle.speed, movingObstacle.movePlayer, movingObstacle.children);
+                    this.createChildren(ctx, movingObstacle, actions, obs);
+                    return obs;
+                });
             }
             else {
                 this.movingObstacles = [];
@@ -42,6 +50,29 @@ export class Level {
             this.obstacles = [];
             this.movingObstacles = [];
             this.spikes = [];
+        }
+    }
+
+    createChildren(ctx, json, actions, entity) {
+        if (json.children) {
+            json.children.map(child => {
+                let childEntity = this.createChildByConstructor(ctx, child, actions);
+                entity.addChild(childEntity);
+                this.createChildren(ctx, child, actions, childEntity);
+            });
+        }
+    }
+
+    createChildByConstructor(ctx, child, actions) {
+        switch (child.constructor) {
+            case 'Obstacle':
+                return new Obstacle(ctx, child.pos, child.size, child.color, child.children);
+            case 'MovingObstacle':
+                return new MovingObstacle(ctx, child.pos, child.size, child.color, child.targetPos, child.speed, child.movePlayer);
+            case 'ColorOrb':
+                return new ColorOrb(ctx, child.pos, child.size, child.color);
+            case 'Spike':
+                return new Spike(ctx, child.pos, child.size, child.rotation, child.color, actions.restartLevel);
         }
     }
 

@@ -9,13 +9,39 @@ import { MovingObstaclePath } from "./MovingObstaclePath.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
 import { Player } from "../Game/Player.mjs";
 import { Spike } from "../Game/Spike.mjs";
+import { ParentChildRelation } from "./ParentChildRelation.mjs";
 
 export class EditorGameManager extends GameManager {
 
-    renderPipeline = [Obstacle, MovingObstacle, MovingObstaclePath, ColorOrb, Spike, MovingEntity, Entity, Finish, Player, Key];
+    renderPipeline = [Obstacle, MovingObstacle, MovingObstaclePath, ColorOrb, Spike, MovingEntity, Entity, Finish, Player, Key, ParentChildRelation];
 
     constructor() {
         super();
+    }
+
+    buildEntities(level, player) {
+        this.entities = [];
+        this.updateEntities = [];
+        this.player = player;
+
+        for (let obstacle of level.obstacles) {
+            this.addEntity(obstacle);
+        }
+        for (let movingObstacle of level.movingObstacles) {
+            this.addEntity(movingObstacle);
+            this.addEntity(new MovingObstaclePath(movingObstacle.ctx, movingObstacle));
+        }
+        for (let colorOrb of level.colorOrbs) {
+            this.addEntity(colorOrb);
+        }
+        for (let spike of level.spikes) {
+            this.addEntity(spike);
+        }
+        this.addEntity(level.finish);
+        this.addEntity(player);
+        this.addEntity(level.key);
+
+        this.sortEntities();
     }
 
     getTargetIndex(type) {
@@ -33,6 +59,10 @@ export class EditorGameManager extends GameManager {
 
     addEntity(entity) {
         this.entities.splice(this.getTargetIndex(entity.constructor), 0, entity);
+
+        entity.children?.forEach(child => {
+            this.addEntity(new ParentChildRelation(entity.ctx, entity, child));
+        });
     }
 
     removeEntity(entity) {
@@ -43,7 +73,7 @@ export class EditorGameManager extends GameManager {
             }
         }
         
-        this.entities = this.entities.filter(e => e !== entity);
+        this.entities = this.entities.filter(e => e !== entity && !(e instanceof ParentChildRelation && (e.parent === entity || e.child === entity)));
     }
 
 }

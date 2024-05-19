@@ -87,6 +87,7 @@ async function loadLevel(index) {
             setLevel(new Level(ctx, json, { restartLevel: restartLevel }));
         }).catch(error => { 
             loadingLevel = false;
+            console.error(error);
         });
 }
 

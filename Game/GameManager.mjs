@@ -59,6 +59,18 @@ export class GameManager {
             if (entity instanceof ColorOrb) {
                 return !entity.delete;
             }
+
+            this.filterColorOrbsOfChildren(entity);
+
+            return true;
+        });
+    }
+
+    filterColorOrbsOfChildren(entity) {
+        entity.children = entity.children.filter(child => {
+            if (child instanceof ColorOrb) {
+                return !child.delete;
+            }
             return true;
         });
     }
