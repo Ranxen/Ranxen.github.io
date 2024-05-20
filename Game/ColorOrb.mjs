@@ -61,4 +61,38 @@ export class ColorOrb extends Entity {
         return [{ x: this.pos.x, y: this.pos.y - this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x - this.size.width, y: this.pos.y }];
     }
 
+    getEditableAttributes() {
+        return [{
+            name: 'Color',
+            type: 'color',
+            value: this.color,
+            callback: (value) => {
+                this.color = value;
+            }
+        }, {
+            name: 'Position',
+            type: 'vector',
+            value: this.pos,
+            callback: (attribute, value) => {
+                if (attribute === 'x') {
+                    this.pos.x = value;
+                }
+                else if (attribute === 'y') {
+                    this.pos.y = value;
+                }
+
+                this.children.forEach(child => {
+                    child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
+                });
+            }
+        }, {
+            name: 'Size',
+            type: 'number',
+            value: this.size.width,
+            callback: (value) => {
+                this.size = { width: value, height: value };
+            }
+        }]
+    }
+
 }
