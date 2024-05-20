@@ -28,7 +28,7 @@ export class MovingObstaclePath {
     }
 
     detectClick(x, y) {
-        if (physicsLib.pointInsideCircle({ x: x, y: y }, { pos: { x: this.movingObstacle.targetPos.x + this.movingObstacle.size.width / 2, y: this.movingObstacle.targetPos.y + this.movingObstacle.size.height / 2 }, size: 5 })) {
+        if (physicsLib.pointInsideCircle({ x: x, y: y }, { pos: { x: this.movingObstacle.targetPos.x + this.movingObstacle.size.width / 2, y: this.movingObstacle.targetPos.y + this.movingObstacle.size.height / 2 }, size: { width: 5, height: 5 } })) {
             return this;
         }
     }
@@ -36,6 +36,5 @@ export class MovingObstaclePath {
     rotate(degree) {
         this.movingObstacle.rotate(degree);
     }
-
 
 }

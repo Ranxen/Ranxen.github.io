@@ -47,81 +47,51 @@ export function levelToJSON(level, player) {
             pos: level.finish.pos,
             size: level.finish.size
         },
-        colorOrbs: level.colorOrbs.map(colorOrb => {
-            return {
-                pos: colorOrb.pos,
-                size: colorOrb.size,
-                color: colorOrb.color
-            }
-        }),
-        obstacles: level.obstacles.map(obstacle => {
-            return {
-                pos: obstacle.pos,
-                size: obstacle.size,
-                color: obstacle.color,
-                children: mapChildren(obstacle)
-            }
-        }),
-        movingObstacles: level.movingObstacles.map(movingObstacle => {
-            return {
-                pos: movingObstacle.pos,
-                size: movingObstacle.size,
-                color: movingObstacle.color,
-                targetPos: movingObstacle.targetPos,
-                speed: movingObstacle.speed,
-                movePlayer: movingObstacle.movePlayer,
-                children: mapChildren(movingObstacle)
-            }
-        }),
-        spikes: level.spikes.map(spike => {
-            return {
-                pos: spike.pos,
-                size: spike.size,
-                rotation: spike.rotation * 180 / Math.PI,
-                color: spike.color
-            }
-        })
+        colorOrbs: level.colorOrbs.map(colorOrb => mapByType(colorOrb)),
+        obstacles: level.obstacles.map(obstacle => mapByType(obstacle)),
+        movingObstacles: level.movingObstacles.map(movingObstacle => mapByType(movingObstacle)),
+        spikes: level.spikes.map(spike => mapByType(spike))
     };
 
     return JSON.stringify(json);
 }
 
 
-function mapByType(child) {
-    switch (child.constructor) {
+function mapByType(entity) {
+    switch (entity.constructor) {
         case Spike:
             return {
                 constructor: "Spike",
-                pos: child.pos,
-                size: child.size,
-                rotation: child.rotation * 180 / Math.PI,
-                color: child.color
+                pos: entity.pos,
+                size: entity.size,
+                rotation: entity.rotation * 180 / Math.PI,
+                color: entity.color
             }
         case MovingObstacle:
             return {
                 constructor: "MovingObstacle",
-                pos: child.pos,
-                size: child.size,
-                color: child.color,
-                targetPos: child.targetPos,
-                speed: child.speed,
-                movePlayer: child.movePlayer,
-                children: mapChildren(child)
+                pos: entity.pos,
+                size: entity.size,
+                color: entity.color,
+                targetPos: entity.targetPos,
+                speed: entity.speed,
+                movePlayer: entity.movePlayer,
+                children: mapChildren(entity)
             }
         case Obstacle:
             return {
                 constructor: "Obstacle",
-                pos: child.pos,
-                size: child.size,
-                color: child.color,
-                children: mapChildren(child)
+                pos: entity.pos,
+                size: entity.size,
+                color: entity.color,
+                children: mapChildren(entity)
             }
         case ColorOrb:
             return {
                 constructor: "ColorOrb",
-                pos: child.pos,
-                size: child.size,
-                color: child.color
+                pos: entity.pos,
+                size: entity.size.width,
+                color: entity.color
             }
     }
 }
