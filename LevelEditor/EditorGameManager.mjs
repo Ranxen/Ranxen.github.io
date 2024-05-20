@@ -64,8 +64,13 @@ export class EditorGameManager extends GameManager {
     addEntity(entity) {
         this.entities.splice(this.getTargetIndex(entity.constructor), 0, entity);
 
+        this.addParentChildRelation(entity);
+    }
+
+    addParentChildRelation(entity) {
         entity.children?.forEach(child => {
             this.addEntity(new ParentChildRelation(entity.ctx, entity, child));
+            this.addParentChildRelation(child);
         });
     }
 

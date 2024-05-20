@@ -26,7 +26,7 @@ export class MovingObstacle extends MovingEntity {
             this.pos.y += this.velocity.y;
         }
 
-        this.updateChildren();
+        super.update();
     }
 
     rotate(degree) {

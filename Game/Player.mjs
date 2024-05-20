@@ -15,7 +15,7 @@ export class Player extends MovingEntity {
     dragAir = .95;
     jumpVelocity = -17.5;
     jumpMultiplier = .5;
-    collidesWith = [Obstacle, MovingObstacle];
+    collisionMask = [Obstacle, MovingObstacle];
 
 
     constructor(ctx, pos, size, color) {
@@ -107,17 +107,20 @@ export class Player extends MovingEntity {
 
     detectCollision(args) {
         let other = args.other;
-        if (this.collidesWith.includes(other.constructor)) {
-            let obstacle = other;
-            if (this.color !== obstacle.color) {
-                if (physicsLib.AABBCollisionPredicted(this, obstacle)) {
-                    this.collisions.push(obstacle);
+        args.other = this;
+        args.collisionMask = this.collisionMask;
+        let possibleCollisions = other.detectCollision(args);
+
+        for (let collision of possibleCollisions) {
+            if (this.collisionMask.includes(collision.constructor)) {
+                if (this.color !== collision.color) {
+                    this.collisions.push(collision);
                 }
             }
-        }
-        else {
-            args.other = this;
-            other.detectCollision(args);
+            else {
+                args.other = this;
+                other.detectCollision(args);
+            }
         }
     }
 

@@ -25,6 +25,13 @@ export class Entity {
         this.drawChildren();
     }
 
+    update() {
+        this.children.forEach(child => {
+            child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
+            child.update();
+        });
+    }
+
     drawChildren() {
         this.children.forEach(child => {
             child.draw()
@@ -57,11 +64,19 @@ export class Entity {
     }
 
     detectCollision(args) {
+        let collisions = [];
         this.children.forEach(child => {
-            child.detectCollision(args);
+            collisions.push(...child.detectCollision(args));
         });
 
-        return physicsLib.AABBCollision(this, args.other);
+        if (args.collisionMask?.includes(this.constructor) && physicsLib.AABBCollisionPredicted(args.other, this)) {
+            collisions.push(this);
+        }
+        else if (args.collisionMask === undefined && physicsLib.AABBCollision(this, args.other)) {
+            collisions.push(this);
+        }
+
+        return collisions;
     }
 
     getEdges() {
@@ -79,8 +94,13 @@ export class Entity {
             this.relativePos = { x: this.pos.x - this.parent.pos.x, y: this.pos.y - this.parent.pos.y };
         }
 
+        this.updateChildPositions();
+    }
+
+    updateChildPositions() {
         this.children.forEach(child => {
             child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
+            child.updateChildPositions();
         });
     }
 
@@ -104,9 +124,7 @@ export class Entity {
                     this.pos.y = value;
                 }
 
-                this.children.forEach(child => {
-                    child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
-                });
+                this.updateChildPositions();
             }
         }, {
             name: 'Size',

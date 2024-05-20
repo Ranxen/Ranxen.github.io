@@ -21,10 +21,13 @@ export class Finish extends Entity {
 
     detectCollision(args) {
         let player = args.other;
-        if (player.hasKey && !this.finished && super.detectCollision({ other: player})) {
+        if (player.hasKey && !this.finished && super.detectCollision({ other: player}).length > 0) {
             this.onFinish();
             this.finished = true;
+            return [this];
         }
+
+        return [];
     }
 
     rotate(degree) {

@@ -34,9 +34,12 @@ export class Spike extends Entity {
             if (player.color !== this.color) {
                 if (physicsLib.trianglePlayerCollision(this, player)) {
                     this.restartLevel();
+                    return [this];
                 }
             }
         }
+
+        return [];
     }
 
     detectClick(x, y) {

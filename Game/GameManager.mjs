@@ -72,6 +72,8 @@ export class GameManager {
 
     filterColorOrbsOfChildren(entity) {
         entity.children = entity.children.filter(child => {
+            this.filterColorOrbsOfChildren(child);
+
             if (child instanceof ColorOrb) {
                 return !child.delete;
             }

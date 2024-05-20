@@ -9,21 +9,6 @@ export class MovingEntity extends Entity {
         this.collisions = [];
     }
 
-    update() {
-        this.pos.x += this.velocity.x;
-        this.pos.y += this.velocity.y;
-        this.updateChildren();
-    }
-
-    updateChildren() {
-        this.children.forEach(child => {
-            child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
-            if (child instanceof MovingEntity) {
-                child.update()
-            }
-        });
-    }
-
     clearCollisions() {
         this.collisions = [];
     }

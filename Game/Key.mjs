@@ -32,10 +32,13 @@ export class Key extends Entity {
     detectCollision(args) {
         if (args.other instanceof Player) {
             let player = args.other;
-            if (super.detectCollision({ other: player })) {
+            if (super.detectCollision({ other: player }).length > 0) {
                 player.hasKey = true;
+                return [this];
             }
         }
+
+        return [];
     }
 
     getEditableAttributes() {

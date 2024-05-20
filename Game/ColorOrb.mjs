@@ -30,17 +30,19 @@ export class ColorOrb extends Entity {
             for (let edge of edgesOfPlayer) {
                 if (physicsLib.pointInsideCircle(edge, this)) {
                     this.hitDetected(player, colorWheel);
-                    break;
+                    return [this];
                 }
             }
     
             for (let edge of this.getEdges()) {
                 if (physicsLib.pointInsideRect(edge, player)) {
                     this.hitDetected(player, colorWheel);
-                    break;
+                    return [this];
                 }
             }
         }
+
+        return [];
     }
 
     detectClick(x, y) {
