@@ -59,10 +59,6 @@ export class ColorOrb extends Entity {
     }
 
     getEdges() {
-        if (this.edges) {
-            return this.edges;
-        }
-
         return [{ x: this.pos.x, y: this.pos.y - this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x - this.size.width, y: this.pos.y }];
     }
 

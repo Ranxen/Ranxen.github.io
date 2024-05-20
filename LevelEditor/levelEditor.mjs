@@ -604,7 +604,7 @@ export class LevelEditor {
 
 
     levelIsValid() {
-        return this.level.obstacles.length > 0 && this.level.finish !== null && this.level.key !== null && this.player !== null;
+        return (this.level.obstacles.length > 0 || this.level.movingObstacles.length > 0) && this.level.finish && this.level.key && this.player;
     }
 
 

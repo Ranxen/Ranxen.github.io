@@ -112,14 +112,8 @@ export class Player extends MovingEntity {
         let possibleCollisions = other.detectCollision(args);
 
         for (let collision of possibleCollisions) {
-            if (this.collisionMask.includes(collision.constructor)) {
-                if (this.color !== collision.color) {
-                    this.collisions.push(collision);
-                }
-            }
-            else {
-                args.other = this;
-                other.detectCollision(args);
+            if (this.collisionMask.includes(collision.constructor) && this.color !== collision.color) {
+                this.collisions.push(collision);
             }
         }
     }
