@@ -2,7 +2,7 @@ import { ColorOrb } from "./ColorOrb.mjs";
 import { Entity } from "./Entity.mjs";
 import { Finish } from "./Finish.mjs";
 import { Key } from "./Key.mjs";
-import { MovingEntity } from "./MovingEntity.mjs";
+import { UpdatingEntity } from "./UpdatingEntity.mjs";
 import { MovingObstacle } from "./MovingObstacle.mjs";
 import { Obstacle } from "./Obstacle.mjs";
 import { Player } from "./Player.mjs";
@@ -10,7 +10,7 @@ import { Spike } from "./Spike.mjs";
 
 export class GameManager {
 
-    renderPipeline = [Obstacle, MovingObstacle, ColorOrb, Spike, MovingEntity, Entity, Finish, Player, Key];
+    renderPipeline = [Obstacle, MovingObstacle, ColorOrb, Spike, UpdatingEntity, Entity, Finish, Player, Key];
 
     constructor(level, player) {
         this.entities = [];
@@ -34,6 +34,9 @@ export class GameManager {
         }
         for (let colorOrb of level.colorOrbs) {
             this.addEntity(colorOrb);
+        }
+        for (let timedColorOrb of level.timedColorOrbs) {
+            this.addEntity(timedColorOrb);
         }
         for (let spike of level.spikes) {
             this.addEntity(spike);
@@ -83,7 +86,7 @@ export class GameManager {
 
     addEntity(entity) {
         this.entities.push(entity);
-        if (entity instanceof MovingEntity) {
+        if (entity instanceof UpdatingEntity) {
             this.updateEntities.push(entity);
         }
     }

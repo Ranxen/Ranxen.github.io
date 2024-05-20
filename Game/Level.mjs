@@ -4,6 +4,7 @@ import { ColorOrb } from "./ColorOrb.mjs";
 import { Obstacle } from "./Obstacle.mjs";
 import { MovingObstacle } from "./MovingObstacle.mjs";
 import { Spike } from "./Spike.mjs";
+import { TimedColorOrb } from "./TimedColorOrb.mjs";
 
 
 export class Level {
@@ -27,6 +28,12 @@ export class Level {
                 this.finish = new Finish(ctx, level.finish.pos, level.finish.size);
             }
             this.colorOrbs = level.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color));
+            if (level.timedColorOrbs) {
+                this.timedColorOrbs = level.timedColorOrbs.map(timedColorOrb => new TimedColorOrb(ctx, timedColorOrb.pos, timedColorOrb.size, timedColorOrb.color, timedColorOrb.timeout));
+            }
+            else {
+                this.timedColorOrbs = [];
+            }
             this.obstacles = level.obstacles.map(obstacle => {
                 let obs = new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color);
                 this.createChildren(ctx, obstacle, actions, obs);
@@ -51,6 +58,7 @@ export class Level {
         }
         else {
             this.colorOrbs = [];
+            this.timedColorOrbs = [];
             this.obstacles = [];
             this.movingObstacles = [];
             this.spikes = [];
@@ -73,6 +81,8 @@ export class Level {
                 return new Obstacle(ctx, child.pos, child.size, child.color, child.children);
             case 'MovingObstacle':
                 return new MovingObstacle(ctx, child.pos, child.size, child.color, child.targetPos, child.speed, child.movePlayer);
+            case 'TimedColorOrb':
+                return new TimedColorOrb(ctx, child.pos, child.size, child.color, child.timeout);
             case 'ColorOrb':
                 return new ColorOrb(ctx, child.pos, child.size, child.color);
             case 'Spike':

@@ -15,6 +15,7 @@ import { Inspector } from "./Inspector.mjs";
 import { ColorPalette } from "./ColorPalette.mjs";
 import { EditorGameManager } from "./EditorGameManager.mjs";
 import { ParentChildRelation } from "./ParentChildRelation.mjs";
+import { TimedColorOrb } from "../Game/TimedColorOrb.mjs";
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -208,6 +209,14 @@ export class LevelEditor {
     }
 
 
+    createTimedColorOrb() {
+        let colorOrb = new TimedColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor, 60);
+        this.level.timedColorOrbs.push(colorOrb);
+        gameManager.addEntity(colorOrb);
+        this.selectObject(colorOrb);
+    }
+
+
     createSpike() {
         let spike = new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, 0, this.currentColor);
         this.level.spikes.push(spike);
@@ -306,7 +315,7 @@ export class LevelEditor {
 
 
     createActions() {
-        return [{ "name": "Player", "action": () => this.createPlayer() }, { "name": "Obstacle", "action": () => this.createObstacle() }, { "name": "Moving Obstacle", "action": () => this.createMovingObstacle() }, { "name" : "Color Orb", "action" : () => this.createColorOrb()}, { "name" : "Spike", "action" : () => this.createSpike()}, { "name" : "Finish", "action" : () => this.createFinish()}, { "name" : "Key", "action" : () => this.createKey()}];
+        return [{ "name": "Player", "action": () => this.createPlayer() }, { "name": "Obstacle", "action": () => this.createObstacle() }, { "name": "Moving Obstacle", "action": () => this.createMovingObstacle() }, { "name": "Color Orb", "action": () => this.createColorOrb() }, { "name": "Timed Color Orb", "action": () => this.createTimedColorOrb() }, { "name" : "Spike", "action" : () => this.createSpike()}, { "name" : "Finish", "action" : () => this.createFinish()}, { "name" : "Key", "action" : () => this.createKey()}];
     }
 
 
@@ -377,6 +386,9 @@ export class LevelEditor {
                 else if (inspector.object instanceof Spike) {
                     this.level.spikes.splice(this.level.spikes.indexOf(inspector.object), 1);
                 }
+                else if (inspector.object instanceof TimedColorOrb) {
+                    this.level.timedColorOrbs.splice(this.level.timedColorOrbs.indexOf(inspector.object), 1);
+                }
                 else if (inspector.object instanceof ColorOrb) {
                     this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(inspector.object), 1);
                 }
@@ -409,6 +421,9 @@ export class LevelEditor {
                     }
                     else if (this.currentObject instanceof Obstacle) {
                         this.level.obstacles.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
+                    }
+                    else if (this.currentObject instanceof TimedColorOrb) {
+                        this.level.timedColorOrbs.push(new TimedColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color, this.currentObject.timeout));
                     }
                     else if (this.currentObject instanceof ColorOrb) {
                         this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
@@ -508,6 +523,9 @@ export class LevelEditor {
         }
         else if (object instanceof Obstacle) {
             this.level.obstacles.splice(this.level.obstacles.indexOf(object), 1);
+        }
+        else if (object instanceof TimedColorOrb) {
+            this.level.timedColorOrbs.splice(this.level.timedColorOrbs.indexOf(object), 1);
         }
         else if (object instanceof ColorOrb) {
             this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(object), 1);

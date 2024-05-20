@@ -3,7 +3,7 @@ import { ColorOrb } from "../Game/ColorOrb.mjs";
 import { Entity } from "../Game/Entity.mjs";
 import { Finish } from "../Game/Finish.mjs";
 import { Key } from "../Game/Key.mjs";
-import { MovingEntity } from "../Game/MovingEntity.mjs";
+import { UpdatingEntity } from "../Game/UpdatingEntity.mjs";
 import { MovingObstacle } from "../Game/MovingObstacle.mjs";
 import { MovingObstaclePath } from "./MovingObstaclePath.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
@@ -13,7 +13,7 @@ import { ParentChildRelation } from "./ParentChildRelation.mjs";
 
 export class EditorGameManager extends GameManager {
 
-    renderPipeline = [Obstacle, MovingObstacle, MovingObstaclePath, ColorOrb, Spike, MovingEntity, Entity, Finish, Player, Key, ParentChildRelation];
+    renderPipeline = [Obstacle, MovingObstacle, MovingObstaclePath, ColorOrb, Spike, UpdatingEntity, Entity, Finish, Player, Key, ParentChildRelation];
 
     constructor() {
         super();
@@ -33,6 +33,9 @@ export class EditorGameManager extends GameManager {
         }
         for (let colorOrb of level.colorOrbs) {
             this.addEntity(colorOrb);
+        }
+        for (let timedColorOrb of level.timedColorOrbs) {
+            this.addEntity(timedColorOrb);
         }
         for (let spike of level.spikes) {
             this.addEntity(spike);

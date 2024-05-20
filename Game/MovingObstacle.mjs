@@ -1,7 +1,7 @@
-import { MovingEntity } from './MovingEntity.mjs';
+import { UpdatingEntity } from './UpdatingEntity.mjs';
 
 
-export class MovingObstacle extends MovingEntity {
+export class MovingObstacle extends UpdatingEntity {
 
     constructor(ctx, pos, size, color, targetPos, speed, movePlayer = true) {
         super(ctx, pos, size, color);

@@ -1,10 +1,10 @@
-import * as physicsLib from '../Helper/physicsLib.mjs';
-import { MovingEntity } from './MovingEntity.mjs';
+import * as drawLib from '../Helper/drawLib.mjs';
+import { UpdatingEntity } from './UpdatingEntity.mjs';
 import { MovingObstacle } from './MovingObstacle.mjs';
 import { Obstacle } from './Obstacle.mjs';
 
 
-export class Player extends MovingEntity {
+export class Player extends UpdatingEntity {
 
 
     gravity = .75;
@@ -33,7 +33,19 @@ export class Player extends MovingEntity {
         this.colors.push(color);
     }
 
+    drawEntity() {
+        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
+
+        if (this.colorTimeout) {
+            this.ctx.translate(this.size.width + 10, -30);
+            drawLib.rect(this.ctx, 0, 0, 10, 20, 'black');
+            let percentage = this.colorTimeout / this.colorTimeoutMax;
+            drawLib.rect(this.ctx, 0, 20 * (1 - percentage), 10, 20 * percentage, this.color);
+        }
+    }
+
     update() {
+        this.checkColorTimeout();
         this.velocity.y += this.gravity;
         this.isGrounded = false;
 
@@ -134,9 +146,43 @@ export class Player extends MovingEntity {
     }
 
     addColor(color) {
+        this.removeTemporaryColor();
         if (!this.colors.includes(color)) {
             this.colors.push(color);
         }
+    }
+
+    checkColorTimeout() {
+        if (this.colorTimeout) {
+            this.colorTimeout--;
+            if (this.colorTimeout <= 0) {
+                this.colorTimeout = null;
+                let temp = this.color;
+                this.previousColor();
+                this.colors = this.colors.filter(color => color !== temp);
+            }
+        }
+    }
+
+    removeTemporaryColor() {
+        if (this.colorTimeout) {
+            this.colorTimeout = null;
+            this.colors = this.colors.filter(color => color !== this.color);
+        }
+    }
+
+    setColor(color) {
+        this.removeTemporaryColor();
+
+        this.color = color;
+    }
+
+    nextColor() {
+        this.setColor(this.colors[(this.colors.indexOf(this.color) + 1) % this.colors.length]);
+    }
+
+    previousColor() {
+        this.setColor(this.colors[(this.colors.indexOf(this.color) - 1 + this.colors.length) % this.colors.length]);
     }
 
     rotate(degree) {

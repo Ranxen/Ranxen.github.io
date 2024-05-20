@@ -19,10 +19,14 @@ export class Entity {
         this.ctx.save();
 
         this.ctx.translate(this.pos.x, this.pos.y);
-        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
+        this.drawEntity();
         
         this.ctx.restore();
         this.drawChildren();
+    }
+
+    drawEntity() {
+        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
     }
 
     update() {

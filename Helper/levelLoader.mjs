@@ -5,6 +5,7 @@ import { Level } from "../Game/Level.mjs";
 import { MovingObstacle } from "../Game/MovingObstacle.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
 import { Spike } from "../Game/Spike.mjs";
+import { TimedColorOrb } from "../Game/TimedColorOrb.mjs";
 
 
 export function loadLevel(ctx, encodedLevel, actions) {
@@ -50,6 +51,7 @@ export function levelToJSON(level, player) {
             size: level.finish.size
         },
         colorOrbs: level.colorOrbs.map(colorOrb => mapByType(colorOrb)),
+        timedColorOrbs: level.timedColorOrbs.map(timedColorOrb => mapByType(timedColorOrb)),
         obstacles: level.obstacles.map(obstacle => mapByType(obstacle)),
         movingObstacles: level.movingObstacles.map(movingObstacle => mapByType(movingObstacle)),
         spikes: level.spikes.map(spike => mapByType(spike))
@@ -87,6 +89,14 @@ function mapByType(entity) {
                 size: entity.size,
                 color: entity.color,
                 children: mapChildren(entity)
+            }
+        case TimedColorOrb:
+            return {
+                constructor: "TimedColorOrb",
+                pos: entity.pos,
+                size: entity.size.width,
+                color: entity.color,
+                timeout: entity.timeout
             }
         case ColorOrb:
             return {
