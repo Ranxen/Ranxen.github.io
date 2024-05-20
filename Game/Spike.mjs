@@ -1,6 +1,7 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
 import { Entity } from './Entity.mjs';
+import { Player } from './Player.mjs';
 
 
 export class Spike extends Entity {
@@ -28,10 +29,12 @@ export class Spike extends Entity {
     }
 
     detectCollision(args) {
-        let player = args.other;
-        if (player.color !== this.color) {
-            if (physicsLib.trianglePlayerCollision(this, player)) {
-                this.restartLevel();
+        if (args.other instanceof Player) {
+            let player = args.other;
+            if (player.color !== this.color) {
+                if (physicsLib.trianglePlayerCollision(this, player)) {
+                    this.restartLevel();
+                }
             }
         }
     }

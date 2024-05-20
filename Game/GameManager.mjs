@@ -38,9 +38,13 @@ export class GameManager {
         for (let spike of level.spikes) {
             this.addEntity(spike);
         }
-        this.addEntity(level.finish);
+        if (level.finish.parent === null) {
+            this.addEntity(level.finish);
+        }
         this.addEntity(player);
-        this.addEntity(level.key);
+        if (level.key.parent === null) {
+            this.addEntity(level.key);
+        }
 
         this.sortEntities();
     }

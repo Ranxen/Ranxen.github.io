@@ -20,8 +20,12 @@ export class Level {
             this.index = level.index;
             this.startPos = level.startPos;
             this.startColor = level.startColor;
-            this.key = new Key(ctx, level.keyPos);
-            this.finish = new Finish(ctx, level.finish.pos, level.finish.size);
+            if (typeof level.keyPos === 'object') {
+                this.key = new Key(ctx, level.keyPos);
+            }
+            if (typeof level.finish === 'object') {
+                this.finish = new Finish(ctx, level.finish.pos, level.finish.size);
+            }
             this.colorOrbs = level.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color));
             this.obstacles = level.obstacles.map(obstacle => {
                 let obs = new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color);
@@ -73,6 +77,12 @@ export class Level {
                 return new ColorOrb(ctx, child.pos, child.size, child.color);
             case 'Spike':
                 return new Spike(ctx, child.pos, child.size, child.rotation, child.color, actions.restartLevel);
+            case 'Finish':
+                this.finish = new Finish(ctx, child.pos, child.size);
+                return this.finish;
+            case 'Key':
+                this.key = new Key(ctx, child.pos);
+                return this.key;
         }
     }
 

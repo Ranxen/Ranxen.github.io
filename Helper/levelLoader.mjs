@@ -1,4 +1,6 @@
 import { ColorOrb } from "../Game/ColorOrb.mjs";
+import { Finish } from "../Game/Finish.mjs";
+import { Key } from "../Game/Key.mjs";
 import { Level } from "../Game/Level.mjs";
 import { MovingObstacle } from "../Game/MovingObstacle.mjs";
 import { Obstacle } from "../Game/Obstacle.mjs";
@@ -42,8 +44,8 @@ export function levelToJSON(level, player) {
         isCustom: true,
         startPos: player.pos,
         startColor: player.color,
-        keyPos: level.key.pos,
-        finish: {
+        keyPos: level.key.parent != null ? 'child' : level.key.pos,
+        finish: level.finish.parent != null ? 'child' : {
             pos: level.finish.pos,
             size: level.finish.size
         },
@@ -92,6 +94,17 @@ function mapByType(entity) {
                 pos: entity.pos,
                 size: entity.size.width,
                 color: entity.color
+            }
+        case Finish:
+            return {
+                constructor: "Finish",
+                pos: entity.pos,
+                size: entity.size
+            }
+        case Key:
+            return {
+                constructor: "Key",
+                pos: entity.pos
             }
     }
 }

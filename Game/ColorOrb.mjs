@@ -1,6 +1,7 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
 import { Entity } from './Entity.mjs';
+import { Player } from './Player.mjs';
 
 
 export class ColorOrb extends Entity {
@@ -21,21 +22,23 @@ export class ColorOrb extends Entity {
     }
 
     detectCollision(args) {
-        let player = args.other;
-        let colorWheel = args.colorWheel;
-        let edgesOfPlayer = player.getEdges();
-
-        for (let edge of edgesOfPlayer) {
-            if (physicsLib.pointInsideCircle(edge, this)) {
-                this.hitDetected(player, colorWheel);
-                break;
+        if (args.other instanceof Player) {
+            let player = args.other;
+            let colorWheel = args.colorWheel;
+            let edgesOfPlayer = player.getEdges();
+    
+            for (let edge of edgesOfPlayer) {
+                if (physicsLib.pointInsideCircle(edge, this)) {
+                    this.hitDetected(player, colorWheel);
+                    break;
+                }
             }
-        }
-
-        for (let edge of this.getEdges()) {
-            if (physicsLib.pointInsideRect(edge, player)) {
-                this.hitDetected(player, colorWheel);
-                break;
+    
+            for (let edge of this.getEdges()) {
+                if (physicsLib.pointInsideRect(edge, player)) {
+                    this.hitDetected(player, colorWheel);
+                    break;
+                }
             }
         }
     }

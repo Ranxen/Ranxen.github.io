@@ -394,14 +394,7 @@ export class LevelEditor {
         x -= this.camera.x;
         y -= this.camera.y;
 
-        for (let entity of gameManager.entities) {
-            let clicked = entity.detectClick(x, y);
-            if (clicked) {
-                return clicked;
-            }
-        }
-
-        return null;
+        return gameManager.detectClick(x, y);
     }
 
     

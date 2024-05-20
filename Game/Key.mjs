@@ -1,5 +1,6 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import { Entity } from './Entity.mjs';
+import { Player } from './Player.mjs';
 
 
 export class Key extends Entity {
@@ -29,9 +30,11 @@ export class Key extends Entity {
     }
 
     detectCollision(args) {
-        let player = args.other;
-        if (super.detectCollision({ other: player })) {
-            player.hasKey = true;
+        if (args.other instanceof Player) {
+            let player = args.other;
+            if (super.detectCollision({ other: player })) {
+                player.hasKey = true;
+            }
         }
     }
 

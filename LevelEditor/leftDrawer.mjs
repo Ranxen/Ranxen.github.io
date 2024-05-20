@@ -84,8 +84,8 @@ export class LeftDrawer {
                 this.editorActions.loadEncodedLevel(encodedLevelField.value);
             }
             catch (error) {
-                this.showInvalidLevelToast();
                 console.error(error);
+                this.showInvalidLevelToast();
             }
         });
         loadLevelContainer.appendChild(loadEncodedButton);
@@ -107,6 +107,7 @@ export class LeftDrawer {
                 this.editorActions.uploadLevel(uploadLevelField.files[0]);
             }
             catch (error) {
+                console.error(error);
                 this.showInvalidLevelToast();
             }
         });
@@ -154,7 +155,8 @@ export class LeftDrawer {
                 }
             }
             catch (error) {
-                this.showInvalidToast("Could not save level");
+                console.error(error);
+                this.showErrorToast("Could not save level");
             }
         });
         buttonsContainer.appendChild(saveToBrowserCache);

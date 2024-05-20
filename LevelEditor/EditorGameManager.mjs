@@ -37,9 +37,13 @@ export class EditorGameManager extends GameManager {
         for (let spike of level.spikes) {
             this.addEntity(spike);
         }
-        this.addEntity(level.finish);
+        if (level.finish.parent === null) {
+            this.addEntity(level.finish);
+        }
         this.addEntity(player);
-        this.addEntity(level.key);
+        if (level.key.parent === null) {
+            this.addEntity(level.key);
+        }
 
         this.sortEntities();
     }
@@ -74,6 +78,17 @@ export class EditorGameManager extends GameManager {
         }
         
         this.entities = this.entities.filter(e => e !== entity && !(e instanceof ParentChildRelation && (e.parent === entity || e.child === entity)));
+    }
+
+    detectClick(x, y) {
+        for (let entity of [...this.entities].reverse()) {
+            let clicked = entity.detectClick(x, y);
+            if (clicked) {
+                return clicked;
+            }
+        }
+
+        return null;
     }
 
 }
