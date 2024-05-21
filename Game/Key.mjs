@@ -57,4 +57,11 @@ export class Key extends Entity {
         }]
     }
 
+    toJSON() {
+        return {
+            constructor: "Key",
+            pos: this.pos
+        }
+    }
+
 }

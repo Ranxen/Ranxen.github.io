@@ -13,4 +13,14 @@ export class Obstacle extends Entity {
         this.size.height = temp;
     }
 
+    toJSON() {
+        return {
+            constructor: "Obstacle",
+            pos: this.pos,
+            size: this.size,
+            color: this.color,
+            children: this.children.map(child => child.toJSON())
+        }
+    }
+
 }

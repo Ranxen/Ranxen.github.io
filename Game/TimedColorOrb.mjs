@@ -31,4 +31,14 @@ export class TimedColorOrb extends ColorOrb {
         return attributes;
     }
 
+    toJSON() {
+        return {
+            constructor: "TimedColorOrb",
+            pos: this.pos,
+            size: this.size,
+            color: this.color,
+            timeout: this.timeout
+        }
+    }
+
 }

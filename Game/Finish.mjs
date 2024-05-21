@@ -62,4 +62,12 @@ export class Finish extends Entity {
         }]
     }
 
+    toJSON() {
+        return {
+            constructor: "Finish",
+            pos: this.pos,
+            size: this.size
+        }
+    }
+
 }

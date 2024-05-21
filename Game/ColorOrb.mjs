@@ -96,4 +96,13 @@ export class ColorOrb extends Entity {
         }]
     }
 
+    toJSON() {
+        return {
+            constructor: "ColorOrb",
+            pos: this.pos,
+            size: this.size,
+            color: this.color
+        }
+    }
+
 }

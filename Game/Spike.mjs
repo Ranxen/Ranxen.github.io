@@ -111,4 +111,14 @@ export class Spike extends Entity {
         }]
     }
 
+    toJSON() {
+        return {
+            constructor: "Spike",
+            pos: this.pos,
+            size: this.size,
+            rotation: this.rotation * 180 / Math.PI,
+            color: this.color
+        }
+    }
+
 }

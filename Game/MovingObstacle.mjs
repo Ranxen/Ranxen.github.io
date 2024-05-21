@@ -69,4 +69,17 @@ export class MovingObstacle extends UpdatingEntity {
         return attributes;
     }
 
+    toJSON() {
+        return {
+            constructor: "MovingObstacle",
+            pos: this.pos,
+            size: this.size,
+            color: this.color,
+            targetPos: this.targetPos,
+            speed: this.speed,
+            movePlayer: this.movePlayer,
+            children: this.children.map(child => child.toJSON())
+        }
+    }
+
 }

@@ -124,78 +124,12 @@ export function levelToJSON(level, player) {
             pos: level.finish.pos,
             size: level.finish.size
         },
-        colorOrbs: level.colorOrbs.map(colorOrb => mapByType(colorOrb)),
-        timedColorOrbs: level.timedColorOrbs.map(timedColorOrb => mapByType(timedColorOrb)),
-        obstacles: level.obstacles.map(obstacle => mapByType(obstacle)),
-        movingObstacles: level.movingObstacles.map(movingObstacle => mapByType(movingObstacle)),
-        spikes: level.spikes.map(spike => mapByType(spike))
+        colorOrbs: level.colorOrbs.map(colorOrb => colorOrb.toJSON()),
+        timedColorOrbs: level.timedColorOrbs.map(timedColorOrb => timedColorOrb.toJSON()),
+        obstacles: level.obstacles.map(obstacle => obstacle.toJSON()),
+        movingObstacles: level.movingObstacles.map(movingObstacle => movingObstacle.toJSON()),
+        spikes: level.spikes.map(spike => spike.toJSON())
     };
 
     return JSON.stringify(json);
-}
-
-
-function mapByType(entity) {
-    switch (entity.constructor) {
-        case Spike:
-            return {
-                constructor: "Spike",
-                pos: entity.pos,
-                size: entity.size,
-                rotation: entity.rotation * 180 / Math.PI,
-                color: entity.color
-            }
-        case MovingObstacle:
-            return {
-                constructor: "MovingObstacle",
-                pos: entity.pos,
-                size: entity.size,
-                color: entity.color,
-                targetPos: entity.targetPos,
-                speed: entity.speed,
-                movePlayer: entity.movePlayer,
-                children: mapChildren(entity)
-            }
-        case Obstacle:
-            return {
-                constructor: "Obstacle",
-                pos: entity.pos,
-                size: entity.size,
-                color: entity.color,
-                children: mapChildren(entity)
-            }
-        case TimedColorOrb:
-            return {
-                constructor: "TimedColorOrb",
-                pos: entity.pos,
-                size: entity.size.width,
-                color: entity.color,
-                timeout: entity.timeout
-            }
-        case ColorOrb:
-            return {
-                constructor: "ColorOrb",
-                pos: entity.pos,
-                size: entity.size.width,
-                color: entity.color
-            }
-        case Finish:
-            return {
-                constructor: "Finish",
-                pos: entity.pos,
-                size: entity.size
-            }
-        case Key:
-            return {
-                constructor: "Key",
-                pos: entity.pos
-            }
-    }
-}
-
-
-function mapChildren(entity) {
-    return entity.children.map(child => {
-        return mapByType(child);
-    });
 }
