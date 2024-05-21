@@ -84,7 +84,7 @@ async function loadLevel(index) {
         })
         .then(json => {
             levelData = json;
-            setLevel(new Level(ctx, json, { restartLevel: restartLevel }));
+            setLevel(levelLoader.jsonToLevel(json, ctx, { restartLevel: restartLevel }));
         }).catch(error => { 
             loadingLevel = false;
             console.error(error);
@@ -106,8 +106,7 @@ function loadEncodedLevel(encodedLevel) {
 function loadLevelFromJSON(json) {
     stopGame();
 
-    level = new Level(ctx, json, { restartLevel: restartLevel });
-    level.isCustom = true;
+    level = levelLoader.jsonToLevel(json, ctx, { restartLevel: restartLevel });
     levelData = json;
     setLevel(level);
 }
@@ -147,7 +146,7 @@ function setLevel(newLevel) {
 
 function restartLevel() {
     stopGame();
-    level = levelLoader.loadLevelFromJSON(ctx, levelData, { restartLevel: restartLevel });
+    level = levelLoader.jsonToLevel(levelData, ctx, { restartLevel: restartLevel });
     setLevel(level);
 }
 

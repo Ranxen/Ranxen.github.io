@@ -696,7 +696,7 @@ export class LevelEditor {
         this.colors = [];
         this.originalColors = [];
 
-        this.setLevel(new Level(this.ctx, json));
+        this.setLevel(levelLoader.jsonToLevel(json, this.ctx));
     }
 
 

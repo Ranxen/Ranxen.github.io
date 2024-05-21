@@ -10,15 +10,7 @@ import { TimedColorOrb } from "../Game/TimedColorOrb.mjs";
 
 export function loadLevel(ctx, encodedLevel, actions) {
     let json = JSON.parse(atob(encodedLevel));
-    let level = new Level(ctx, json, actions);
-
-    return level;
-}
-
-
-export function loadLevelFromJSON(ctx, json, actions) {
-    let level = new Level(ctx, json, actions);
-    return level;
+    return jsonToLevel(json, ctx, actions);
 }
 
 
@@ -26,11 +18,93 @@ export function loadLevelFromFile(ctx, file, actions, setLevel) {
     let reader = new FileReader();
 
     reader.onload = () => {
-        let level = new Level(ctx, JSON.parse(reader.result), actions);
+        let level = jsonToLevel(JSON.parse(reader.result), ctx, actions);
         setLevel(level);
     };
 
     reader.readAsText(file);
+}
+
+
+export function jsonToLevel(json, ctx, actions) {
+    // Deep copy the json object to avoid modifying the original object
+    json = JSON.parse(JSON.stringify(json));
+
+    let level = new Level();
+
+    level.levelName = json.levelName;
+    level.isCustom = json.isCustom;
+    level.index = json.index;
+    level.startPos = json.startPos;
+    level.startColor = json.startColor;
+    if (typeof json.keyPos === 'object') {
+        level.key = new Key(ctx, json.keyPos);
+    }
+    if (typeof json.finish === 'object') {
+        level.finish = new Finish(ctx, json.finish.pos, json.finish.size);
+    }
+    level.colorOrbs = json.colorOrbs.map(colorOrb => new ColorOrb(ctx, colorOrb.pos, colorOrb.size, colorOrb.color));
+    if (json.timedColorOrbs) {
+        level.timedColorOrbs = json.timedColorOrbs.map(timedColorOrb => new TimedColorOrb(ctx, timedColorOrb.pos, timedColorOrb.size, timedColorOrb.color, timedColorOrb.timeout));
+    }
+    else {
+        level.timedColorOrbs = [];
+    }
+    level.obstacles = json.obstacles.map(obstacle => {
+        let obs = new Obstacle(ctx, obstacle.pos, obstacle.size, obstacle.color);
+        createChildren(level, ctx, obstacle, actions, obs);
+        return obs;
+    });
+    if (json.movingObstacles) {
+        level.movingObstacles = json.movingObstacles.map(movingObstacle => {
+            let obs = new MovingObstacle(ctx, movingObstacle.pos, movingObstacle.size, movingObstacle.color, movingObstacle.targetPos, movingObstacle.speed, movingObstacle.movePlayer, movingObstacle.children);
+            createChildren(level, ctx, movingObstacle, actions, obs);
+            return obs;
+        });
+    }
+    else {
+        level.movingObstacles = [];
+    }
+    if (json.spikes) {
+        level.spikes = json.spikes.map(spike => new Spike(ctx, spike.pos, spike.size, spike.rotation, spike.color, actions.restartLevel));
+    }
+    else {
+        level.spikes = [];
+    }
+
+    return level;
+}
+
+
+function createChildren(level, ctx, json, actions, entity) {
+    if (json.children) {
+        json.children.map(child => {
+            let childEntity = createEntityByConstructor(level, ctx, child, actions);
+            entity.addChild(childEntity);
+            createChildren(level, ctx, child, actions, childEntity);
+        });
+    }
+}
+
+function createEntityByConstructor(level, ctx, child, actions) {
+    switch (child.constructor) {
+        case 'Obstacle':
+            return new Obstacle(ctx, child.pos, child.size, child.color, child.children);
+        case 'MovingObstacle':
+            return new MovingObstacle(ctx, child.pos, child.size, child.color, child.targetPos, child.speed, child.movePlayer);
+        case 'TimedColorOrb':
+            return new TimedColorOrb(ctx, child.pos, child.size, child.color, child.timeout);
+        case 'ColorOrb':
+            return new ColorOrb(ctx, child.pos, child.size, child.color);
+        case 'Spike':
+            return new Spike(ctx, child.pos, child.size, child.rotation, child.color, actions.restartLevel);
+        case 'Finish':
+            level.finish = new Finish(ctx, child.pos, child.size);
+            return level.finish;
+        case 'Key':
+            level.key = new Key(ctx, child.pos);
+            return level.key;
+    }
 }
 
 
