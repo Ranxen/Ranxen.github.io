@@ -186,7 +186,7 @@ export class LevelEditor {
 
     createObstacle() {
         let obstacle = new Obstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor);
-        this.level.obstacles.push(obstacle);
+        this.level.entities.push(obstacle);
         gameManager.addEntity(obstacle);
         this.selectObject(obstacle);
     }
@@ -194,7 +194,7 @@ export class LevelEditor {
 
     createMovingObstacle() {
         let movingObstacle = new MovingObstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 1);
-        this.level.movingObstacles.push(movingObstacle);
+        this.level.entities.push(movingObstacle);
         gameManager.addEntity(movingObstacle);
         gameManager.addEntity(new MovingObstaclePath(this.ctx, movingObstacle));
         this.selectObject(movingObstacle);
@@ -203,7 +203,7 @@ export class LevelEditor {
 
     createColorOrb() {
         let colorOrb = new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor);
-        this.level.colorOrbs.push(colorOrb);
+        this.level.entities.push(colorOrb);
         gameManager.addEntity(colorOrb);
         this.selectObject(colorOrb);
     }
@@ -211,7 +211,7 @@ export class LevelEditor {
 
     createTimedColorOrb() {
         let colorOrb = new TimedColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor, 60);
-        this.level.timedColorOrbs.push(colorOrb);
+        this.level.entities.push(colorOrb);
         gameManager.addEntity(colorOrb);
         this.selectObject(colorOrb);
     }
@@ -219,7 +219,7 @@ export class LevelEditor {
 
     createSpike() {
         let spike = new Spike(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, 0, this.currentColor);
-        this.level.spikes.push(spike);
+        this.level.entities.push(spike);
         gameManager.addEntity(spike);
         this.selectObject(spike);
     }
@@ -255,27 +255,9 @@ export class LevelEditor {
 
     getUsedColors() {
         let usedColors = [];
-        for (let obstacle of this.level.obstacles) {
-            if (!usedColors.includes(obstacle.color)) {
-                usedColors.push(obstacle.color);
-            }
-        }
-
-        for (let movingObstacle of this.level.movingObstacles) {
-            if (!usedColors.includes(movingObstacle.color)) {
-                usedColors.push(movingObstacle.color);
-            }
-        }
-
-        for (let colorOrb of this.level.colorOrbs) {
-            if (!usedColors.includes(colorOrb.color)) {
-                usedColors.push(colorOrb.color);
-            }
-        }
-
-        for (let spike of this.level.spikes) {
-            if (!usedColors.includes(spike.color)) {
-                usedColors.push(spike.color);
+        for (let entity of gameManager.entities) {
+            if (entity.color && !(entity instanceof Key)) {
+                usedColors.push(entity.color);
             }
         }
 
@@ -377,21 +359,7 @@ export class LevelEditor {
             if (result && result !== inspector.object && (result instanceof MovingObstacle || result instanceof Obstacle)) {
                 result.addChild(inspector.object);
                 
-                if (inspector.object instanceof MovingObstacle) {
-                    this.level.movingObstacles.splice(this.level.movingObstacles.indexOf(inspector.object), 1);
-                }
-                else if (inspector.object instanceof Obstacle) {
-                    this.level.obstacles.splice(this.level.obstacles.indexOf(inspector.object), 1);
-                }
-                else if (inspector.object instanceof Spike) {
-                    this.level.spikes.splice(this.level.spikes.indexOf(inspector.object), 1);
-                }
-                else if (inspector.object instanceof TimedColorOrb) {
-                    this.level.timedColorOrbs.splice(this.level.timedColorOrbs.indexOf(inspector.object), 1);
-                }
-                else if (inspector.object instanceof ColorOrb) {
-                    this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(inspector.object), 1);
-                }
+                this.level.entities = this.level.entities.filter(entity => entity !== inspector.object);
                 
                 gameManager.removeEntity(inspector.object);
                 gameManager.addEntity(new ParentChildRelation(this.ctx, result, inspector.object));
@@ -417,21 +385,23 @@ export class LevelEditor {
             if (this.keysPressed.includes("ShiftLeft")) {
                 if (this.currentObject) {
                     if (this.currentObject instanceof MovingObstacle) {
-                        this.level.movingObstacles.push(new MovingObstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color, this.currentObject.targetPos, this.currentObject.speed));
+                        this.level.entities.push(new MovingObstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color, this.currentObject.targetPos, this.currentObject.speed));
                     }
                     else if (this.currentObject instanceof Obstacle) {
-                        this.level.obstacles.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
+                        this.level.entities.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
                     }
                     else if (this.currentObject instanceof TimedColorOrb) {
-                        this.level.timedColorOrbs.push(new TimedColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color, this.currentObject.timeout));
+                        this.level.entities.push(new TimedColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color, this.currentObject.timeout));
                     }
                     else if (this.currentObject instanceof ColorOrb) {
-                        this.level.colorOrbs.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
+                        this.level.entities.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
                     }
                     else if (this.currentObject instanceof Spike) {
-                        this.level.spikes.push(new Spike(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.rotation, this.currentObject.color));
-                        this.level.spikes[this.level.spikes.length - 1].rotation = this.currentObject.rotation;
+                        this.level.entities.push(new Spike(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.rotation, this.currentObject.color));
+                        this.level.entities[this.level.entities.length - 1].rotation = this.currentObject.rotation;
                     }
+
+                    gameManager.addEntity(this.level.entities[this.level.entities.length - 1]);
                 }
             }
             else {
@@ -518,26 +488,14 @@ export class LevelEditor {
         if (object instanceof Player) {
             this.player = null;
         }
-        else if (object instanceof MovingObstacle) {
-            this.level.movingObstacles.splice(this.level.movingObstacles.indexOf(object), 1);
-        }
-        else if (object instanceof Obstacle) {
-            this.level.obstacles.splice(this.level.obstacles.indexOf(object), 1);
-        }
-        else if (object instanceof TimedColorOrb) {
-            this.level.timedColorOrbs.splice(this.level.timedColorOrbs.indexOf(object), 1);
-        }
-        else if (object instanceof ColorOrb) {
-            this.level.colorOrbs.splice(this.level.colorOrbs.indexOf(object), 1);
-        }
-        else if (object instanceof Spike) {
-            this.level.spikes.splice(this.level.spikes.indexOf(object), 1);
-        }
         else if (object instanceof Finish) {
             this.level.finish = null;
         }
         else if (object instanceof Key) {
             this.level.key = null;
+        }
+        else {
+            this.level.entities = this.level.entities.filter(entity => entity !== object);
         }
     }
 
@@ -622,7 +580,7 @@ export class LevelEditor {
 
 
     levelIsValid() {
-        return (this.level.obstacles.length > 0 || this.level.movingObstacles.length > 0) && this.level.finish && this.level.key && this.player;
+        return this.level.entities.length > 0 && this.level.finish && this.level.key && this.player;
     }
 
 

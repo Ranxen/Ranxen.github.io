@@ -26,20 +26,8 @@ export class GameManager {
         this.updateEntities = [];
         this.player = player;
 
-        for (let obstacle of level.obstacles) {
-            this.addEntity(obstacle);
-        }
-        for (let movingObstacle of level.movingObstacles) {
-            this.addEntity(movingObstacle);
-        }
-        for (let colorOrb of level.colorOrbs) {
-            this.addEntity(colorOrb);
-        }
-        for (let timedColorOrb of level.timedColorOrbs) {
-            this.addEntity(timedColorOrb);
-        }
-        for (let spike of level.spikes) {
-            this.addEntity(spike);
+        for (let entity of level.entities) {
+            this.addEntity(entity);
         }
         if (level.finish.parent === null) {
             this.addEntity(level.finish);

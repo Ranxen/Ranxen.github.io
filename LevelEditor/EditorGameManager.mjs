@@ -24,21 +24,8 @@ export class EditorGameManager extends GameManager {
         this.updateEntities = [];
         this.player = player;
 
-        for (let obstacle of level.obstacles) {
-            this.addEntity(obstacle);
-        }
-        for (let movingObstacle of level.movingObstacles) {
-            this.addEntity(movingObstacle);
-            this.addEntity(new MovingObstaclePath(movingObstacle.ctx, movingObstacle));
-        }
-        for (let colorOrb of level.colorOrbs) {
-            this.addEntity(colorOrb);
-        }
-        for (let timedColorOrb of level.timedColorOrbs) {
-            this.addEntity(timedColorOrb);
-        }
-        for (let spike of level.spikes) {
-            this.addEntity(spike);
+        for (let entity of level.entities) {
+            this.addEntity(entity);
         }
         if (level.finish.parent === null) {
             this.addEntity(level.finish);
@@ -68,6 +55,10 @@ export class EditorGameManager extends GameManager {
         this.entities.splice(this.getTargetIndex(entity.constructor), 0, entity);
 
         this.addParentChildRelation(entity);
+
+        if (entity instanceof MovingObstacle) {
+            this.addEntity(new MovingObstaclePath(entity.ctx, entity));
+        }
     }
 
     addParentChildRelation(entity) {
@@ -85,7 +76,7 @@ export class EditorGameManager extends GameManager {
             }
         }
         
-        this.entities = this.entities.filter(e => e !== entity && !(e instanceof ParentChildRelation && (e.parent === entity || e.child === entity)));
+        this.entities = this.entities.filter(e => e !== entity && !(e instanceof ParentChildRelation && (e.parent === entity || e.child === entity)) && !(entity instanceof MovingObstaclePath && (e.movingObstacle === entity.movingObstacle)));
     }
 
     detectClick(x, y) {
