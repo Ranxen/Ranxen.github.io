@@ -39,7 +39,7 @@ function drawHtml() {
     editorControls = new EditorControls(document);
     parentContainer.appendChild(editorControls.createElement());
 
-    leftDrawer = new LeftDrawer(document, localLevels, editorControls, levelEditor.createActions(), { copyEncoded : () => levelEditor.copyEncodedLevel(), loadEncodedLevel : (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid : () => levelEditor.toggleGrid(), showGrid : () => levelEditor.showGrid(), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
+    leftDrawer = new LeftDrawer(document, localLevels, editorControls, levelEditor.createActions(), { copyEncoded: () => levelEditor.copyEncodedLevel(), loadEncodedLevel: (encodedLevel) => levelEditor.loadLevelFromBase64(encodedLevel), toggleGrid: () => levelEditor.toggleGrid(), showGrid: () => levelEditor.showGrid(), changeGridSize: (value) => levelEditor.changeGridSize(value), saveLevel : () => levelEditor.saveLevel(), uploadLevel : (json) => levelEditor.uploadLevel(json), saveToBrowserCache : () => levelEditor.saveToBrowserCache(), changeLevelName : (name) => levelEditor.changeLevelName(name) });
     parentContainer.appendChild(leftDrawer.createElement());
 
     inspector = new Inspector(document, () => levelEditor.getUsedColors(), () => levelEditor.selectParent());
@@ -149,7 +149,7 @@ export class LevelEditor {
     mouseYInGridTranslated = 0;
     gridSize = 25;
     gridEnabled = true;
-    gridShown = false;
+    gridShown = true;
     selectingParent = false;
 
 
@@ -170,6 +170,11 @@ export class LevelEditor {
     showGrid() {
         this.gridShown = !this.gridShown;
         leftDrawer.showGrid(this.gridShown);
+    }
+
+
+    changeGridSize(value) {
+        this.gridSize = parseInt(value);
     }
 
 
@@ -202,7 +207,7 @@ export class LevelEditor {
 
 
     createColorOrb() {
-        let colorOrb = new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor);
+        let colorOrb = new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, heigth: 25 }, this.currentColor);
         this.level.entities.push(colorOrb);
         gameManager.addEntity(colorOrb);
         this.selectObject(colorOrb);
@@ -210,7 +215,7 @@ export class LevelEditor {
 
 
     createTimedColorOrb() {
-        let colorOrb = new TimedColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 25, this.currentColor, 60);
+        let colorOrb = new TimedColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, heigth: 25 }, this.currentColor, 60);
         this.level.entities.push(colorOrb);
         gameManager.addEntity(colorOrb);
         this.selectObject(colorOrb);
@@ -502,7 +507,7 @@ export class LevelEditor {
 
     increaseCurrentObjectWidth() {
         if (this.currentObject) {
-            let changeBy = this.gridSize;
+            let changeBy = this.gridSize - (this.currentObject.size.width % this.gridSize);
             if (!this.gridEnabled) {
                 changeBy = 1;
             }
@@ -517,7 +522,10 @@ export class LevelEditor {
 
     decreaseCurrentObjectWidth() {
         if (this.currentObject) {
-            let changeBy = this.gridSize;
+            let changeBy = this.currentObject.size.width % this.gridSize;
+            if (changeBy === 0) {
+                changeBy = this.gridSize;
+            }
             if (!this.gridEnabled) {
                 changeBy = 1;
             }
@@ -539,7 +547,7 @@ export class LevelEditor {
 
     increaseCurrentObjectHeight() {
         if (this.currentObject) {
-            let changeBy = this.gridSize;
+            let changeBy = this.gridSize - (this.currentObject.size.height % this.gridSize);
             if (!this.gridEnabled) {
                 changeBy = 1;
             }
@@ -554,7 +562,10 @@ export class LevelEditor {
 
     decreaseCurrentObjectHeight() {
         if (this.currentObject) {
-            let changeBy = this.gridSize;
+            let changeBy = this.currentObject.size.height % this.gridSize;
+            if (changeBy === 0) {
+                changeBy = this.gridSize;
+            }
             if (!this.gridEnabled) {
                 changeBy = 1;
             }
@@ -701,6 +712,7 @@ export class LevelEditor {
         this.ctx.lineWidth = 1;
         for (let i = 0; i < canvas.width - this.camera.x; i += this.gridSize) {
             this.ctx.beginPath();
+            this.ctx.strokeStyle = i % (this.gridSize * 5) === 0 ? "rgba(0, 0, 0, 1)" : "rgba(0, 0, 0, 0.5)";
             this.ctx.moveTo(i, 0);
             this.ctx.lineTo(i, canvas.height - this.camera.y);
             this.ctx.stroke();
@@ -708,6 +720,7 @@ export class LevelEditor {
 
         for (let i = 0; i < canvas.height - this.camera.y; i += this.gridSize) {
             this.ctx.beginPath();
+            this.ctx.strokeStyle = i % (this.gridSize * 5) === 0 ? "rgba(0, 0, 0, 1)" : "rgba(0, 0, 0, 0.5)";
             this.ctx.moveTo(0, i);
             this.ctx.lineTo(canvas.width - this.camera.x, i);
             this.ctx.stroke();

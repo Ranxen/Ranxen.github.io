@@ -22,9 +22,9 @@ export class TimedColorOrb extends ColorOrb {
         attributes.push({
             name: 'Timeout',
             type: 'number',
-            value: this.timeout,
+            value: this.timeout / 60,
             callback: (value) => {
-                this.timeout = value;
+                this.timeout = value * 60;
             }
         });
 

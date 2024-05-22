@@ -7,18 +7,15 @@ import { Player } from './Player.mjs';
 export class ColorOrb extends Entity {
 
     constructor(ctx, pos, size, color) {
-        super(ctx, pos, { width: size, height: size}, color);
+        if (typeof size === 'number') {
+            size = { width: size, height: size };
+        }
+        super(ctx, pos, size, color);
         this.edges = this.getEdges();
     }
 
-    draw() {
-        this.ctx.save();
-
-        this.ctx.translate(this.pos.x, this.pos.y);
-
+    drawEntity() {
         drawLib.circle(this.ctx, 0, 0, this.size.width, this.color);
-
-        this.ctx.restore();
     }
 
     detectCollision(args) {

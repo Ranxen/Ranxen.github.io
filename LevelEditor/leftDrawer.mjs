@@ -178,13 +178,37 @@ export class LeftDrawer {
         toggleGridContainer.appendChild(toggleGridLabel);
 
         this.showGridButton = this.document.createElement("button");
-        this.showGridButton.innerText = "Show";
+        this.showGridButton.innerText = "Hide";
         this.showGridButton.addEventListener("click", () => {
             this.editorActions.showGrid();
         });
         toggleGridContainer.appendChild(this.showGridButton);
 
         buttonsContainer.appendChild(toggleGridContainer);
+
+        let gridSizeContainer = this.document.createElement("div");
+        gridSizeContainer.classList.add("horizontal", "margin");
+
+        let gridSizeLabel = this.document.createElement("label");
+        gridSizeLabel.htmlFor = "gridSize";
+        gridSizeLabel.innerText = "Grid Size";
+        gridSizeLabel.classList.add("margin");
+        gridSizeContainer.appendChild(gridSizeLabel);
+
+        let gridSizeInput = this.document.createElement("input");
+        gridSizeInput.id = "gridSize";
+        gridSizeInput.type = "number";
+        gridSizeInput.value = 25;
+        gridSizeInput.classList.add("margin");
+        gridSizeInput.addEventListener("change", () => {
+            if (gridSizeInput.value < 1) {
+                gridSizeInput.value = 1;
+            }
+            this.editorActions.changeGridSize(gridSizeInput.value);
+        });
+        gridSizeContainer.appendChild(gridSizeInput);
+
+        buttonsContainer.appendChild(gridSizeContainer);
 
         let showLocalLevelsButton = this.document.createElement("button");
         showLocalLevelsButton.innerText = "Show Local Levels";
