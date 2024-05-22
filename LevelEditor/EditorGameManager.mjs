@@ -55,13 +55,13 @@ export class EditorGameManager extends GameManager {
         this.entities.splice(this.getTargetIndex(entity.constructor), 0, entity);
 
         this.addParentChildRelation(entity);
-
-        if (entity instanceof MovingObstacle) {
-            this.addEntity(new MovingObstaclePath(entity.ctx, entity));
-        }
     }
 
     addParentChildRelation(entity) {
+        if (entity instanceof MovingObstacle) {
+            this.addEntity(new MovingObstaclePath(entity.ctx, entity));
+        }
+
         entity.children?.forEach(child => {
             this.addEntity(new ParentChildRelation(entity.ctx, entity, child));
             this.addParentChildRelation(child);
@@ -75,8 +75,15 @@ export class EditorGameManager extends GameManager {
                 this.removeEntity(path);
             }
         }
-        
+
         this.entities = this.entities.filter(e => e !== entity && !(e instanceof ParentChildRelation && (e.parent === entity || e.child === entity)) && !(entity instanceof MovingObstaclePath && (e.movingObstacle === entity.movingObstacle)));
+        entity.children?.forEach(child => {
+            this.removeEntity(child);
+        });   
+    }
+
+    removeEntityFromRender(entity) {
+        this.entities = this.entities.filter(e => e !== entity);
     }
 
     detectClick(x, y) {

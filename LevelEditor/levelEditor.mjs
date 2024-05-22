@@ -297,7 +297,9 @@ export class LevelEditor {
 
 
     selectParent() {
-        this.selectingParent = true;
+        if (inspector.object && !(inspector.object instanceof Player)) {
+            this.selectingParent = true;
+        }
     }
 
 
@@ -366,7 +368,7 @@ export class LevelEditor {
                 
                 this.level.entities = this.level.entities.filter(entity => entity !== inspector.object);
                 
-                gameManager.removeEntity(inspector.object);
+                gameManager.removeEntityFromRender(inspector.object, true);
                 gameManager.addEntity(new ParentChildRelation(this.ctx, result, inspector.object));
             }
 

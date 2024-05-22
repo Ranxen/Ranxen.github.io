@@ -47,7 +47,10 @@ export class Inspector {
         this.object = object;
         this.title.innerText = object.constructor.name.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-        if (!(object instanceof Player)) {
+        if (object instanceof Player) {
+            this.parentButton.style.display = "none";
+        }
+        else {
             this.parentButton.style.display = "block";
         }
         
