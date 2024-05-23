@@ -1,3 +1,4 @@
+import * as drawLib from '../Helper/drawLib.mjs';
 import { UpdatingEntity } from './UpdatingEntity.mjs';
 
 
@@ -26,7 +27,21 @@ export class MovingObstacle extends UpdatingEntity {
             this.pos.y += this.velocity.y;
         }
 
+        if (this.parent) {
+            this.relativePos = { x: this.pos.x - this.parent.pos.x, y: this.pos.y - this.parent.pos.y };
+        }
+
         super.update();
+    }
+
+    updatePos(x, y) {
+        let diff = { x: x - this.pos.x, y: y - this.pos.y };
+        this.pos.x = x;
+        this.pos.y = y;
+        this.startPos.x += diff.x;
+        this.startPos.y += diff.y;
+        this.targetPos.x += diff.x;
+        this.targetPos.y += diff.y;
     }
 
     rotate(degree) {

@@ -31,9 +31,14 @@ export class Entity {
 
     update() {
         this.children.forEach(child => {
-            child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
+            child.updatePos(this.pos.x + child.relativePos.x, this.pos.y + child.relativePos.y);
             child.update();
         });
+    }
+
+    updatePos(x, y) {
+        this.pos.x = x;
+        this.pos.y = y;
     }
 
     drawChildren() {
