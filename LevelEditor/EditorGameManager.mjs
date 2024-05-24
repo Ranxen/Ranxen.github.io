@@ -68,6 +68,10 @@ export class EditorGameManager extends GameManager {
         });
     }
 
+    removeParentChildRelation(entity) {
+        this.entities = this.entities.filter(e => !(e instanceof ParentChildRelation && (e.parent === entity.parent && e.child === entity)));
+    }
+
     removeEntity(entity) {
         if (entity instanceof MovingObstacle) {
             let path = this.entities.find(e => e instanceof MovingObstaclePath && e.movingObstacle === entity);

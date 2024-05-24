@@ -92,6 +92,10 @@ export class Entity {
         return [{ x: this.pos.x, y: this.pos.y }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y + this.size.height }];
     }
 
+    getCenter() {
+        return { x: this.pos.x + this.size.width / 2, y: this.pos.y + this.size.height / 2 };
+    }
+
     rotate(degree) {
 
     }

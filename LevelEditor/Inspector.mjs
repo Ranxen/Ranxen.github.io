@@ -23,10 +23,13 @@ export class Inspector {
         header.appendChild(this.title);
 
         this.parentButton = this.document.createElement("button");
-        this.parentButton.innerText = "Parent";
+        this.parentButton.innerText = "Attach";
         this.parentButton.style.margin = "4px";
         this.parentButton.addEventListener("click", () => {
             this.selectParentCallback();
+            if (!this.object.parent) {
+                this.parentButton.innerText = "Attach";
+            }
         });
         header.appendChild(this.parentButton);
 
@@ -52,6 +55,13 @@ export class Inspector {
         }
         else {
             this.parentButton.style.display = "block";
+        }
+
+        if (object.parent) {
+            this.parentButton.innerText = "Detach";
+        }
+        else {
+            this.parentButton.innerText = "Attach";
         }
         
         let editableAttributes = object.getEditableAttributes();

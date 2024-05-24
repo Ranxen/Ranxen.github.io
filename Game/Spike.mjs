@@ -64,6 +64,14 @@ export class Spike extends Entity {
         return edges;
     }
 
+    getCenter() {
+        let x = this.size.width / 2;
+        let y = this.size.height / 2;
+        let centerX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation) + this.pos.x;
+        let centerY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation) + this.pos.y;
+        return { x: centerX, y: centerY };
+    }
+
     rotate(degree) {
         this.rotation += (degree * Math.PI) / 180;
         this.rotation = this.rotation % (2 * Math.PI);

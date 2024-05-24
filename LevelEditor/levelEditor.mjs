@@ -298,7 +298,16 @@ export class LevelEditor {
 
     selectParent() {
         if (inspector.object && !(inspector.object instanceof Player)) {
-            this.selectingParent = true;
+            if (inspector.object.parent) {
+                gameManager.removeParentChildRelation(inspector.object);
+                inspector.object.parent.removeChild(inspector.object);
+                inspector.object.parent = null;
+                this.level.entities.push(inspector.object);
+                gameManager.addEntity(inspector.object);
+            }
+            else {
+                this.selectingParent = true;
+            }
         }
     }
 
@@ -391,30 +400,49 @@ export class LevelEditor {
         if (button === 0) {
             if (this.keysPressed.includes("ShiftLeft")) {
                 if (this.currentObject) {
-                    if (this.currentObject instanceof MovingObstacle) {
-                        this.level.entities.push(new MovingObstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color, this.currentObject.targetPos, this.currentObject.speed));
-                    }
-                    else if (this.currentObject instanceof Obstacle) {
-                        this.level.entities.push(new Obstacle(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.color));
-                    }
-                    else if (this.currentObject instanceof TimedColorOrb) {
-                        this.level.entities.push(new TimedColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color, this.currentObject.timeout));
-                    }
-                    else if (this.currentObject instanceof ColorOrb) {
-                        this.level.entities.push(new ColorOrb(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, this.currentObject.size, this.currentObject.color));
-                    }
-                    else if (this.currentObject instanceof Spike) {
-                        this.level.entities.push(new Spike(this.ctx, { x: this.currentObject.pos.x, y: this.currentObject.pos.y}, { width: this.currentObject.size.width, height: this.currentObject.size.height}, this.currentObject.rotation, this.currentObject.color));
-                        this.level.entities[this.level.entities.length - 1].rotation = this.currentObject.rotation;
+                    let newEntity = this.copyEntity(this.currentObject);
+
+                    if (this.currentObject.parent) {
+                        this.currentObject.parent.addChild(newEntity);
+                        gameManager.addEntity(new ParentChildRelation(this.ctx, this.currentObject.parent, newEntity));
                     }
 
-                    gameManager.addEntity(this.level.entities[this.level.entities.length - 1]);
+                    gameManager.addEntity(newEntity);
                 }
             }
             else {
                 this.currentObject = null;
             }
         }
+    }
+
+
+    copyEntity(entity) {
+        let newEntity = null;
+        if (entity instanceof MovingObstacle) {
+            newEntity = new MovingObstacle(this.ctx, { x: entity.pos.x, y: entity.pos.y }, { width: entity.size.width, height: entity.size.height }, entity.color, entity.targetPos, entity.speed);
+        }
+        else if (entity instanceof Obstacle) {
+            newEntity = new Obstacle(this.ctx, { x: entity.pos.x, y: entity.pos.y }, { width: entity.size.width, height: entity.size.height }, entity.color);
+        }
+        else if (entity instanceof TimedColorOrb) {
+            newEntity = new TimedColorOrb(this.ctx, { x: entity.pos.x, y: entity.pos.y }, entity.size, entity.color, entity.timeout);
+        }
+        else if (entity instanceof ColorOrb) {
+            newEntity = new ColorOrb(this.ctx, { x: entity.pos.x, y: entity.pos.y }, entity.size, entity.color);
+        }
+        else if (entity instanceof Spike) {
+            newEntity = new Spike(this.ctx, { x: entity.pos.x, y: entity.pos.y }, { width: entity.size.width, height: entity.size.height }, entity.rotation, entity.color);
+            newEntity.rotation = entity.rotation;
+        }
+
+        if (newEntity) {
+            entity.children.forEach(child => {
+                newEntity.addChild(this.copyEntity(child));
+            });
+        }
+
+        return newEntity;
     }
 
 

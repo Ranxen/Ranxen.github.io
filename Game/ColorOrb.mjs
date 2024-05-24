@@ -59,6 +59,10 @@ export class ColorOrb extends Entity {
         return [{ x: this.pos.x, y: this.pos.y - this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x - this.size.width, y: this.pos.y }];
     }
 
+    getCenter() {
+        return { x: this.pos.x, y: this.pos.y };
+    }
+
     getEditableAttributes() {
         return [{
             name: 'Color',
