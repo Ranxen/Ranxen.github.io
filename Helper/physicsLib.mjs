@@ -1,10 +1,10 @@
 export function AABBCollisionPredicted(movingObj, other) {
-    return movingObj.pos.x + movingObj.size + movingObj.velocity.x >= other.pos.x && movingObj.pos.x + movingObj.velocity.x <= other.pos.x + other.size.width && movingObj.pos.y + movingObj.size + movingObj.velocity.y >= other.pos.y && movingObj.pos.y + movingObj.velocity.y <= other.pos.y + other.size.height;
+    return movingObj.pos.x + movingObj.size.width + movingObj.velocity.x >= other.pos.x && movingObj.pos.x + movingObj.velocity.x <= other.pos.x + other.size.width && movingObj.pos.y + movingObj.size.height + movingObj.velocity.y >= other.pos.y && movingObj.pos.y + movingObj.velocity.y <= other.pos.y + other.size.height;
 }
 
 
 export function AABBCollision(obj1, obj2) {
-    return obj1.pos.x + obj1.size >= obj2.pos.x && obj1.pos.x <= obj2.pos.x + obj2.size.width && obj1.pos.y + obj1.size >= obj2.pos.y && obj1.pos.y <= obj2.pos.y + obj2.size.height;
+    return obj1.pos.x + obj1.size.width >= obj2.pos.x && obj1.pos.x <= obj2.pos.x + obj2.size.width && obj1.pos.y + obj1.size.height >= obj2.pos.y && obj1.pos.y <= obj2.pos.y + obj2.size.height;
 }
 
 
@@ -26,7 +26,7 @@ export function trianglePlayerCollision(triangle, player) {
         }
     }
 
-    return triangleRectCollision(triangle, { pos: player.pos, size: { width: player.size, height: player.size } });
+    return triangleRectCollision(triangle, player);
 }
 
 
@@ -45,5 +45,5 @@ export function pointInsideRect(point, rect) {
 
 
 export function pointInsideCircle(point, circle) {
-    return Math.sqrt(Math.pow(point.x - circle.pos.x, 2) + Math.pow(point.y - circle.pos.y, 2)) < circle.size;
+    return Math.sqrt(Math.pow(point.x - circle.pos.x, 2) + Math.pow(point.y - circle.pos.y, 2)) < circle.size.width;
 }

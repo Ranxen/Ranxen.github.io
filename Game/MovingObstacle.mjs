@@ -1,9 +1,7 @@
-import * as drawLib from '../Helper/drawLib.mjs';
-import { Obstacle } from './Obstacle.mjs';
+import { MovingEntity } from './MovingEntity.mjs';
 
 
-export class MovingObstacle extends Obstacle {
-
+export class MovingObstacle extends MovingEntity {
 
     constructor(ctx, pos, size, color, targetPos, speed, movePlayer = true) {
         super(ctx, pos, size, color);
@@ -11,21 +9,9 @@ export class MovingObstacle extends Obstacle {
         this.targetPos = targetPos;
         this.speed = speed;
         this.movePlayer = movePlayer;
-        this.velocity = { x: 0, y: 0 };
     }
 
-
-
-    draw() {
-        this.ctx.save();
-        this.ctx.translate(this.pos.x, this.pos.y);
-        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
-
-        this.ctx.restore();
-    }
-
-
-    move() {
+    update() {
         let distance = Math.sqrt(Math.pow(this.targetPos.x - this.pos.x, 2) + Math.pow(this.targetPos.y - this.pos.y, 2));
         if (distance < this.speed) {
             this.pos = this.targetPos;
@@ -39,8 +25,33 @@ export class MovingObstacle extends Obstacle {
             this.pos.x += this.velocity.x;
             this.pos.y += this.velocity.y;
         }
+
+        if (this.parent) {
+            this.relativePos = { x: this.pos.x - this.parent.pos.x, y: this.pos.y - this.parent.pos.y };
+            if (this.parent instanceof MovingEntity) {
+                this.velocity.x += this.parent.velocity.x;
+                this.velocity.y += this.parent.velocity.y;
+            }
+        }
+
+        super.update();
     }
 
+    updatePos(x, y) {
+        let diff = { x: x - this.pos.x, y: y - this.pos.y };
+        this.pos.x = x;
+        this.pos.y = y;
+        this.startPos.x += diff.x;
+        this.startPos.y += diff.y;
+        this.targetPos.x += diff.x;
+        this.targetPos.y += diff.y;
+    }
+
+    rotate(degree) {
+        let temp = this.size.width;
+        this.size.width = this.size.height;
+        this.size.height = temp;
+    }
 
     getEditableAttributes() {
         let attributes = super.getEditableAttributes();
@@ -74,6 +85,19 @@ export class MovingObstacle extends Obstacle {
             }
         });
         return attributes;
+    }
+
+    toJSON() {
+        return {
+            constructor: "MovingObstacle",
+            pos: this.pos,
+            size: this.size,
+            color: this.color,
+            targetPos: this.targetPos,
+            speed: this.speed,
+            movePlayer: this.movePlayer,
+            children: this.children.map(child => child.toJSON())
+        }
     }
 
 }

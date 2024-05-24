@@ -9,6 +9,7 @@ import { SettingsDialog } from "./UI/HtmlDialogs/SettingsDialog.mjs";
 import { ControlsDialog } from "./UI/HtmlDialogs/ControlsDialog.mjs";
 import { LocalLevels } from "./UI/HtmlDialogs/LocalLevels.mjs";
 import { Timer } from "./UI/Canvas/Timer.mjs";
+import { GameManager } from "./Game/GameManager.mjs";
 import * as drawLib from "./Helper/drawLib.mjs";
 import * as levelLoader from "./Helper/levelLoader.mjs";
 
@@ -22,6 +23,7 @@ var levelDoneDialog = null;
 var localLevels = null;
 
 
+var gameManager = null;
 var level = null;
 var levelData = null;
 var player = null;
@@ -82,9 +84,10 @@ async function loadLevel(index) {
         })
         .then(json => {
             levelData = json;
-            setLevel(new Level(ctx, json, { restartLevel: restartLevel }));
+            setLevel(levelLoader.jsonToLevel(json, ctx, { restartLevel: restartLevel }));
         }).catch(error => { 
             loadingLevel = false;
+            console.error(error);
         });
 }
 
@@ -103,8 +106,7 @@ function loadEncodedLevel(encodedLevel) {
 function loadLevelFromJSON(json) {
     stopGame();
 
-    level = new Level(ctx, json, { restartLevel: restartLevel });
-    level.isCustom = true;
+    level = levelLoader.jsonToLevel(json, ctx, { restartLevel: restartLevel });
     levelData = json;
     setLevel(level);
 }
@@ -134,15 +136,17 @@ function setLevel(newLevel) {
         levelDoneDialog.drawLevelTimes(timer.times);
         levelDoneDialog.show();
     };
-    player = new Player(ctx, level.startPos, 50, level.startColor);
+    player = new Player(ctx, level.startPos, { width: 50, height: 50 }, level.startColor);
+    level.key.player = player;
     colorWheel = new ColorWheel(ctx, { x: window.innerWidth - 150, y: window.innerHeight }, 150, player);
+    gameManager = new GameManager(level, player);
     loadingLevel = false;
 }
 
 
 function restartLevel() {
     stopGame();
-    level = levelLoader.loadLevelFromJSON(ctx, levelData, { restartLevel: restartLevel });
+    level = levelLoader.jsonToLevel(levelData, ctx, { restartLevel: restartLevel });
     setLevel(level);
 }
 
@@ -378,30 +382,14 @@ function processTouchOrClick(x, y, touchIdentifier = null) {
 
 
 function computePhysics() {
-    player.clearCollisions();
-
-    level.detectColorOrbCollisions(player, colorWheel);
-    level.detectSpikeCollisions(player);
-    level.detectObstacleCollisions(player);
-    level.moveObstacles();
-
-    level.colorOrbs = level.colorOrbs.filter(colorOrb => !colorOrb.delete);
-    player.update();
-    level.key.detectCollision(player);
-    level.finish.detectCollision(player);
+    gameManager.update(colorWheel);
 
     timer.update();
 }
 
 
 function drawGameObjects() {
-    level.drawObstacles();
-    level.drawSpikes();
-    level.drawColorOrbs();
-
-    level.drawFinish();
-    player.draw();
-    level.drawKey(player);
+    gameManager.draw();
 }
 
 

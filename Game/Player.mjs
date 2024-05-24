@@ -1,9 +1,10 @@
 import * as drawLib from '../Helper/drawLib.mjs';
-import * as physicsLib from '../Helper/physicsLib.mjs';
+import { MovingEntity } from './MovingEntity.mjs';
 import { MovingObstacle } from './MovingObstacle.mjs';
+import { Obstacle } from './Obstacle.mjs';
 
 
-export class Player {
+export class Player extends MovingEntity {
 
 
     gravity = .75;
@@ -14,9 +15,11 @@ export class Player {
     dragAir = .95;
     jumpVelocity = -17.5;
     jumpMultiplier = .5;
+    collisionMask = [Obstacle, MovingObstacle];
 
 
     constructor(ctx, pos, size, color) {
+        super(ctx, pos, size, color);
         this.direction = 'none';
         this.velocity = { x: 0, y: 0 };
         this.collisions = [];
@@ -26,13 +29,23 @@ export class Player {
 
         this.ctx = ctx;
         this.pos = pos;
-        this.size = size;
         this.color = color;
         this.colors.push(color);
     }
 
+    drawEntity() {
+        drawLib.rect(this.ctx, 0, 0, this.size.width, this.size.height, this.color);
+
+        if (this.colorTimeout) {
+            this.ctx.translate(this.size.width + 10, -30);
+            drawLib.rect(this.ctx, 0, 0, 10, 20, 'black');
+            let percentage = this.colorTimeout / this.colorTimeoutMax;
+            drawLib.rect(this.ctx, 0, 20 * (1 - percentage), 10, 20 * percentage, this.color);
+        }
+    }
 
     update() {
+        this.checkColorTimeout();
         this.velocity.y += this.gravity;
         this.isGrounded = false;
 
@@ -51,8 +64,8 @@ export class Player {
         });
 
         for (let obstacle of this.collisions) {
-            if (this.velocity.y >= 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
-                this.pos.y = obstacle.pos.y - this.size;
+            if (this.velocity.y >= 0 && this.pos.y < obstacle.pos.y && this.pos.y + this.size.height < obstacle.pos.y + obstacle.size.height && this.pos.x + this.size.width > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+                this.pos.y = obstacle.pos.y - this.size.height;
                 this.velocity.y = 0;
                 this.isGrounded = true;
 
@@ -60,16 +73,16 @@ export class Player {
                     this.pos.x += obstacle.velocity.x;
                 }
 
-            } else if (this.velocity.y < 0 && this.pos.y > obstacle.pos.y && this.pos.y + this.size > obstacle.pos.y + obstacle.size.height && this.pos.x + this.size > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
+            } else if (this.velocity.y < 0 && this.pos.y > obstacle.pos.y && this.pos.y + this.size.height > obstacle.pos.y + obstacle.size.height && this.pos.x + this.size.width > obstacle.pos.x && this.pos.x < obstacle.pos.x + obstacle.size.width) {
                 this.pos.y = obstacle.pos.y + obstacle.size.height;
                 this.velocity.y = 0;
-            } else if (this.pos.x <= obstacle.pos.x && this.pos.x + this.size >= obstacle.pos.x && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
-                this.pos.x = obstacle.pos.x - this.size;
+            } else if (this.pos.x <= obstacle.pos.x && this.pos.x + this.size.width >= obstacle.pos.x && this.pos.y + this.size.height > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
+                this.pos.x = obstacle.pos.x - this.size.width;
 
                 if (this.velocity.x > 0) {
                     this.velocity.x = 0;
                 }
-            } else if (this.pos.x <= obstacle.pos.x + obstacle.size.width && this.pos.x + this.size >= obstacle.pos.x + obstacle.size.width && this.pos.y + this.size > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
+            } else if (this.pos.x <= obstacle.pos.x + obstacle.size.width && this.pos.x + this.size.width >= obstacle.pos.x + obstacle.size.width && this.pos.y + this.size.height > obstacle.pos.y && this.pos.y < obstacle.pos.y + obstacle.size.height) {
                 this.pos.x = obstacle.pos.x + obstacle.size.width;
 
                 if (this.velocity.x < 0) {
@@ -104,34 +117,26 @@ export class Player {
         this.pos.y += this.velocity.y;
     }
 
+    detectCollision(args) {
+        let other = args.other;
+        args.other = this;
+        args.collisionMask = this.collisionMask;
+        let possibleCollisions = other.detectCollision(args);
 
-    clearCollisions() {
-        this.collisions = [];
-    }
-
-
-    detectCollision(obstacle) {
-        if (this.color !== obstacle.color) {
-            if (physicsLib.AABBCollisionPredicted(this, obstacle)) {
-                this.collisions.push(obstacle);
+        for (let collision of possibleCollisions) {
+            if (this.collisionMask.includes(collision.constructor) && this.color !== collision.color) {
+                this.collisions.push(collision);
             }
         }
     }
-
-    detectClick(x, y) {
-        return physicsLib.pointInsideRect({ x: x, y: y }, { pos: this.pos, size: { width: this.size, height: this.size } });
-    }
-
 
     moveLeft() {
         this.direction = 'left';
     }
 
-
     moveRight() {
         this.direction = 'right';
     }
-
 
     jump() {
         if (this.isGrounded) {
@@ -140,33 +145,49 @@ export class Player {
         }
     }
 
-
     addColor(color) {
+        this.removeTemporaryColor();
         if (!this.colors.includes(color)) {
             this.colors.push(color);
         }
     }
 
-
-    draw() {
-        this.ctx.save();
-
-        this.ctx.translate(this.pos.x, this.pos.y);
-        drawLib.rect(this.ctx, 0, 0, this.size, this.size, this.color);
-
-        this.ctx.restore();
+    checkColorTimeout() {
+        if (this.colorTimeout) {
+            this.colorTimeout--;
+            if (this.colorTimeout <= 0) {
+                this.colorTimeout = null;
+                let temp = this.color;
+                this.previousColor();
+                this.colors = this.colors.filter(color => color !== temp);
+            }
+        }
     }
 
-
-    getEdges() {
-        return [{ x: this.pos.x, y: this.pos.y }, { x: this.pos.x + this.size, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size }, { x: this.pos.x + this.size, y: this.pos.y + this.size }];
+    removeTemporaryColor() {
+        if (this.colorTimeout) {
+            this.colorTimeout = null;
+            this.colors = this.colors.filter(color => color !== this.color);
+        }
     }
 
+    setColor(color) {
+        this.removeTemporaryColor();
+
+        this.color = color;
+    }
+
+    nextColor() {
+        this.setColor(this.colors[(this.colors.indexOf(this.color) + 1) % this.colors.length]);
+    }
+
+    previousColor() {
+        this.setColor(this.colors[(this.colors.indexOf(this.color) - 1 + this.colors.length) % this.colors.length]);
+    }
 
     rotate(degree) {
 
     }
-
 
     getEditableAttributes() {
         return [{
@@ -190,6 +211,5 @@ export class Player {
             }
         }]
     }
-
 
 }

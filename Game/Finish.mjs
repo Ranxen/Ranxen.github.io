@@ -1,17 +1,13 @@
 import * as drawLib from '../Helper/drawLib.mjs';
-import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
 
 
-export class Finish {
-
+export class Finish extends Entity {
 
     constructor(ctx, pos, size) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = size;
+        super(ctx, pos, size, 'brown');
         this.finished = false;
     }
-
 
     draw() {
         this.ctx.save();
@@ -23,24 +19,20 @@ export class Finish {
         this.ctx.restore();
     }
 
-
-    detectCollision(player) {
-        if (player.hasKey && !this.finished && player.pos.x + player.size > this.pos.x && player.pos.x < this.pos.x + this.size.width && player.pos.y + player.size > this.pos.y && player.pos.y < this.pos.y + this.size.height) {
+    detectCollision(args) {
+        let player = args.other;
+        if (player.hasKey && !this.finished && super.detectCollision({ other: player}).length > 0) {
             this.onFinish();
             this.finished = true;
+            return [this];
         }
+
+        return [];
     }
-
-
-    detectClick(x, y) {
-        return physicsLib.pointInsideRect({ x: x, y: y }, this);
-    }
-
 
     rotate(degree) {
 
     }
-
 
     getEditableAttributes() {
         return [{
@@ -68,6 +60,14 @@ export class Finish {
                 }
             }
         }]
+    }
+
+    toJSON() {
+        return {
+            constructor: "Finish",
+            pos: this.pos,
+            size: this.size
+        }
     }
 
 }

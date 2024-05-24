@@ -37,7 +37,6 @@ export class ColorWheel {
         drawLib.arc(this.ctx, 0, 0, this.size, (this.selectorPos + selectorSize) * Math.PI / 180, (this.selectorPos - selectorSize) * Math.PI / 180, 'rgba(0, 0, 0, 0.5)');
         drawLib.arc(this.ctx, 0, 0, this.size, (this.selectorPos - selectorSize) * Math.PI / 180, (this.selectorPos + selectorSize) * Math.PI / 180, 'transparent', 'black', 8);
         drawLib.circle(this.ctx, Math.cos(this.selectorPos * Math.PI / 180) * (this.size - 25), Math.sin(this.selectorPos * Math.PI / 180) * (this.size - 25), 8, this.isDragging ? 'white' : 'black');
-        
     }
 
 
@@ -73,14 +72,14 @@ export class ColorWheel {
 
 
     nextColor() {
-        this.player.color = this.player.colors[(this.player.colors.indexOf(this.player.color) + 1) % this.player.colors.length];
+        this.player.nextColor();
 
         this.setColor(this.player.color);
     }
 
 
     previousColor() {
-        this.player.color = this.player.colors[(this.player.colors.indexOf(this.player.color) - 1 + this.player.colors.length) % this.player.colors.length];
+        this.player.previousColor();
 
         this.setColor(this.player.color);
     }

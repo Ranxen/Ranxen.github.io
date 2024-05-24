@@ -1,24 +1,22 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
+import { Player } from './Player.mjs';
 
 
-export class Spike {
-
+export class Spike extends Entity {
 
     constructor(ctx, pos, size, rotation, color, restartLevel) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = size;
+        super(ctx, pos, size, color);
         if (rotation) {
             this.rotation = (rotation * Math.PI) / 180;
         }
         else {
             this.rotation = 0;
         }
-        this.color = color;
         this.restartLevel = restartLevel;
+        this.edges = this.getEdges();
     }
-
 
 
     draw() {
@@ -30,20 +28,25 @@ export class Spike {
         this.ctx.restore();
     }
 
-
-    detectCollision(player) {
-        if (player.color !== this.color) {
-            if (physicsLib.trianglePlayerCollision(this, player)) {
-                this.restartLevel();
+    detectCollision(args) {
+        if (args.other instanceof Player) {
+            let player = args.other;
+            if (player.color !== this.color) {
+                if (physicsLib.trianglePlayerCollision(this, player)) {
+                    this.restartLevel();
+                    return [this];
+                }
             }
         }
-    }
 
+        return [];
+    }
 
     detectClick(x, y) {
-        return physicsLib.pointInsideTriangle({ x: x, y: y }, this.getEdges());
+        if (physicsLib.pointInsideTriangle({ x: x, y: y }, this.getEdges())) {
+            return this;
+        }
     }
-
 
     getEdges() {
         let edges = [];
@@ -61,12 +64,18 @@ export class Spike {
         return edges;
     }
 
+    getCenter() {
+        let x = this.size.width / 2;
+        let y = this.size.height / 2;
+        let centerX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation) + this.pos.x;
+        let centerY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation) + this.pos.y;
+        return { x: centerX, y: centerY };
+    }
 
     rotate(degree) {
         this.rotation += (degree * Math.PI) / 180;
         this.rotation = this.rotation % (2 * Math.PI);
     }
-
 
     getEditableAttributes() {
         return [{
@@ -108,6 +117,16 @@ export class Spike {
                 this.rotation = (value * Math.PI) / 180;
             }
         }]
+    }
+
+    toJSON() {
+        return {
+            constructor: "Spike",
+            pos: this.pos,
+            size: this.size,
+            rotation: this.rotation * 180 / Math.PI,
+            color: this.color
+        }
     }
 
 }

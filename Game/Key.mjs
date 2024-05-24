@@ -1,26 +1,23 @@
 import * as drawLib from '../Helper/drawLib.mjs';
-import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
+import { Player } from './Player.mjs';
 
 
-export class Key {
-
+export class Key extends Entity {
 
     constructor(ctx, pos) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = { width: 20, height: 30}
-        this.color = 'gold';
+        super(ctx, pos, { width: 20, height: 30 }, 'gold');
+        this.player = null;
     }
 
-
-    draw(player) {
+    draw() {
         this.ctx.save();
 
-        if (!player.hasKey) {
+        if (this.player == null || !this.player.hasKey) {
             this.ctx.translate(this.pos.x, this.pos.y);
         }
         else {
-            this.ctx.translate(player.pos.x - 10, player.pos.y - 40);
+            this.ctx.translate(this.player.pos.x - 10, this.player.pos.y - 40);
         }
 
         drawLib.rect(this.ctx, this.size.width / 3, 0, this.size.width / 4, this.size.height, this.color, "transparent", 0);
@@ -32,23 +29,17 @@ export class Key {
         this.ctx.restore();
     }
 
-
-    detectCollision(player) {
-        if (physicsLib.AABBCollision(player, this)) {
-            player.hasKey = true;
+    detectCollision(args) {
+        if (args.other instanceof Player) {
+            let player = args.other;
+            if (super.detectCollision({ other: player }).length > 0) {
+                player.hasKey = true;
+                return [this];
+            }
         }
+
+        return [];
     }
-
-
-    detectClick(x, y) {
-        return physicsLib.pointInsideRect({ x: x, y: y}, this);
-    }
-
-
-    rotate(degree) {
-
-    }
-
 
     getEditableAttributes() {
         return [{
@@ -66,5 +57,11 @@ export class Key {
         }]
     }
 
+    toJSON() {
+        return {
+            constructor: "Key",
+            pos: this.pos
+        }
+    }
 
 }

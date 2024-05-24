@@ -1,9 +1,12 @@
+import { Player } from "../Game/Player.mjs";
+
 export class Inspector {
 
 
-    constructor(document, colorCallback) {
+    constructor(document, colorCallback, selectParentCallback) {
         this.document = document;
         this.colorCallback = colorCallback;
+        this.selectParentCallback = selectParentCallback;
     }
 
 
@@ -19,6 +22,17 @@ export class Inspector {
         this.title.innerText = "Object Inspector";
         header.appendChild(this.title);
 
+        this.parentButton = this.document.createElement("button");
+        this.parentButton.innerText = "Attach";
+        this.parentButton.style.margin = "4px";
+        this.parentButton.addEventListener("click", () => {
+            this.selectParentCallback();
+            if (!this.object.parent) {
+                this.parentButton.innerText = "Attach";
+            }
+        });
+        header.appendChild(this.parentButton);
+
         this.attributeContainer = this.document.createElement("div");
         this.attributeContainer.style.margin = "4px";
         this.container.appendChild(this.attributeContainer);
@@ -28,9 +42,27 @@ export class Inspector {
 
 
     setObject(object) {
+        if (object.getEditableAttributes === undefined) {
+            return;
+        }
+
         this.attributeContainer.innerHTML = "";
         this.object = object;
-        this.title.innerText = object.constructor.name;
+        this.title.innerText = object.constructor.name.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+        if (object instanceof Player) {
+            this.parentButton.style.display = "none";
+        }
+        else {
+            this.parentButton.style.display = "block";
+        }
+
+        if (object.parent) {
+            this.parentButton.innerText = "Detach";
+        }
+        else {
+            this.parentButton.innerText = "Attach";
+        }
         
         let editableAttributes = object.getEditableAttributes();
 
@@ -54,6 +86,7 @@ export class Inspector {
 
     hide() {
         this.container.style.display = "none";
+        this.parentButton.style.display = "none";
     }
 
 

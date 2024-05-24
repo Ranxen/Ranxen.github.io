@@ -1,52 +1,53 @@
 import * as drawLib from '../Helper/drawLib.mjs';
 import * as physicsLib from '../Helper/physicsLib.mjs';
+import { Entity } from './Entity.mjs';
+import { Player } from './Player.mjs';
 
 
-export class ColorOrb {
-
+export class ColorOrb extends Entity {
 
     constructor(ctx, pos, size, color) {
-        this.ctx = ctx;
-        this.pos = pos;
-        this.size = size;
-        this.color = color;
-    }
-
-
-    draw() {
-        this.ctx.save();
-
-        this.ctx.translate(this.pos.x, this.pos.y);
-
-        drawLib.circle(this.ctx, 0, 0, this.size, this.color);
-
-        this.ctx.restore();
-    }
-
-
-    detectCollision(player, colorWheel) {
-        if (player.pos.x < this.pos.x && player.pos.x + player.size > this.pos.x && player.pos.y < this.pos.y && player.pos.y + player.size > this.pos.y) {
-            this.hitDetected(player, colorWheel);
-            return;
+        if (typeof size === 'number') {
+            size = { width: size, height: size };
         }
+        super(ctx, pos, size, color);
+        this.edges = this.getEdges();
+    }
 
-        let edgesOfPlayer = player.getEdges();
+    drawEntity() {
+        drawLib.circle(this.ctx, 0, 0, this.size.width, this.color);
+    }
 
-        for (let edge of edgesOfPlayer) {
-            let distance = Math.sqrt(Math.pow(edge.x - this.pos.x, 2) + Math.pow(edge.y - this.pos.y, 2));
-            if (distance < this.size) {
-                this.hitDetected(player, colorWheel);
-                break;
+    detectCollision(args) {
+        if (args.other instanceof Player) {
+            let player = args.other;
+            let colorWheel = args.colorWheel;
+            let edgesOfPlayer = player.getEdges();
+    
+            for (let edge of edgesOfPlayer) {
+                if (physicsLib.pointInsideCircle(edge, this)) {
+                    this.hitDetected(player, colorWheel);
+                    return [this];
+                }
+            }
+    
+            for (let edge of this.getEdges()) {
+                if (physicsLib.pointInsideRect(edge, player)) {
+                    this.hitDetected(player, colorWheel);
+                    return [this];
+                }
             }
         }
-    }
 
+        return [];
+    }
 
     detectClick(x, y) {
-        return physicsLib.pointInsideCircle({ x: x, y: y}, this);
+        if (physicsLib.pointInsideCircle({ x: x, y: y}, this)) {
+            return this;
+        }
     }
 
-    
     hitDetected(player, colorWheel) {
         player.addColor(this.color);
         player.color = this.color;
@@ -54,11 +55,13 @@ export class ColorOrb {
         this.delete = true;
     }
 
-
-    rotate(degree) {
-        
+    getEdges() {
+        return [{ x: this.pos.x, y: this.pos.y - this.size.height }, { x: this.pos.x + this.size.width, y: this.pos.y }, { x: this.pos.x, y: this.pos.y + this.size.height }, { x: this.pos.x - this.size.width, y: this.pos.y }];
     }
 
+    getCenter() {
+        return { x: this.pos.x, y: this.pos.y };
+    }
 
     getEditableAttributes() {
         return [{
@@ -79,16 +82,28 @@ export class ColorOrb {
                 else if (attribute === 'y') {
                     this.pos.y = value;
                 }
+
+                this.children.forEach(child => {
+                    child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
+                });
             }
         }, {
             name: 'Size',
             type: 'number',
-            value: this.size,
+            value: this.size.width,
             callback: (value) => {
-                this.size = value;
+                this.size = { width: value, height: value };
             }
         }]
     }
 
+    toJSON() {
+        return {
+            constructor: "ColorOrb",
+            pos: this.pos,
+            size: this.size,
+            color: this.color
+        }
+    }
 
 }
