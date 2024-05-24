@@ -232,6 +232,10 @@ export class LevelEditor {
 
     createFinish() {
         if (this.level.finish) {
+            if (this.level.finish.parent) {
+                this.level.finish.parent.removeChild(this.level.finish);
+            }
+
             gameManager.removeEntity(this.level.finish);
         }
 
@@ -243,6 +247,10 @@ export class LevelEditor {
 
     createKey() {
         if (this.level.key) {
+            if (this.level.key.parent) {
+                this.level.key.parent.removeChild(this.level.key);
+            }
+
             gameManager.removeEntity(this.level.key);
         }
 
@@ -407,6 +415,7 @@ export class LevelEditor {
                         gameManager.addEntity(new ParentChildRelation(this.ctx, this.currentObject.parent, newEntity));
                     }
 
+                    this.level.entities.push(newEntity);
                     gameManager.addEntity(newEntity);
                 }
             }
