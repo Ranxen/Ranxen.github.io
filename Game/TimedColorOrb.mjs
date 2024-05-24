@@ -1,3 +1,4 @@
+import * as drawLib from '../Helper/drawLib.mjs';
 import { ColorOrb } from './ColorOrb.mjs';
 
 export class TimedColorOrb extends ColorOrb {
@@ -5,6 +6,11 @@ export class TimedColorOrb extends ColorOrb {
     constructor(ctx, pos, size, color, timeout) {
         super(ctx, pos, size, color);
         this.timeout = timeout;
+    }
+
+    drawEntity() {
+        super.drawEntity();
+        drawLib.circle(this.ctx, 0, 0, this.size.width * 0.8, 'transparent', '#000', 2);
     }
 
     hitDetected(player, colorWheel) {
