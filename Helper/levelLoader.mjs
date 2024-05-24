@@ -104,7 +104,7 @@ function createChildren(level, ctx, json, actions, entity) {
     }
 }
 
-function createEntityByConstructor(level, ctx, json, actions) {
+function createEntityByConstructor(level, ctx, json, actions = {}) {
     switch (json.constructor) {
         case 'Obstacle':
             return new Obstacle(ctx, json.pos, json.size, json.color, json.children);
