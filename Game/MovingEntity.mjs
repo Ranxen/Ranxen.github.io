@@ -1,7 +1,7 @@
 import { Entity } from './Entity.mjs';
 
 
-export class UpdatingEntity extends Entity {
+export class MovingEntity extends Entity {
 
     constructor(ctx, pos, size, color) {
         super(ctx, pos, size, color);

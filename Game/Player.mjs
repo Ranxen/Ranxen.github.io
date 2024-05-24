@@ -1,10 +1,10 @@
 import * as drawLib from '../Helper/drawLib.mjs';
-import { UpdatingEntity } from './UpdatingEntity.mjs';
+import { MovingEntity } from './MovingEntity.mjs';
 import { MovingObstacle } from './MovingObstacle.mjs';
 import { Obstacle } from './Obstacle.mjs';
 
 
-export class Player extends UpdatingEntity {
+export class Player extends MovingEntity {
 
 
     gravity = .75;

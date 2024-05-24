@@ -1,8 +1,7 @@
-import * as drawLib from '../Helper/drawLib.mjs';
-import { UpdatingEntity } from './UpdatingEntity.mjs';
+import { MovingEntity } from './MovingEntity.mjs';
 
 
-export class MovingObstacle extends UpdatingEntity {
+export class MovingObstacle extends MovingEntity {
 
     constructor(ctx, pos, size, color, targetPos, speed, movePlayer = true) {
         super(ctx, pos, size, color);
@@ -29,6 +28,10 @@ export class MovingObstacle extends UpdatingEntity {
 
         if (this.parent) {
             this.relativePos = { x: this.pos.x - this.parent.pos.x, y: this.pos.y - this.parent.pos.y };
+            if (this.parent instanceof MovingEntity) {
+                this.velocity.x += this.parent.velocity.x;
+                this.velocity.y += this.parent.velocity.y;
+            }
         }
 
         super.update();
