@@ -414,8 +414,10 @@ export class LevelEditor {
                         this.currentObject.parent.addChild(newEntity);
                         gameManager.addEntity(new ParentChildRelation(this.ctx, this.currentObject.parent, newEntity));
                     }
+                    else {
+                        this.level.entities.push(newEntity);
+                    }
 
-                    this.level.entities.push(newEntity);
                     gameManager.addEntity(newEntity);
                 }
             }
