@@ -10,7 +10,6 @@ export class Entity {
         this.pos = pos;
         this.size = size;
         this.color = color;
-        this.edges = this.getEdges();
         this.children = [];
         this.parent = null;
     }

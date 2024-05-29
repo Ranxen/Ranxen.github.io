@@ -79,7 +79,7 @@
             },
             "size": {
                 "width": 25,
-                "heigth": 25
+                "height": 25
             },
             "color": "#a37121"
         },
@@ -783,7 +783,7 @@
             },
             "size": {
                 "width": 25,
-                "heigth": 25
+                "height": 25
             },
             "color": "#1f4fa3"
         },
@@ -873,7 +873,7 @@
             },
             "size": {
                 "width": 25,
-                "heigth": 25
+                "height": 25
             },
             "color": "#7a2279",
             "timeout": 300

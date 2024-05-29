@@ -207,7 +207,7 @@ export class LevelEditor {
 
 
     createColorOrb() {
-        let colorOrb = new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, heigth: 25 }, this.currentColor);
+        let colorOrb = new ColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, this.currentColor);
         this.level.entities.push(colorOrb);
         gameManager.addEntity(colorOrb);
         this.selectObject(colorOrb);
@@ -215,7 +215,7 @@ export class LevelEditor {
 
 
     createTimedColorOrb() {
-        let colorOrb = new TimedColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, heigth: 25 }, this.currentColor, 60);
+        let colorOrb = new TimedColorOrb(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 25, height: 25 }, this.currentColor, 60);
         this.level.entities.push(colorOrb);
         gameManager.addEntity(colorOrb);
         this.selectObject(colorOrb);
@@ -416,9 +416,8 @@ export class LevelEditor {
                     }
                     else {
                         this.level.entities.push(newEntity);
+                        gameManager.addEntity(newEntity);
                     }
-
-                    gameManager.addEntity(newEntity);
                 }
             }
             else {
