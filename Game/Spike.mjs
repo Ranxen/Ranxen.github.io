@@ -15,7 +15,6 @@ export class Spike extends Entity {
             this.rotation = 0;
         }
         this.restartLevel = restartLevel;
-        this.edges = this.getEdges();
     }
 
 

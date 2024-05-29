@@ -11,7 +11,6 @@ export class ColorOrb extends Entity {
             size = { width: size, height: size };
         }
         super(ctx, pos, size, color);
-        this.edges = this.getEdges();
     }
 
     drawEntity() {
