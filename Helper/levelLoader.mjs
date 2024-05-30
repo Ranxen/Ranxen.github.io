@@ -81,7 +81,7 @@ export function oldJsonToLevel(json, ctx, actions) {
     }));
     if (json.movingObstacles) {
         level.entities.push(...json.movingObstacles.map(movingObstacle => {
-            let obs = new MovingObstacle(ctx, movingObstacle.pos, movingObstacle.size, movingObstacle.color, movingObstacle.targetPos, movingObstacle.speed, movingObstacle.movePlayer, movingObstacle.children);
+            let obs = new MovingObstacle(ctx, movingObstacle.pos, movingObstacle.size, movingObstacle.color, movingObstacle.startAt, movingObstacle.targetPos, movingObstacle.speed, movingObstacle.movePlayer, movingObstacle.children);
             createChildren(level, ctx, movingObstacle, actions, obs);
             return obs;
         }));
@@ -109,7 +109,7 @@ function createEntityByConstructor(level, ctx, json, actions = {}) {
         case 'Obstacle':
             return new Obstacle(ctx, json.pos, json.size, json.color, json.children);
         case 'MovingObstacle':
-            return new MovingObstacle(ctx, json.pos, json.size, json.color, json.targetPos, json.speed, json.movePlayer);
+            return new MovingObstacle(ctx, json.pos, json.size, json.color, json.startAt, json.targetPos, json.speed, json.movePlayer);
         case 'TimedColorOrb':
             return new TimedColorOrb(ctx, json.pos, json.size, json.color, json.timeout);
         case 'ColorOrb':

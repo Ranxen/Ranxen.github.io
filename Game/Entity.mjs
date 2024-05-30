@@ -111,7 +111,7 @@ export class Entity {
 
     updateChildPositions() {
         this.children.forEach(child => {
-            child.pos = { x: this.pos.x + child.relativePos.x, y: this.pos.y + child.relativePos.y };
+            child.setPosition(this.pos.x + child.relativePos.x, this.pos.y + child.relativePos.y);
             child.updateChildPositions();
         });
     }

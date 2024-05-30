@@ -198,7 +198,7 @@ export class LevelEditor {
 
 
     createMovingObstacle() {
-        let movingObstacle = new MovingObstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 1);
+        let movingObstacle = new MovingObstacle(this.ctx, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, { width: 200, height: 25 }, this.currentColor, 0, { x: this.mouseXInGridTranslated, y: this.mouseYInGridTranslated }, 1);
         this.level.entities.push(movingObstacle);
         gameManager.addEntity(movingObstacle);
         gameManager.addEntity(new MovingObstaclePath(this.ctx, movingObstacle));
@@ -430,7 +430,7 @@ export class LevelEditor {
     copyEntity(entity) {
         let newEntity = null;
         if (entity instanceof MovingObstacle) {
-            newEntity = new MovingObstacle(this.ctx, { x: entity.pos.x, y: entity.pos.y }, { width: entity.size.width, height: entity.size.height }, entity.color, entity.targetPos, entity.speed);
+            newEntity = new MovingObstacle(this.ctx, { x: entity.pos.x, y: entity.pos.y }, { width: entity.size.width, height: entity.size.height }, entity.color, entity.startAt, entity.targetPos, entity.speed);
         }
         else if (entity instanceof Obstacle) {
             newEntity = new Obstacle(this.ctx, { x: entity.pos.x, y: entity.pos.y }, { width: entity.size.width, height: entity.size.height }, entity.color);

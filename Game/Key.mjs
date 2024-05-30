@@ -33,6 +33,10 @@ export class Key extends Entity {
         if (args.other instanceof Player) {
             let player = args.other;
             if (super.detectCollision({ other: player }).length > 0) {
+                if (this.parent) {
+                    this.parent.removeChild(this);
+                }
+                player.addChild(this);
                 player.hasKey = true;
                 return [this];
             }

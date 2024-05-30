@@ -74,7 +74,7 @@ export class Inspector {
             label.innerText = attribute.name;
             div.appendChild(label);
 
-            let input = this.createInputElementByType(attribute.type, attribute.value, attribute.callback);
+            let input = this.createInputElementByType(attribute);
 
             div.appendChild(input);
             this.attributeContainer.appendChild(div);
@@ -95,49 +95,57 @@ export class Inspector {
     }
 
 
-    createInputElementByType(type, value, callback) {
-        if (type === 'vector') {
+    createInputElementByType(attribute) {
+        if (attribute.type === 'vector') {
             let vector = this.document.createElement("div");
             vector.classList.add("horizontal");
 
-            let x = this.createInputElementByType("number", value.x, (value) => {
-                callback("x", value);
-            });
+            let x = this.createInputElementByType({ type: 'number', value: attribute.value.x, callback: (value) => { attribute.callback("x", value); } });
             vector.appendChild(x);
 
-            let y = this.createInputElementByType("number", value.y, (value) => {
-                callback("y", value);
-            });
+            let y = this.createInputElementByType({ type: 'number', value: attribute.value.y, callback: (value) => { attribute.callback("y", value); } });
             vector.appendChild(y);
 
             return vector;
         }
-        else if (type === 'number') {
+        else if (attribute.type === 'number') {
             let input = this.document.createElement("input");
             input.type = "number";
-            input.value = value;
+            input.value = attribute.value;
             input.addEventListener("input", () => {
-                callback(input.valueAsNumber);
+                attribute.callback(input.valueAsNumber);
             });
             return input;
         }
-        else if (type === 'checkbox') {
+        else if (attribute.type === 'slider') {
+            let input = this.document.createElement("input");
+            input.type = "range";
+            input.min = attribute.min;
+            input.max = attribute.max;
+            input.step = (attribute.max - attribute.min) / 100;
+            input.value = attribute.value;
+            input.addEventListener("input", () => {
+                attribute.callback(input.valueAsNumber);
+            });
+            return input;
+        }
+        else if (attribute.type === 'checkbox') {
             let input = this.document.createElement("input");
             input.type = "checkbox";
-            input.checked = value;
+            input.checked = attribute.value;
             input.addEventListener("change", () => {
-                callback(input.checked);
+                attribute.callback(input.checked);
             });
             return input;
         }
         else {
             let input = this.document.createElement("input");
             input.type = "text"
-            input.value = value;
+            input.value = attribute.value;
             input.addEventListener("input", () => {
-                callback(input.value);
+                attribute.callback(input.value);
 
-                if (type === 'color') {
+                if (attribute.type === 'color') {
                     this.colorCallback();
                 }
             });

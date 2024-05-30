@@ -115,6 +115,8 @@ export class Player extends MovingEntity {
 
         this.pos.x += this.velocity.x;
         this.pos.y += this.velocity.y;
+
+        super.update();
     }
 
     detectCollision(args) {
