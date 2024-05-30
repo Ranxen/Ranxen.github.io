@@ -13,10 +13,10 @@ export class MovingObstaclePath {
     draw() {
         this.ctx.save();
         this.ctx.translate(this.movingObstacle.size.width / 2, this.movingObstacle.size.height / 2);
-        drawLib.circle(this.ctx, this.movingObstacle.pos.x, this.movingObstacle.pos.y, 5, 'grey');
+        drawLib.circle(this.ctx, this.movingObstacle.startPos.x, this.movingObstacle.startPos.y, 5, 'grey');
         this.ctx.strokeStyle = 'grey';
         this.ctx.beginPath();
-        this.ctx.moveTo(this.movingObstacle.pos.x, this.movingObstacle.pos.y);
+        this.ctx.moveTo(this.movingObstacle.startPos.x, this.movingObstacle.startPos.y);
         this.ctx.lineTo(this.movingObstacle.targetPos.x, this.movingObstacle.targetPos.y);
         this.ctx.stroke();
         drawLib.circle(this.ctx, this.movingObstacle.targetPos.x, this.movingObstacle.targetPos.y, 5, 'grey');
@@ -25,6 +25,7 @@ export class MovingObstaclePath {
 
     setPosition(x, y) {
         this.movingObstacle.targetPos = { x: x, y: y };
+        this.movingObstacle.calculateStartPos();
     }
 
     detectClick(x, y) {

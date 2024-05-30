@@ -3,12 +3,16 @@ import { MovingEntity } from './MovingEntity.mjs';
 
 export class MovingObstacle extends MovingEntity {
 
-    constructor(ctx, pos, size, color, targetPos, speed, movePlayer = true) {
+    constructor(ctx, pos, size, color, startAt, targetPos, speed, movePlayer = true) {
         super(ctx, pos, size, color);
         this.startPos = { x: pos.x, y: pos.y };
         this.targetPos = targetPos;
         this.speed = speed;
         this.movePlayer = movePlayer;
+        this.startAt = startAt;
+        if (this.startAt) {
+            this.calculateStartPos();
+        }
     }
 
     update() {
@@ -53,8 +57,45 @@ export class MovingObstacle extends MovingEntity {
         this.size.height = temp;
     }
 
+    setPosition(x, y) {
+        this.pos.x = x;
+        this.pos.y = y;
+        this.startPos.x = x;
+        this.startPos.y = y;
+        this.startAt = 0;
+        this.calculateStartPos();
+    }
+
+    calculateStartPos() {
+        this.pos.x = this.startPos.x + (this.targetPos.x - this.startPos.x) * this.startAt;
+        this.pos.y = this.startPos.y + (this.targetPos.y - this.startPos.y) * this.startAt;
+
+        if (this.parent) {
+            this.relativePos = { x: this.pos.x - this.parent.pos.x, y: this.pos.y - this.parent.pos.y };
+        }
+
+        this.updateChildPositions();
+    }
+
     getEditableAttributes() {
         let attributes = super.getEditableAttributes();
+        attributes = attributes.filter(attribute => attribute.name !== 'Position');
+        attributes.push({
+            name: 'Start Position',
+            type: 'vector',
+            value: this.startPos,
+            callback: (attribute, value) => {
+                if (attribute === 'x') {
+                    this.pos.x = value;
+                    this.startPos.x = value;
+                }
+                else if (attribute === 'y') {
+                    this.pos.y = value;
+                    this.startPos.y = value;
+                }
+                this.calculateStartPos();
+            }
+        });
         attributes.push({
             name: 'Target Position',
             type: 'vector',
@@ -66,6 +107,19 @@ export class MovingObstacle extends MovingEntity {
                 else if (attribute === 'y') {
                     this.targetPos.y = value;
                 }
+
+                this.calculateStartPos();
+            }
+        });
+        attributes.push({
+            name: 'Start At',
+            type: 'slider',
+            value: this.startAt,
+            min: 0,
+            max: 1,
+            callback: (value) => {
+                this.startAt = value;
+                this.calculateStartPos();
             }
         });
         attributes.push({
@@ -90,9 +144,10 @@ export class MovingObstacle extends MovingEntity {
     toJSON() {
         return {
             constructor: "MovingObstacle",
-            pos: this.pos,
+            pos: this.startPos,
             size: this.size,
             color: this.color,
+            startAt: this.startAt,
             targetPos: this.targetPos,
             speed: this.speed,
             movePlayer: this.movePlayer,
