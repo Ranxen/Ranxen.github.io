@@ -38,7 +38,6 @@ export class GameManager {
         }
 
         this.sortEntities();
-        console.log(this.entities);
     }
 
     sortEntities() {
