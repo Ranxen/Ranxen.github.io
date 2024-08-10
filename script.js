@@ -28,6 +28,10 @@ var level = null;
 var levelData = null;
 var player = null;
 
+var ticksPerSecond = 60;
+var lastTick = Date.now();
+var tickLengthMs = 1000 / ticksPerSecond;
+
 var buttons = [];
 var restartButton = null;
 var colorWheel = null;
@@ -47,7 +51,6 @@ var cameraPos = { x: 0, y: 0 };
 var loadingLevel = false;
 var running = false;
 var isMobile = true;
-var levelCode = null;
 
 var buttonColor = '#414e5c';
 
@@ -56,13 +59,13 @@ async function loadAvailableLevels() {
     await fetch("/levels/availableLevels.json")
         .then(response => response.json())
         .catch(error => {
-            
+            console.error(error);
         })
         .then(json => {
             levelSelection.setAvailableLevels(json.availableLevels);
             localLevels.setStartIndex(json.availableLevels.length);
         }).catch(error => {
-            
+            console.log(error);
         });
 }
 
@@ -85,7 +88,7 @@ async function loadLevel(index) {
         .then(json => {
             levelData = json;
             setLevel(levelLoader.jsonToLevel(json, ctx, { restartLevel: restartLevel }));
-        }).catch(error => { 
+        }).catch(error => {
             loadingLevel = false;
             console.error(error);
         });
@@ -95,7 +98,6 @@ async function loadLevel(index) {
 function loadEncodedLevel(encodedLevel) {
     stopGame();
 
-    levelCode = encodedLevel;
     level = levelLoader.loadLevel(ctx, encodedLevel, { restartLevel: restartLevel });
     level.isCustom = true;
     levelData = JSON.parse(levelLoader.levelToJSON(level, { pos: level.startPos, color: level.startColor }));
@@ -212,10 +214,10 @@ function setup() {
 
         if (levelCode !== null) {
             loadEncodedLevel(levelCode);
-            draw();
+            update();
         } else {
             loadLevel(0).then(() => {
-                draw();
+                update();
             });
         }
     });
@@ -258,12 +260,7 @@ function hideDialogs() {
 }
 
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawLib.rect(ctx, 0, 0, canvas.width, canvas.height, "#123")
-
-    updateCameraPos();
-
+function update() {
     if ((activeKeys.length > 0 || touches.length > 0) && !running) {
         startGame();
     }
@@ -272,6 +269,22 @@ function draw() {
         activeKeys = [];
         touches = [];
     }
+
+    if (lastTick < Date.now() - tickLengthMs) {
+        draw();
+    }
+
+    requestAnimationFrame(update);
+}
+
+
+function draw() {
+    lastTick = Date.now() - (Date.now() - lastTick) % tickLengthMs;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawLib.rect(ctx, 0, 0, canvas.width, canvas.height, "#123")
+
+    updateCameraPos();
 
     player.direction = 'none';
 
@@ -283,11 +296,9 @@ function draw() {
     }
 
     drawGameObjects();
-
     ctx.resetTransform();
 
     drawHUD();
-    setTimeout(draw, 1000 / 60);
 }
 
 
